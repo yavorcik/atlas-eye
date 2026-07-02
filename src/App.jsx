@@ -65,14 +65,14 @@ function App() {
         <div className="status-card">
           <span className="status-dot" />
           <div>
-            <strong>Atlas is awake.</strong>
-            <p>Condition: Healthy · Cognitive State: Standby</p>
+            <strong>Atlas Status</strong>
+            <p>Healthy • Awake • Standby</p>
           </div>
         </div>
 
         <form className="waitlist" onSubmit={handleSignup}>
           <h2>Early Access</h2>
-          <p>Join the private release list for Atlas Eye testing.</p>
+          <p>Private Preview</p>
 
           <div className="waitlist-fields">
             <input type="text" name="name" placeholder="Name" required />
@@ -88,7 +88,7 @@ function App() {
             </select>
 
             <button type="submit" disabled={formState === 'submitting'}>
-              {formState === 'submitting' ? 'Sending...' : 'Request Access'}
+              {formState === 'submitting' ? 'Sending...' : 'Request Clearance'}
             </button>
           </div>
 
