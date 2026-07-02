@@ -1,9 +1,11 @@
 # Atlas Eye
 
+> Observe. Reason. Understand.
+
 > The public interface for **Atlas**, an Artificial Cognitive Operating System.
 
 <p align="center">
-  <img src="public/favicon.svg" width="140" alt="Atlas Eye" />
+  <img src="branding/atlas-eye-logo.png" width="220" alt="Atlas Eye">
 </p>
 
 ---
