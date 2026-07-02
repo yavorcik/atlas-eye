@@ -18,7 +18,6 @@ function App() {
     const signup = {
       name: formData.get('name'),
       email: formData.get('email'),
-      interest: formData.get('interest'),
       source: 'atlaseye.ai',
       status: 'new',
     }
