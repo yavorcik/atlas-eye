@@ -72,7 +72,7 @@ Time: ${time}
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: "Atlas Eye <onboarding@resend.dev>",
+          from: "Atlas Eye <notify@atlaseye.ai>",
           to: [notifyEmail],
           subject,
           html,
