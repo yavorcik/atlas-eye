@@ -72,8 +72,7 @@ function App() {
           </div>
 
           <div className="access-copy">
-              <p>Access to the Atlas Eye preview program.</p>
-          </div>
+</div>
 
           <div className="access-fields">
             <input type="text" name="name" placeholder="Name" required />
