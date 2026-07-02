@@ -62,33 +62,25 @@ function App() {
         <h1>Atlas Eye</h1>
         <p className="tagline">The public face of Atlas, an Artificial Cognitive Operating System.</p>
 
-        <div className="status-card">
-          <span className="status-dot" />
-          <div>
-            <strong>Atlas Status</strong>
-            <p>Healthy • Awake • Standby</p>
+        <form className="access-panel" onSubmit={handleSignup}>
+          <div className="status-row">
+            <span className="status-dot" />
+            <div>
+              <strong>Atlas Status</strong>
+              <p>Healthy • Awake • Standby</p>
+            </div>
           </div>
-        </div>
 
-        <form className="waitlist" onSubmit={handleSignup}>
-          <h2>Early Access</h2>
-          <p>Private Preview</p>
+          <div className="access-copy">
+              <p>Access to the Atlas Eye preview program.</p>
+          </div>
 
-          <div className="waitlist-fields">
+          <div className="access-fields">
             <input type="text" name="name" placeholder="Name" required />
             <input type="email" name="email" placeholder="Email" required />
 
-            <select name="interest" defaultValue="">
-              <option value="" disabled>Use case</option>
-              <option value="developer">Developer</option>
-              <option value="research">Research</option>
-              <option value="legal">Legal</option>
-              <option value="business">Business</option>
-              <option value="general">General</option>
-            </select>
-
             <button type="submit" disabled={formState === 'submitting'}>
-              {formState === 'submitting' ? 'Sending...' : 'Request Clearance'}
+              {formState === 'submitting' ? 'Transmitting...' : 'Request Clearance'}
             </button>
           </div>
 
