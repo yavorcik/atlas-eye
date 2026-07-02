@@ -12,7 +12,8 @@ function App() {
     setFormState('submitting')
     setMessage('')
 
-    const formData = new FormData(event.currentTarget)
+    const form = event.currentTarget
+    const formData = new FormData(form)
 
     const signup = {
       name: formData.get('name'),
@@ -39,7 +40,15 @@ function App() {
       return
     }
 
-    event.target.reset()
+    const { error: notifyError } = await supabase.functions.invoke('early-access-signup', {
+      body: signup,
+    })
+
+    if (notifyError) {
+      console.error('Atlas Eye notification failed:', notifyError)
+    }
+
+    form.reset()
     setFormState('success')
     setMessage('Request received. Welcome to Atlas Eye.')
   }
