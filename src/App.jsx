@@ -1,7 +1,43 @@
+import { useState } from 'react'
 import './App.css'
 import AtlasEye from './components/AtlasEye'
+import { supabase } from './lib/supabase'
 
 function App() {
+  const [formState, setFormState] = useState('idle')
+  const [message, setMessage] = useState('')
+
+  async function handleSignup(event) {
+    event.preventDefault()
+    setFormState('submitting')
+    setMessage('')
+
+    const formData = new FormData(event.currentTarget)
+
+    const signup = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      interest: formData.get('interest'),
+      source: 'atlaseye.ai',
+      status: 'new',
+    }
+
+    const { error } = await supabase
+      .from('atlas_early_access_signups')
+      .insert(signup)
+
+    if (error) {
+      console.error(error)
+      setFormState('error')
+      setMessage('Something went wrong. Please try again.')
+      return
+    }
+
+    event.target.reset()
+    setFormState('success')
+    setMessage('Request received. Welcome to Atlas Eye.')
+  }
+
   return (
     <main className="page">
       <section className="hero">
@@ -19,14 +55,7 @@ function App() {
           </div>
         </div>
 
-        <form
-          name="early-access"
-          method="POST"
-          data-netlify="true"
-          className="waitlist"
-        >
-          <input type="hidden" name="form-name" value="early-access" />
-
+        <form className="waitlist" onSubmit={handleSignup}>
           <h2>Early Access</h2>
           <p>Join the private release list for Atlas Eye testing.</p>
 
@@ -43,8 +72,12 @@ function App() {
               <option value="general">General</option>
             </select>
 
-            <button type="submit">Request Access</button>
+            <button type="submit" disabled={formState === 'submitting'}>
+              {formState === 'submitting' ? 'Sending...' : 'Request Access'}
+            </button>
           </div>
+
+          {message && <p className={`form-message ${formState}`}>{message}</p>}
         </form>
 
         <div className="actions">

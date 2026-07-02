@@ -216,3 +216,16 @@ h1 {
     height: 11rem;
   }
 }
+
+.form-message {
+  margin: 0.85rem 0 0;
+  font-weight: 700;
+}
+
+.form-message.success {
+  color: #44ff88;
+}
+
+.form-message.error {
+  color: #ff6666;
+}
