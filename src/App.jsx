@@ -22,6 +22,12 @@ function App() {
       status: 'new',
     }
 
+    if (!supabase) {
+      setFormState('error')
+      setMessage('Early access is temporarily unavailable.')
+      return
+    }
+
     const { error } = await supabase
       .from('atlas_early_access_signups')
       .insert(signup)
