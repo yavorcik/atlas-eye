@@ -1,12 +1,11 @@
 import './App.css'
+import AtlasEye from './components/AtlasEye'
 
 function App() {
   return (
     <main className="page">
       <section className="hero">
-        <div className="eye" aria-label="Atlas Eye">
-          <div className="eye-core" />
-        </div>
+        <AtlasEye />
 
         <p className="eyebrow">Command AI presents</p>
         <h1>Atlas Eye</h1>
