@@ -307,3 +307,21 @@ h1 {
   background: #f3f3f3 !important;
 }
 
+
+/* Rounded Atlas inputs */
+.access-fields input,
+.signup-form input {
+  border-radius: 999px !important;
+  padding: 12px 18px !important;
+  height: 52px !important;
+  background: #111 !important;
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,.15) !important;
+  box-sizing: border-box;
+}
+
+.access-fields input::placeholder,
+.signup-form input::placeholder {
+  color: rgba(255,255,255,.45) !important;
+}
+
