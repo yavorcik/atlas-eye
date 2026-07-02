@@ -8,15 +8,10 @@
   box-sizing: border-box;
 }
 
-html,
-body,
-#root {
+body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-}
-
-body {
   background:
     radial-gradient(circle at center, rgba(160, 20, 20, 0.18), transparent 34rem),
     #050507;
@@ -32,18 +27,18 @@ a {
 }
 
 .hero {
-  min-height: 100svh;
+  min-height: 100vh;
   display: grid;
   place-items: center;
   align-content: center;
-  gap: 1.2rem;
+  gap: 1.1rem;
   padding: 3rem 1.25rem;
   text-align: center;
 }
 
 .eye {
-  width: 13rem;
-  height: 13rem;
+  width: 12.5rem;
+  height: 12.5rem;
   border-radius: 999px;
   display: grid;
   place-items: center;
@@ -57,8 +52,8 @@ a {
 }
 
 .eye-core {
-  width: 3.6rem;
-  height: 3.6rem;
+  width: 3.1rem;
+  height: 3.1rem;
   border-radius: 999px;
   background: #070707;
   box-shadow:
@@ -88,16 +83,21 @@ h1 {
   font-size: clamp(1.1rem, 2vw, 1.45rem);
 }
 
+.status-card,
+.waitlist {
+  width: min(100%, 42rem);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 1.25rem;
+  background: rgba(255, 255, 255, 0.055);
+  backdrop-filter: blur(18px);
+}
+
 .status-card {
   display: flex;
   align-items: center;
   gap: 1rem;
   max-width: 34rem;
   padding: 1rem 1.15rem;
-  border: 1px solid rgba(255, 255, 255, 0.13);
-  border-radius: 1.25rem;
-  background: rgba(255, 255, 255, 0.055);
-  backdrop-filter: blur(18px);
   text-align: left;
 }
 
@@ -113,6 +113,49 @@ h1 {
   background: #44ff88;
   box-shadow: 0 0 1rem rgba(68, 255, 136, 0.8);
   flex: 0 0 auto;
+}
+
+.waitlist {
+  padding: 1.15rem;
+}
+
+.waitlist h2 {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.waitlist p {
+  margin: 0.35rem 0 1rem;
+  color: #b8aaa0;
+}
+
+.waitlist-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr 0.8fr auto;
+  gap: 0.65rem;
+}
+
+.waitlist input,
+.waitlist select,
+.waitlist button {
+  min-height: 2.85rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 0 1rem;
+  background: rgba(0, 0, 0, 0.35);
+  color: #f6f1ea;
+  font: inherit;
+}
+
+.waitlist input::placeholder {
+  color: #9f938b;
+}
+
+.waitlist button {
+  cursor: pointer;
+  background: #f6f1ea;
+  color: #090909;
+  font-weight: 700;
 }
 
 .actions {
@@ -160,5 +203,16 @@ h1 {
   50% {
     transform: scale(1.04);
     filter: brightness(1.18);
+  }
+}
+
+@media (max-width: 820px) {
+  .waitlist-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .eye {
+    width: 11rem;
+    height: 11rem;
   }
 }
