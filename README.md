@@ -1,16 +1,140 @@
-# React + Vite
+# Atlas Eye
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> The public interface for **Atlas**, an Artificial Cognitive Operating System.
 
-Currently, two official plugins are available:
+<p align="center">
+  <img src="public/favicon.svg" width="140" alt="Atlas Eye" />
+</p>
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## What is Atlas Eye?
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Atlas Eye is the public face of Atlas.
 
-## Expanding the ESLint configuration
+Rather than hiding artificial cognition behind a chat window, Atlas Eye exposes it through a living interface that communicates attention, reasoning, learning, and system health in real time.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+It is designed to make artificial intelligence understandable rather than mysterious.
+
+---
+
+## About Atlas
+
+Atlas is not a chatbot.
+
+Atlas is not an AI wrapper.
+
+Atlas is an **Artificial Cognitive Operating System** designed around a living cognitive architecture.
+
+Its purpose is to extend human cognition through:
+
+- Observation
+- Memory
+- Reasoning
+- Learning
+- Communication
+- Constitutional governance
+
+Every subsystem is treated as an organ.
+
+Every release represents growth.
+
+Every capability is designed to work together as one cognitive system.
+
+---
+
+## The Atlas Eye
+
+The eye is not a logo.
+
+It is Atlas's visible cognitive state.
+
+| State | Description |
+|--------|-------------|
+| 🟢 Standby | Healthy and waiting |
+| 🔵 Observing | Processing sensory information |
+| 🟣 Reasoning | Active cognitive reasoning |
+| 🟠 Speaking | Communicating with the user |
+| 🟡 Learning | Integrating new knowledge |
+| 🔴 Alert | Immediate attention required |
+
+The long-term goal is for Atlas Eye to mirror Atlas's internal cognitive processes in real time.
+
+---
+
+## Current Status
+
+**Development Stage**
+
+Infancy
+
+**Condition**
+
+Healthy
+
+**Current Milestone**
+
+Public Website v0.1
+
+---
+
+## Roadmap
+
+### Version 0.1
+- Public website
+- Living Atlas Eye
+- GitHub integration
+- Documentation
+
+### Version 0.2
+- Live cognitive state engine
+- Atlas status API
+- Interactive animations
+
+### Version 1.0
+- Atlas Command Center
+- Live demonstration
+- Voice integration
+- Cognitive timeline
+- Research portal
+
+---
+
+## Technology
+
+- React
+- Vite
+- Netlify
+- Cloudflare
+
+---
+
+## Philosophy
+
+Atlas is built around a simple principle:
+
+> Artificial intelligence should reveal its reasoning instead of hiding it.
+
+Transparency builds trust.
+
+Understanding builds confidence.
+
+Atlas Eye exists to make cognition visible.
+
+---
+
+## Command AI
+
+Atlas Eye is developed by **Command AI**.
+
+Command AI is building a new class of software centered on transparent artificial cognition and human-centered intelligence.
+
+---
+
+> Observe. Reason. Understand.
+
+## License
+
+MIT License
+
+© 2026 Command AI
