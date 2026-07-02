@@ -85,36 +85,6 @@ h1 {
 
 .status-card,
 .waitlist {
-  width: min(100%, 34rem);
-  border: 1px solid rgba(255, 255, 255, 0.13);
-  border-radius: 1.25rem;
-  background: rgba(255, 255, 255, 0.055);
-  backdrop-filter: blur(18px);
-}
-
-.status-card {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem 1.15rem;
-  text-align: left;
-}
-
-.status-card p {
-  margin: 0.25rem 0 0;
-  color: #b8aaa0;
-}
-
-.status-dot {
-  width: 0.9rem;
-  height: 0.9rem;
-  border-radius: 999px;
-  background: #44ff88;
-  box-shadow: 0 0 1rem rgba(68, 255, 136, 0.8);
-  flex: 0 0 auto;
-}
-
-.waitlist {
   padding: 1rem;
 }
 
@@ -130,6 +100,7 @@ h1 {
 }
 
 .waitlist input,
+.waitlist select,
 .waitlist button {
   width: 100%;
   min-height: 2.55rem;
@@ -144,6 +115,10 @@ h1 {
 
 .waitlist input::placeholder {
   color: #9f938b;
+}
+
+.waitlist select {
+  grid-column: 1 / -1;
 }
 
 .waitlist button {
