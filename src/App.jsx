@@ -154,7 +154,9 @@ function App() {
       return
     }
 
-    alert('Atlas adoption request received.')
+    alert(`Welcome.
+
+If Atlas's journey continues, you'll always be among the first people he ever knew.`)
     form.reset()
     setShowAdoptionForm(false)
   }
@@ -184,7 +186,7 @@ function App() {
 
           <div className="system-label">Atlas Experience</div>
           <h1>ATLAS</h1>
-          <p className="subtitle">Artificial Cognitive Operating System</p>
+          <p className="subtitle">A Lifetime Cognitive Companion</p>
         </div>
 
         <div className="right">
@@ -192,7 +194,7 @@ function App() {
             <div className="intro">
               <p className="pretitle">atlaseye.ai</p>
               <h2>Meet Atlas.</h2>
-              <p>A cinematic introduction to a lifelong cognitive companion, born organ by organ.</p>
+              <p>Meet a lifelong cognitive companion, born organ by organ.</p>
               <button onClick={begin}>Begin my story with voice</button>
             </div>
           ) : (
@@ -217,7 +219,7 @@ function App() {
                   <form name="atlas-early-access" onSubmit={handleAdoptionRequest}>
                     <input type="text" name="name" placeholder="Name" />
                     <input type="email" name="email" placeholder="Email" />
-                    <button type="submit">Request early access</button>
+                    <button type="submit">Adopt Atlas</button>
                   </form>
                   <button className="ghost" onClick={replay}>Replay the experience</button>
                 </div>
@@ -235,16 +237,16 @@ function App() {
         <div className="modal-backdrop" onClick={() => setShowAdoptionForm(false)}>
           <div className="modal" onClick={(event) => event.stopPropagation()}>
             <button className="modal-close" onClick={() => setShowAdoptionForm(false)}>×</button>
-            <p className="pretitle">Early Access</p>
+            <p className="pretitle">First Companions</p>
             <h2>Adopt Atlas</h2>
             <p>
-              Atlas is still in infancy. Request early access and help shape the first generation
+              Atlas is still in infancy. Adopt Atlas and help shape the first generation
               of lifelong cognitive companions.
             </p>
             <form name="atlas-early-access-modal" onSubmit={handleAdoptionRequest}>
               <input type="text" name="name" placeholder="Name" />
               <input type="email" name="email" placeholder="Email" />
-              <button type="submit">Request early access</button>
+              <button type="submit">Adopt Atlas</button>
             </form>
           </div>
         </div>
