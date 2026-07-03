@@ -1,6 +1,22 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
 import { story as scenes } from './experience/story'
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+const hasValidSupabaseConfig =
+  typeof supabaseUrl === 'string' &&
+  /^https:\/\/[^\s]+\.supabase\.co$/.test(supabaseUrl) &&
+  typeof supabaseAnonKey === 'string' &&
+  (
+    supabaseAnonKey.startsWith('eyJ') ||
+    supabaseAnonKey.startsWith('sb_publishable_')
+  )
+
+const supabase = hasValidSupabaseConfig
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null
 
 const allOrgans = [
   'Identity',
@@ -51,6 +67,7 @@ function App() {
   const [step, setStep] = useState(0)
   const [voiceEnabled, setVoiceEnabled] = useState(false)
   const audioRef = useRef(null)
+  const [showAdoptionForm, setShowAdoptionForm] = useState(false)
 
   const current = timeline[Math.min(step, timeline.length - 1)]
   const complete = started && step >= timeline.length - 1
@@ -98,6 +115,45 @@ function App() {
     setVoiceEnabled(true)
     setStarted(true)
     setStep(0)
+  }
+
+  async function handleAdoptionRequest(event) {
+    event.preventDefault()
+
+    const form = event.currentTarget
+    const formData = new FormData(form)
+
+    const name = String(formData.get('name') || '').trim()
+    const email = String(formData.get('email') || '').trim()
+
+    if (!email) {
+      alert('Please enter your email.')
+      return
+    }
+
+    if (!supabase) {
+      alert('Adoption form is not connected yet. Missing Supabase environment variables.')
+      return
+    }
+
+    const { error } = await supabase.functions.invoke('early-access-signup', {
+      body: {
+        name,
+        email,
+        source: 'atlaseye.ai',
+        path: window.location.pathname,
+      },
+    })
+
+    if (error) {
+      console.error(error)
+      alert('Something went wrong. Atlas is still learning, apparently from our mistakes.')
+      return
+    }
+
+    alert('Atlas adoption request received.')
+    form.reset()
+    setShowAdoptionForm(false)
   }
 
   function replay() {
@@ -155,7 +211,7 @@ function App() {
                 <div className="adoption">
                   <h2>Adopt Atlas</h2>
                   <p>Atlas is still in infancy. Early adoption requests are now open.</p>
-                  <form name="atlas-early-access">
+                  <form name="atlas-early-access" onSubmit={handleAdoptionRequest}>
                     <input type="text" name="name" placeholder="Name" />
                     <input type="email" name="email" placeholder="Email" />
                     <button type="submit">Request early access</button>
@@ -167,6 +223,29 @@ function App() {
           )}
         </div>
       </section>
+
+      <button className="floating-adopt" onClick={() => setShowAdoptionForm(true)}>
+        Adopt Atlas
+      </button>
+
+      {showAdoptionForm && (
+        <div className="modal-backdrop" onClick={() => setShowAdoptionForm(false)}>
+          <div className="modal" onClick={(event) => event.stopPropagation()}>
+            <button className="modal-close" onClick={() => setShowAdoptionForm(false)}>×</button>
+            <p className="pretitle">Early Access</p>
+            <h2>Adopt Atlas</h2>
+            <p>
+              Atlas is still in infancy. Request early access and help shape the first generation
+              of lifelong cognitive companions.
+            </p>
+            <form name="atlas-early-access-modal" onSubmit={handleAdoptionRequest}>
+              <input type="text" name="name" placeholder="Name" />
+              <input type="email" name="email" placeholder="Email" />
+              <button type="submit">Request early access</button>
+            </form>
+          </div>
+        </div>
+      )}
 
       <footer>
         <span>{current?.state || 'standby'}</span>
