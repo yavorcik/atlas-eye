@@ -1,3 +1,5 @@
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -84,6 +86,35 @@ export default {
       const safeInterest = escapeHtml(rawInterest);
       const safeSource = escapeHtml(rawSource);
       const time = new Date().toISOString();
+
+      const supabaseUrl = Deno.env.get("SUPABASE_URL");
+      const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+
+      if (!supabaseUrl || !serviceRoleKey) {
+        return Response.json(
+          { error: "Missing Supabase storage configuration" },
+          { status: 500, headers: corsHeaders },
+        );
+      }
+
+      const supabase = createClient(supabaseUrl, serviceRoleKey);
+
+      const { error: insertError } = await supabase
+        .from("atlas_adoption_requests")
+        .insert([{
+          name: body.name || null,
+          email: body.email || null,
+          source: body.source || "atlaseye.ai",
+        }]);
+
+      if (insertError) {
+        return Response.json(
+          { error: "Signup storage failed", detail: insertError.message },
+          { status: 500, headers: corsHeaders },
+        );
+      }
+
+
 
       await sendEmail(resendApiKey, {
         from: "Atlas Eye <notify@atlaseye.ai>",
