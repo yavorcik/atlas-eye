@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
 import { story as scenes } from './experience/story'
+import { audioCues } from './experience/audioCues'
 import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
@@ -74,72 +75,49 @@ function App() {
   const complete = started && step >= timeline.length - 1
 
   useEffect(() => {
-    if (!started || !current?.line) return
+    if (!started) return
 
-    let finished = false
+    const audio = audioRef.current
+    if (!audio) return
 
-    const advance = () => {
-      if (finished) return
-      finished = true
-      setTimeout(() => {
-        setStep((value) => Math.min(value + 1, timeline.length - 1))
-      }, 1600)
+    const sync = () => {
+      const currentTime = audio.currentTime
+      const cueIndex = audioCues.findIndex((cue) => currentTime >= cue.start && currentTime < cue.end)
+
+      if (cueIndex >= 0 && cueIndex !== step) {
+        setStep(cueIndex)
+      }
+
+      if (audio.ended) {
+        setStep(timeline.length - 1)
+      }
     }
 
-    if (!voiceEnabled) {
-      const textDelay = Math.min(18000, Math.max(7500, current.line.length * 145))
-      const timer = setTimeout(advance, textDelay)
-      return () => clearTimeout(timer)
-    }
-
-    const audio =
-      audioCacheRef.current[step] ||
-      new Audio(`/audio/atlas-experience/${String(step).padStart(3, '0')}.mp3?v=6`)
-
-    audioRef.current = audio
-    audio.currentTime = 0
-    audio.volume = 1
-
-    const failureTimer = setTimeout(() => {
-      advance()
-    }, 20000)
-
-    audio.onended = () => {
-      clearTimeout(failureTimer)
-      advance()
-    }
-
-    audio.onerror = () => {
-      clearTimeout(failureTimer)
-      advance()
-    }
-
-    audio.play().catch((error) => {
-      console.warn('Atlas audio blocked:', error)
-      clearTimeout(failureTimer)
-      // Do not instantly fly through. Wait cinematically if iOS blocks playback.
-      const textDelay = Math.min(18000, Math.max(7500, current.line.length * 145))
-      setTimeout(advance, textDelay)
-    })
+    const interval = setInterval(sync, 120)
+    audio.addEventListener('timeupdate', sync)
+    audio.addEventListener('ended', sync)
 
     return () => {
-      clearTimeout(failureTimer)
-      audio.pause()
+      clearInterval(interval)
+      audio.removeEventListener('timeupdate', sync)
+      audio.removeEventListener('ended', sync)
     }
-  }, [started, step, current, timeline.length, voiceEnabled])
+  }, [started, step, timeline.length])
 
   function begin() {
     setVoiceEnabled(true)
+    setStep(0)
 
-    audioCacheRef.current = timeline.map((_, index) => {
-      const audio = new Audio(`/audio/atlas-experience/${String(index).padStart(3, '0')}.mp3?v=6`)
-      audio.preload = 'auto'
-      audio.load()
-      return audio
+    const audio = new Audio('/audio/atlas-experience/atlas_full.mp3?v=2')
+    audioRef.current = audio
+    audio.preload = 'auto'
+    audio.volume = 1
+
+    audio.play().catch((error) => {
+      console.warn('Atlas narration blocked:', error)
     })
 
     setStarted(true)
-    setStep(0)
   }
 
   async function handleAdoptionRequest(event) {
