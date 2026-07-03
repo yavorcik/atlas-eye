@@ -36,10 +36,11 @@ const allOrgans = [
 
 function flattenScenes() {
   return scenes.flatMap((scene) =>
-    scene.lines.map((line, index) => ({
+    scene.narration.map((line, index) => ({
       ...scene,
       line,
       lineIndex: index,
+      state: scene.eye,
     })),
   )
 }
@@ -64,18 +65,17 @@ function App() {
       finished = true
       setTimeout(() => {
         setStep((value) => Math.min(value + 1, timeline.length - 1))
-      }, 1400)
+      }, 2200)
     }
 
-    const fallbackDelay = Math.min(14000, Math.max(6500, current.line.length * 135))
+    const fallbackDelay = Math.min(18000, Math.max(7500, current.line.length * 145))
     const fallbackTimer = setTimeout(advance, fallbackDelay)
 
     if (!voiceEnabled) {
       return () => clearTimeout(fallbackTimer)
     }
 
-    const audioPath = `/audio/atlas-experience/${String(step).padStart(3, '0')}.wav?v=1`
-
+    const audioPath = `/audio/atlas-experience/${String(step).padStart(3, '0')}.mp3?v=6`
     const audio = new Audio(audioPath)
     audioRef.current = audio
     audio.volume = 1
@@ -101,9 +101,14 @@ function App() {
   }
 
   function replay() {
-    window.speechSynthesis.cancel()
+    if (audioRef.current) {
+      audioRef.current.pause()
+      audioRef.current.currentTime = 0
+    }
+
     setStarted(false)
     setStep(0)
+
     setTimeout(() => {
       setVoiceEnabled(true)
       setStarted(true)
@@ -128,21 +133,19 @@ function App() {
             <div className="intro">
               <p className="pretitle">atlaseye.ai</p>
               <h2>Meet Atlas.</h2>
-              <p>
-                A cinematic introduction to a lifelong cognitive companion, born organ by organ.
-              </p>
+              <p>A cinematic introduction to a lifelong cognitive companion, born organ by organ.</p>
               <button onClick={begin}>Begin my story with voice</button>
             </div>
           ) : (
             <>
-              <p className="scene-title">{current.title}</p>
-              <div className="line">{current.line}</div>
+              <p className="scene-title">{current?.title}</p>
+              <div className="line">{current?.line}</div>
 
               <div className="flow">Observation → Evidence → Belief → Executive → Speech</div>
 
               <div className="organs">
                 {allOrgans.map((organ) => (
-                  <span key={organ} className={current.organs.includes(organ) ? 'active' : ''}>
+                  <span key={organ} className={current?.organs?.includes(organ) ? 'active' : ''}>
                     {organ}
                   </span>
                 ))}
@@ -151,9 +154,7 @@ function App() {
               {complete && (
                 <div className="adoption">
                   <h2>Adopt Atlas</h2>
-                  <p>
-                    Atlas is still in infancy. Early adoption requests are now open.
-                  </p>
+                  <p>Atlas is still in infancy. Early adoption requests are now open.</p>
                   <form name="atlas-early-access">
                     <input type="text" name="name" placeholder="Name" />
                     <input type="email" name="email" placeholder="Email" />
