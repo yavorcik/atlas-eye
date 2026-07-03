@@ -198,32 +198,57 @@ function App() {
   const timeline = useMemo(() => flattenScenes(), [])
   const [started, setStarted] = useState(false)
   const [step, setStep] = useState(0)
+  const [voiceEnabled, setVoiceEnabled] = useState(false)
 
   const current = timeline[Math.min(step, timeline.length - 1)]
   const complete = started && step >= timeline.length - 1
 
   useEffect(() => {
-    if (!started || complete) return
+    if (!started || !voiceEnabled || !current?.line) return
 
-    const lineLength = current?.line?.length || 0
-    const delay = Math.min(5200, Math.max(2200, lineLength * 55))
+    window.speechSynthesis.cancel()
 
-    const timer = setTimeout(() => {
-      setStep((value) => Math.min(value + 1, timeline.length - 1))
-    }, delay)
+    const utterance = new SpeechSynthesisUtterance(current.line)
+    utterance.rate = 0.82
+    utterance.pitch = 0.72
+    utterance.volume = 1
 
-    return () => clearTimeout(timer)
-  }, [started, step, complete, current, timeline.length])
+    const voices = window.speechSynthesis.getVoices()
+    const preferredVoice =
+      voices.find((voice) => /Daniel|Google UK English Male|Microsoft David|Alex/i.test(voice.name)) ||
+      voices.find((voice) => /male|english|us|uk/i.test(voice.name)) ||
+      voices[0]
+
+    if (preferredVoice) {
+      utterance.voice = preferredVoice
+    }
+
+    utterance.onend = () => {
+      setTimeout(() => {
+        setStep((value) => Math.min(value + 1, timeline.length - 1))
+      }, 650)
+    }
+
+    window.speechSynthesis.speak(utterance)
+
+    return () => window.speechSynthesis.cancel()
+  }, [started, step, current, timeline.length, voiceEnabled])
 
   function begin() {
+    setVoiceEnabled(true)
+    window.speechSynthesis.cancel()
     setStarted(true)
     setStep(0)
   }
 
   function replay() {
+    window.speechSynthesis.cancel()
     setStarted(false)
     setStep(0)
-    setTimeout(() => setStarted(true), 150)
+    setTimeout(() => {
+      setVoiceEnabled(true)
+      setStarted(true)
+    }, 150)
   }
 
   return (
@@ -247,7 +272,7 @@ function App() {
               <p>
                 A cinematic introduction to a lifelong cognitive companion, born organ by organ.
               </p>
-              <button onClick={begin}>Begin my story</button>
+              <button onClick={begin}>Begin my story with voice</button>
             </div>
           ) : (
             <>
