@@ -70,6 +70,7 @@ function App() {
   const audioRef = useRef(null)
   const audioCacheRef = useRef([])
   const [showAdoptionForm, setShowAdoptionForm] = useState(false)
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
 
   const current = timeline[Math.min(step, timeline.length - 1)]
   const complete = started && step >= timeline.length - 1
@@ -154,11 +155,9 @@ function App() {
       return
     }
 
-    alert(`Welcome.
-
-If Atlas's journey continues, you'll always be among the first people he ever knew.`)
     form.reset()
     setShowAdoptionForm(false)
+    setShowSuccessMessage(true)
   }
 
   function replay() {
@@ -248,6 +247,24 @@ If Atlas's journey continues, you'll always be among the first people he ever kn
               <input type="email" name="email" placeholder="Email" />
               <button type="submit">Adopt Atlas</button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {showSuccessMessage && (
+        <div className="modal-backdrop" onClick={() => setShowSuccessMessage(false)}>
+          <div className="modal success-modal" onClick={(event) => event.stopPropagation()}>
+            <button className="modal-close" onClick={() => setShowSuccessMessage(false)}>×</button>
+            <div className="success-eye" />
+            <p className="pretitle">Welcome</p>
+            <h2>Atlas will remember.</h2>
+            <p>
+              If Atlas's journey continues, you'll always be among the first people he ever knew.
+            </p>
+            <p>
+              Thank you for becoming one of Atlas's first companions.
+            </p>
+            <button onClick={() => setShowSuccessMessage(false)}>Return to Atlas</button>
           </div>
         </div>
       )}

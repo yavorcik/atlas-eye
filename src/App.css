@@ -428,3 +428,50 @@ footer {
     font-size: .75rem;
   }
 }
+
+.success-modal {
+  text-align: center;
+}
+
+.success-eye {
+  width: 92px;
+  height: 92px;
+  margin: 0 auto 1.3rem;
+  border-radius: 50%;
+  border: 3px solid var(--green);
+  box-shadow: 0 0 34px var(--green), inset 0 0 22px rgba(64,255,138,.18);
+  animation: breathe 3.2s ease-in-out infinite;
+}
+
+.success-modal h2 {
+  font-size: clamp(2.2rem, 5vw, 4.2rem);
+}
+
+.success-modal button:not(.modal-close) {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.success-modal{
+    text-align:center;
+}
+
+.success-eye{
+    width:90px;
+    height:90px;
+    margin:0 auto 28px;
+
+    border-radius:50%;
+
+    border:3px solid #40ff8a;
+
+    box-shadow:
+        0 0 18px #40ff8a,
+        0 0 45px rgba(64,255,138,.35);
+
+    animation:breathe 3s ease-in-out infinite;
+}
+
+.success-modal button{
+    margin-top:28px;
+}
