@@ -67,6 +67,7 @@ function App() {
   const [step, setStep] = useState(0)
   const [voiceEnabled, setVoiceEnabled] = useState(false)
   const audioRef = useRef(null)
+  const audioCacheRef = useRef([])
   const [showAdoptionForm, setShowAdoptionForm] = useState(false)
 
   const current = timeline[Math.min(step, timeline.length - 1)]
@@ -82,37 +83,61 @@ function App() {
       finished = true
       setTimeout(() => {
         setStep((value) => Math.min(value + 1, timeline.length - 1))
-      }, 2200)
+      }, 1600)
     }
-
-    const fallbackDelay = Math.min(18000, Math.max(7500, current.line.length * 145))
-    const fallbackTimer = setTimeout(advance, fallbackDelay)
 
     if (!voiceEnabled) {
-      return () => clearTimeout(fallbackTimer)
+      const textDelay = Math.min(18000, Math.max(7500, current.line.length * 145))
+      const timer = setTimeout(advance, textDelay)
+      return () => clearTimeout(timer)
     }
 
-    const audioPath = `/audio/atlas-experience/${String(step).padStart(3, '0')}.mp3?v=6`
-    const audio = new Audio(audioPath)
+    const audio =
+      audioCacheRef.current[step] ||
+      new Audio(`/audio/atlas-experience/${String(step).padStart(3, '0')}.mp3?v=6`)
+
     audioRef.current = audio
+    audio.currentTime = 0
     audio.volume = 1
 
-    audio.onended = advance
-    audio.onerror = advance
-
-    audio.play().catch(() => {
+    const failureTimer = setTimeout(() => {
       advance()
+    }, 20000)
+
+    audio.onended = () => {
+      clearTimeout(failureTimer)
+      advance()
+    }
+
+    audio.onerror = () => {
+      clearTimeout(failureTimer)
+      advance()
+    }
+
+    audio.play().catch((error) => {
+      console.warn('Atlas audio blocked:', error)
+      clearTimeout(failureTimer)
+      // Do not instantly fly through. Wait cinematically if iOS blocks playback.
+      const textDelay = Math.min(18000, Math.max(7500, current.line.length * 145))
+      setTimeout(advance, textDelay)
     })
 
     return () => {
-      clearTimeout(fallbackTimer)
+      clearTimeout(failureTimer)
       audio.pause()
-      audio.currentTime = 0
     }
   }, [started, step, current, timeline.length, voiceEnabled])
 
   function begin() {
     setVoiceEnabled(true)
+
+    audioCacheRef.current = timeline.map((_, index) => {
+      const audio = new Audio(`/audio/atlas-experience/${String(index).padStart(3, '0')}.mp3?v=6`)
+      audio.preload = 'auto'
+      audio.load()
+      return audio
+    })
+
     setStarted(true)
     setStep(0)
   }
