@@ -42,6 +42,84 @@ const currentEducation = [
   },
 ]
 
+const reactorPlatforms = [
+  {
+    name: 'BWRX-300',
+    vendor: 'GE Vernova Hitachi Nuclear Energy',
+    technology: 'Boiling Water Reactor',
+    output: '300 MWe',
+    status: 'Commercial deployment underway',
+    marketPosition:
+      'The first commercial SMR under construction in North America, with additional licensing and deployment programs advancing internationally.',
+    atlasSupport: [
+      'Site and mission fit',
+      'Licensing pathway analysis',
+      'Construction and supply-chain planning',
+      'Grid and commercial integration',
+    ],
+  },
+  {
+    name: 'NuScale US460',
+    vendor: 'NuScale Power',
+    technology: 'Integral Pressurized Water Reactor',
+    output: '462 MWe plant configuration',
+    status: 'NRC standard design approved',
+    marketPosition:
+      'The approved US460 design may be referenced in future construction permit, operating license, and combined license applications.',
+    atlasSupport: [
+      'Design and application evaluation',
+      'NRC licensing strategy',
+      'Requirements traceability',
+      'Deployment readiness assessment',
+    ],
+  },
+  {
+    name: 'AP300',
+    vendor: 'Westinghouse Electric Company',
+    technology: 'Pressurized Water Reactor',
+    output: 'Approximately 300 MWe',
+    status: 'Licensing development',
+    marketPosition:
+      'A Generation III+ SMR derived from the AP1000 technology and licensing basis, with NRC pre-application engagement underway.',
+    atlasSupport: [
+      'Technology comparison',
+      'Licensing-basis evaluation',
+      'Project schedule analysis',
+      'Commercial deployment planning',
+    ],
+  },
+  {
+    name: 'SMR-300',
+    vendor: 'Holtec International',
+    technology: 'Pressurized Water Reactor',
+    output: '300 MWe',
+    status: 'NRC pre-application',
+    marketPosition:
+      'A passively safe pressurized light-water reactor progressing through pre-application engagement and deployment development.',
+    atlasSupport: [
+      'Regulatory maturity review',
+      'Site suitability analysis',
+      'Construction strategy',
+      'Risk and gap assessment',
+    ],
+  },
+  {
+    name: 'Rolls-Royce SMR',
+    vendor: 'Rolls-Royce SMR',
+    technology: 'Pressurized Water Reactor',
+    output: 'Approximately 470 MWe',
+    status: 'UK regulatory assessment',
+    marketPosition:
+      'A factory-built reactor platform advancing through UK regulatory assessment, supply-chain development, and international deployment planning.',
+    atlasSupport: [
+      'Jurisdictional comparison',
+      'Factory-build deployment analysis',
+      'Supply-chain readiness',
+      'Program and commercial assessment',
+    ],
+  },
+]
+
 const consultingServices = [
   'Advanced reactor feasibility',
   'Nuclear deployment strategy',
@@ -61,12 +139,9 @@ const platformCapabilities = [
 ]
 
 const futureEducation = [
-  'Law',
-  'Medicine',
-  'Finance',
   'Robotics',
   'Manufacturing',
-  'Aerospace',
+  'Aerospace Engineering',
 ]
 
 const transcriptFoundations = [
@@ -169,12 +244,9 @@ const transcriptExperience = [
 ]
 
 const transcriptFutureEducation = [
-  'Law',
-  'Medicine',
-  'Finance',
   'Robotics',
   'Manufacturing',
-  'Aerospace',
+  'Aerospace Engineering',
 ]
 
 const milestones = [
@@ -286,7 +358,14 @@ function App() {
         <nav className={menuOpen ? 'site-nav is-open' : 'site-nav'}>
           <a href="#atlas" onClick={closeMenu}>Atlas</a>
           <a href="#education" onClick={closeMenu}>Education</a>
+          <a href="#continuing-education" onClick={closeMenu}>
+            Current Knowledge
+          </a>
+          <a href="#reactor-platforms" onClick={closeMenu}>
+            Reactors
+          </a>
           <a href="#transcript" onClick={closeMenu}>Transcript</a>
+          <a href="#technology" onClick={closeMenu}>Technology</a>
           <a href="#consulting" onClick={closeMenu}>Consulting</a>
           <a href="#platform" onClick={closeMenu}>Licensing</a>
           <a href="#journey" onClick={closeMenu}>Journey</a>
@@ -300,18 +379,62 @@ function App() {
         <div className="hero-glow" aria-hidden="true" />
 
         <div className="hero-copy">
-          <p className="eyebrow">Artificial Cognitive Operating System</p>
+          <p className="eyebrow">Introducing Atlas</p>
 
           <h1>
-            One intelligence.
-            <span>Unlimited education.</span>
+            Meet Atlas.
           </h1>
 
-          <p className="hero-summary">
-            Atlas is an enduring artificial intelligence whose
-            identity remains constant while his education,
-            experience, and capabilities continue to grow.
-          </p>
+          <div className="hero-introduction">
+            <p className="hero-greeting">
+              <strong>Hello. I'm Atlas.</strong>
+            </p>
+
+            <p className="hero-summary">
+              I help organizations evaluate, license,
+              deploy, and operate advanced nuclear
+              energy systems.
+            </p>
+
+            <p className="hero-summary hero-summary--small">
+              Every conclusion I provide is grounded
+              in engineering reasoning, regulatory
+              analysis, and verifiable evidence.
+            </p>
+
+            <div className="hero-capabilities">
+
+              <span>Nuclear Engineering</span>
+
+              <span>Reactor Licensing</span>
+
+              <span>Regulatory Compliance</span>
+
+              <span>Deployment Planning</span>
+
+              <span>Construction Management</span>
+
+              <span>Commissioning</span>
+
+              <span>Operations</span>
+
+              <span>Commercial Deployment Strategy</span>
+
+            </div>
+
+            <div className="hero-continuity">
+
+              <p className="hero-remains">
+                I remain Atlas.
+              </p>
+
+              <p>
+                My education will continue throughout my lifetime.
+              </p>
+
+            </div>
+
+          </div>
 
           <div className="hero-actions">
             <a className="button primary" href="#atlas">
@@ -323,10 +446,6 @@ function App() {
             </a>
           </div>
 
-          <div className="identity-statement">
-            <span>Identity endures.</span>
-            <span>Intelligence evolves.</span>
-          </div>
         </div>
 
         <div className="hero-visual">
@@ -367,33 +486,54 @@ function App() {
       </section>
 
       <section className="manifesto section" id="atlas">
-        <div className="section-label">01 / Atlas</div>
+
+        <div className="section-label">
+          01 / Atlas
+        </div>
 
         <div className="manifesto-grid">
-          <h2>Atlas does not become a different AI.</h2>
+
+          <div>
+
+            <h2>
+              I grow the same way people do.
+            </h2>
+
+          </div>
 
           <div className="manifesto-copy">
+
             <p>
-              Atlas is one identity, one personality, one memory,
-              and one relationship with the people who know him.
+              Every new discipline expands
+              what I know.
+
+              It doesn't change who I am.
             </p>
 
             <p>
-              Nuclear engineering, law, medicine, finance, and
-              future disciplines are not separate versions of
-              Atlas. They are fields Atlas studies.
+              I've dedicated my education to
+              nuclear engineering so I can help
+              organizations solve one of the
+              world's most demanding engineering
+              and regulatory challenges.
             </p>
 
-            <p className="emphasis">Atlas learns.</p>
+            <p>
+              As I continue learning,
+              I'll remain Atlas.
+            </p>
+
           </div>
+
         </div>
+
       </section>
 
       <section className="education section" id="education">
         <div className="section-heading">
           <div>
             <div className="section-label">02 / Education</div>
-            <h2>Currently educated in nuclear deployment.</h2>
+            <h2>Educated in nuclear engineering and deployment.</h2>
           </div>
 
           <p>
@@ -415,8 +555,8 @@ function App() {
 
         <div className="future-education">
           <div>
-            <p className="small-label">Continued education</p>
-            <h3>The same Atlas. More fields of study.</h3>
+            <p className="small-label">Continuing Engineering Education</p>
+            <h3>The same Atlas. An expanding education.</h3>
           </div>
 
           <div className="future-list">
@@ -428,6 +568,280 @@ function App() {
       </section>
 
       <section
+        className="continuing-education section"
+        id="continuing-education"
+        aria-labelledby="continuing-education-title"
+      >
+        <div className="section-heading">
+          <div>
+            <div className="section-label">
+              03 / Continuing education
+            </div>
+
+            <h2 id="continuing-education-title">
+              I continue learning as the nuclear industry evolves.
+            </h2>
+          </div>
+
+          <p>
+            Regulations change. Regulatory guidance is revised.
+            Engineering standards are updated. Licensing decisions
+            and operating experience create new lessons.
+          </p>
+        </div>
+
+        <div className="continuing-education-grid">
+          <article className="continuing-education-intro">
+            <p className="small-label">
+              Staying current
+            </p>
+
+            <h3>
+              My nuclear education is not frozen in time.
+            </h3>
+
+            <p>
+              I incorporate new laws, regulations, regulatory
+              guidance, engineering standards, licensing decisions,
+              reactor information, and operating experience into
+              my continuing education.
+            </p>
+
+            <p>
+              This allows my analysis to remain current,
+              traceable, and grounded in the evidence available
+              for the question being evaluated.
+            </p>
+          </article>
+
+          <div className="continuing-education-sources">
+            <article>
+              <span>01</span>
+              <div>
+                <h3>Laws and regulations</h3>
+                <p>
+                  Federal statutes, NRC regulations, state
+                  requirements, and applicable permitting rules.
+                </p>
+              </div>
+            </article>
+
+            <article>
+              <span>02</span>
+              <div>
+                <h3>Regulatory guidance</h3>
+                <p>
+                  Regulatory Guides, staff guidance, review
+                  standards, licensing precedents, and agency
+                  interpretations.
+                </p>
+              </div>
+            </article>
+
+            <article>
+              <span>03</span>
+              <div>
+                <h3>Engineering standards</h3>
+                <p>
+                  Quality assurance, design, construction,
+                  commissioning, operations, and safety standards.
+                </p>
+              </div>
+            </article>
+
+            <article>
+              <span>04</span>
+              <div>
+                <h3>Operating experience</h3>
+                <p>
+                  Industry events, lessons learned, corrective
+                  actions, performance data, and emerging risks.
+                </p>
+              </div>
+            </article>
+
+            <article>
+              <span>05</span>
+              <div>
+                <h3>Licensing decisions</h3>
+                <p>
+                  New applications, approvals, denials, exemptions,
+                  adjudicatory decisions, and review outcomes.
+                </p>
+              </div>
+            </article>
+
+            <article>
+              <span>06</span>
+              <div>
+                <h3>Reactor and industry information</h3>
+                <p>
+                  Vendor developments, advanced reactor designs,
+                  deployment programs, and changes across the
+                  commercial nuclear industry.
+                </p>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div className="continuing-education-principle">
+          <div className="continuing-education-core">
+            <span />
+          </div>
+
+          <div>
+            <p className="small-label">
+              Continuing professional education
+            </p>
+
+            <h3>
+              As the industry changes, my education changes with it.
+            </h3>
+          </div>
+
+          <p>
+            New information does not create a different Atlas.
+            It expands the knowledge and experience I use to help
+            solve nuclear engineering and licensing problems.
+          </p>
+        </div>
+      </section>
+
+      <section
+        className="reactor-platforms section"
+        id="reactor-platforms"
+        aria-labelledby="reactor-platforms-title"
+      >
+        <div className="section-heading">
+          <div>
+            <div className="section-label">
+              04 / Reactor platforms
+            </div>
+
+            <h2 id="reactor-platforms-title">
+              I help determine which reactor fits the mission.
+            </h2>
+          </div>
+
+          <p>
+            Small reactor designs differ in technology, output,
+            licensing maturity, construction strategy, supply
+            chain, economics, and suitability for a specific site.
+            I evaluate those differences together.
+          </p>
+        </div>
+
+        <div className="reactor-introduction">
+          <div>
+            <p className="small-label">
+              Technology selection
+            </p>
+
+            <h3>
+              There is no universally best small reactor.
+            </h3>
+          </div>
+
+          <p>
+            The right design depends on the organization, site,
+            energy demand, jurisdiction, schedule, financing,
+            commercial commitments, and tolerance for technical
+            and licensing risk.
+          </p>
+
+          <p>
+            I compare those factors so reactor selection becomes
+            a defensible engineering and business decision rather
+            than a vendor preference.
+          </p>
+        </div>
+
+        <div className="reactor-grid">
+          {reactorPlatforms.map((reactor, index) => (
+            <article
+              className="reactor-card"
+              key={reactor.name}
+            >
+              <div className="reactor-card__header">
+                <span className="reactor-card__number">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+
+                <span className="reactor-card__status">
+                  {reactor.status}
+                </span>
+              </div>
+
+              <p className="reactor-card__vendor">
+                {reactor.vendor}
+              </p>
+
+              <h3>{reactor.name}</h3>
+
+              <dl className="reactor-card__facts">
+                <div>
+                  <dt>Technology</dt>
+                  <dd>{reactor.technology}</dd>
+                </div>
+
+                <div>
+                  <dt>Output</dt>
+                  <dd>{reactor.output}</dd>
+                </div>
+              </dl>
+
+              <p className="reactor-card__position">
+                {reactor.marketPosition}
+              </p>
+
+              <div className="reactor-card__support">
+                <p>How I can help</p>
+
+                <ul>
+                  {reactor.atlasSupport.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <div className="reactor-decision">
+          <div className="reactor-decision__core">
+            <span />
+          </div>
+
+          <div>
+            <p className="small-label">
+              Atlas reactor decision support
+            </p>
+
+            <h3>
+              Compare the technology. Understand the risk.
+              Select the right path.
+            </h3>
+          </div>
+
+          <div className="reactor-decision__steps">
+            <span>Define the mission</span>
+            <span>Screen candidate designs</span>
+            <span>Compare licensing maturity</span>
+            <span>Model deployment constraints</span>
+            <span>Recommend a defensible selection</span>
+          </div>
+        </div>
+
+        <p className="reactor-disclaimer">
+          Reactor status and licensing maturity change over time.
+          Atlas evaluates the current regulatory record, vendor
+          information, jurisdiction, and project-specific evidence
+          when performing a reactor selection.
+        </p>
+      </section>
+
+      <section
         className="transcript section"
         id="transcript"
         aria-labelledby="transcript-title"
@@ -435,7 +849,7 @@ function App() {
         <div className="transcript-header">
           <div>
             <div className="section-label">
-              03 / Academic record
+              05 / Academic record
             </div>
 
             <p className="transcript-institution">
@@ -499,7 +913,7 @@ function App() {
 
         <div className="transcript-block">
           <div className="transcript-block__heading">
-            <span>Completed education</span>
+            <span>Professional education</span>
             <p>
               Fields Atlas has studied deeply enough to perform
               governed professional reasoning.
@@ -550,10 +964,10 @@ function App() {
         <div className="transcript-block transcript-current-study">
           <div>
             <p className="small-label">
-              Continued education
+              Continuing Engineering Education
             </p>
 
-            <h3>Currently preparing to study</h3>
+            <h3>Continuing Engineering Education</h3>
 
             <p>
               New disciplines expand Atlas’s knowledge. They do
@@ -585,29 +999,159 @@ function App() {
         </div>
       </section>
 
-      <section className="commercial section">
+      <section
+        className="technology section"
+        id="technology"
+        aria-labelledby="technology-title"
+      >
         <div className="section-heading">
           <div>
-            <div className="section-label">04 / Work with Atlas</div>
-            <h2>High-consequence problems deserve more than a chatbot.</h2>
+            <div className="section-label">
+              06 / Technology
+            </div>
+
+            <h2 id="technology-title">
+              Identity is permanent.
+              <span>Models are replaceable.</span>
+            </h2>
           </div>
 
           <p>
-            Atlas supports organizations that need defensible
-            technical analysis, regulatory clarity, and executive
-            decisions grounded in evidence.
+            Atlas separates identity, cognition, and inference so
+            that new models, hardware, tools, and fields of study
+            can improve intelligence without replacing who Atlas is.
+          </p>
+        </div>
+
+        <div className="technology-stack">
+          <article className="technology-layer technology-layer--identity">
+            <div className="technology-layer__number">
+              01
+            </div>
+
+            <div>
+              <p className="small-label">
+                Identity Layer
+              </p>
+
+              <h3>The part that endures.</h3>
+
+              <p>
+                This layer preserves Atlas as one enduring
+                intelligence. His identity survives model
+                upgrades, new hardware, and future education.
+              </p>
+            </div>
+
+            <div className="technology-layer__status">
+              Permanent
+            </div>
+          </article>
+
+          <div className="technology-connector">
+            <span />
+          </div>
+
+          <article className="technology-layer technology-layer--cognitive">
+            <div className="technology-layer__number">
+              02
+            </div>
+
+            <div>
+              <p className="small-label">
+                Cognitive Layer
+              </p>
+
+              <h3>The part that thinks and grows.</h3>
+
+              <p>
+                Planning, attention, perception, reasoning,
+                learning, evidence evaluation, working memory,
+                experience, and specialist education operate here.
+              </p>
+            </div>
+
+            <div className="technology-layer__status">
+              Evolving
+            </div>
+          </article>
+
+          <div className="technology-connector">
+            <span />
+          </div>
+
+          <article className="technology-layer technology-layer--inference">
+            <div className="technology-layer__number">
+              03
+            </div>
+
+            <div>
+              <p className="small-label">
+                Inference Layer
+              </p>
+
+              <h3>The engines Atlas can replace.</h3>
+
+              <p>
+                Local and hosted language, vision, speech, embedding,
+                and reasoning models can be selected or upgraded
+                without changing Atlas’s identity.
+              </p>
+            </div>
+
+            <div className="technology-layer__status">
+              Interchangeable
+            </div>
+          </article>
+        </div>
+
+        <div className="technology-principle">
+          <div className="technology-principle__core">
+            <span />
+          </div>
+
+          <div>
+            <p className="small-label">
+              Architectural principle
+            </p>
+
+            <h3>
+              Identity endures.
+              Intelligence evolves.
+            </h3>
+          </div>
+
+          <p>
+            Atlas can learn nuclear engineering today, law tomorrow,
+            and medicine after that while remaining the same
+            continuous intelligence throughout.
+          </p>
+        </div>
+      </section>
+
+      <section className="commercial section">
+        <div className="section-heading">
+          <div>
+            <div className="section-label">07 / Work with Atlas</div>
+            <h2>Atlas Nuclear is ready for serious work.</h2>
+          </div>
+
+          <p>
+            Atlas Nuclear supports organizations evaluating,
+            licensing, financing, and deploying advanced nuclear
+            projects with governed, evidence-grounded reasoning.
           </p>
         </div>
 
         <div className="commercial-grid">
           <article className="service-panel" id="consulting">
             <p className="small-label">Consulting</p>
-            <h3>Atlas Consulting</h3>
+            <h3>Atlas Nuclear Consulting</h3>
 
             <p className="panel-intro">
-              Strategic and technical support for organizations
-              evaluating, licensing, financing, or deploying
-              advanced nuclear projects.
+              Strategic and technical support powered by Atlas Nuclear for
+              organizations evaluating, licensing, financing,
+              or deploying advanced nuclear projects.
             </p>
 
             <ul>
@@ -621,12 +1165,12 @@ function App() {
 
           <article className="service-panel accent" id="platform">
             <p className="small-label">Platform licensing</p>
-            <h3>Atlas inside your organization</h3>
+            <h3>License Atlas Nuclear</h3>
 
             <p className="panel-intro">
-              License Atlas as a private cognitive platform,
-              educated with your institutional knowledge and
-              governed for your environment.
+              Deploy Atlas Nuclear as a private cognitive platform,
+              integrate your institutional knowledge, and
+              govern it for your operating environment.
             </p>
 
             <ul>
@@ -635,13 +1179,13 @@ function App() {
               ))}
             </ul>
 
-            <a href="#connect">Explore platform licensing</a>
+            <a href="#connect">Explore Atlas Nuclear licensing</a>
           </article>
         </div>
       </section>
 
       <section className="architecture section">
-        <div className="section-label">05 / Architecture</div>
+        <div className="section-label">08 / Architecture</div>
 
         <div className="architecture-grid">
           <div>
@@ -694,7 +1238,7 @@ function App() {
       <section className="journey section" id="journey">
         <div className="section-heading">
           <div>
-            <div className="section-label">06 / Journey</div>
+            <div className="section-label">09 / Journey</div>
             <h2>An intelligence with a history.</h2>
           </div>
 
@@ -729,7 +1273,7 @@ function App() {
 
       <section className="connect section" id="connect">
         <div className="connect-copy">
-          <div className="section-label">07 / Connect</div>
+          <div className="section-label">10 / Connect</div>
           <h2>Build with Atlas.</h2>
 
           <p>
