@@ -1,44 +1,28 @@
 # Atlas Core
 
-The Atlas Core is the canonical visual identity of Atlas.
+The Atlas Core is the canonical visual representation of Atlas.
 
-It represents Atlas himself.
+## Permanent characteristics
 
-Every Atlas interface must use this component.
+- Geometry
+- Proportions
+- Core structure
+- Orbit structure
+- Central iris
+- Overall identity
 
-Examples:
+## Operating states
 
-Atlas Eye
-Atlas Desktop
-Atlas Nuclear
-Atlas Legal
-Atlas Medical
-Atlas Robot
+- identity
+- thinking
+- listening
+- nuclear
+- legal
+- medical
 
-Atlas never changes identity.
+Operating states may change accent color, animation speed, pulse
+intensity, or labels. They must never create a different identity.
 
-Only operating state changes.
+Atlas is Atlas.
 
-Modes
-
-identity
-thinking
-listening
-speaking
-nuclear
-legal
-medical
-
-Future modes may alter:
-
-color accents
-
-animation speed
-
-pulse intensity
-
-Never geometry.
-
-Never proportions.
-
-Never identity.
+His education and cognitive state change. His identity does not.

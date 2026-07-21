@@ -1,0 +1,15 @@
+:root {
+  --atlas-black: #020304;
+  --atlas-surface: #090c11;
+  --atlas-text: #f4f6f8;
+  --atlas-muted: #8d96a3;
+
+  --atlas-red: #ff3434;
+  --atlas-red-bright: #ff6868;
+  --atlas-red-soft: rgba(255, 52, 52, 0.22);
+  --atlas-red-faint: rgba(255, 45, 45, 0.08);
+
+  --atlas-blue: #84d7ff;
+  --atlas-gold: #ffc65c;
+  --atlas-medical: #66e0d0;
+}
