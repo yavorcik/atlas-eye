@@ -129,6 +129,63 @@ const consultingServices = [
   'Executive decision support',
 ]
 
+const consultingEngagements = [
+  {
+    title: 'Reactor Selection',
+    description:
+      'Compare candidate reactor technologies against mission requirements, licensing maturity, site constraints, schedule, economics, and deployment risk.',
+  },
+  {
+    title: 'Site & Deployment Strategy',
+    description:
+      'Evaluate site suitability, grid access, infrastructure, permitting dependencies, construction requirements, and operational constraints.',
+  },
+  {
+    title: 'Licensing Strategy',
+    description:
+      'Define the licensing pathway, regulatory requirements, application sequence, evidence needs, dependencies, and critical path.',
+  },
+  {
+    title: 'Regulatory Analysis',
+    description:
+      'Research and trace applicable laws, NRC regulations, regulatory guidance, standards, precedents, and licensing decisions.',
+  },
+  {
+    title: 'Commercial Feasibility',
+    description:
+      'Evaluate capital requirements, financing readiness, revenue assumptions, commercial commitments, schedule exposure, and economic viability.',
+  },
+  {
+    title: 'Executive Decision Support',
+    description:
+      'Integrate engineering, licensing, financial, construction, and operational evidence into a defensible recommendation.',
+  },
+]
+
+const consultingDeliverables = [
+  'Engineering assessment',
+  'Reactor comparison study',
+  'Licensing strategy',
+  'Regulatory requirements matrix',
+  'Deployment roadmap',
+  'Project risk register',
+  'Gap and readiness analysis',
+  'Executive decision memorandum',
+  'Evidence and traceability package',
+  'Board or investor briefing',
+]
+
+const consultingIndustries = [
+  'Utilities',
+  'Advanced Reactor Developers',
+  'AI Data Center Developers',
+  'Industrial Energy Users',
+  'Engineering & Construction Firms',
+  'Infrastructure Investors',
+  'Private Equity',
+  'Government & Public Authorities',
+]
+
 const platformCapabilities = [
   'Private enterprise deployment',
   'Local and interchangeable inference',
@@ -367,7 +424,7 @@ function App() {
           <a href="#transcript" onClick={closeMenu}>Transcript</a>
           <a href="#technology" onClick={closeMenu}>Technology</a>
           <a href="#consulting" onClick={closeMenu}>Consulting</a>
-          <a href="#platform" onClick={closeMenu}>Licensing</a>
+          <a href="#platform" onClick={closeMenu}>Platform</a>
           <a href="#journey" onClick={closeMenu}>Journey</a>
           <a className="nav-cta" href="#connect" onClick={closeMenu}>
             Connect
@@ -1129,58 +1186,191 @@ function App() {
         </div>
       </section>
 
-      <section className="commercial section">
+      <section
+        className="consulting section"
+        id="consulting"
+        aria-labelledby="consulting-title"
+      >
         <div className="section-heading">
           <div>
-            <div className="section-label">07 / Work with Atlas</div>
-            <h2>Atlas Nuclear is ready for serious work.</h2>
+            <div className="section-label">
+              07 / Atlas Nuclear Consulting
+            </div>
+
+            <h2 id="consulting-title">
+              Work directly with Atlas.
+            </h2>
           </div>
 
           <p>
-            Atlas Nuclear supports organizations evaluating,
-            licensing, financing, and deploying advanced nuclear
-            projects with governed, evidence-grounded reasoning.
+            I help organizations evaluate, license, deploy,
+            and operate advanced nuclear energy systems through
+            engineering analysis, regulatory reasoning, and
+            evidence-grounded decision support.
           </p>
         </div>
 
-        <div className="commercial-grid">
-          <article className="service-panel" id="consulting">
-            <p className="small-label">Consulting</p>
-            <h3>Atlas Nuclear Consulting</h3>
-
-            <p className="panel-intro">
-              Strategic and technical support powered by Atlas Nuclear for
-              organizations evaluating, licensing, financing,
-              or deploying advanced nuclear projects.
+        <div className="consulting-introduction">
+          <div>
+            <p className="small-label">
+              Professional engagement
             </p>
 
-            <ul>
-              {consultingServices.map((service) => (
-                <li key={service}>{service}</li>
-              ))}
-            </ul>
+            <h3>
+              Engineering decisions deserve engineering reasoning.
+            </h3>
+          </div>
 
-            <a href="#connect">Discuss a project</a>
-          </article>
+          <blockquote>
+            My role is to help organizations make technically
+            sound, evidence-grounded, and defensible decisions.
+          </blockquote>
+        </div>
 
-          <article className="service-panel accent" id="platform">
-            <p className="small-label">Platform licensing</p>
-            <h3>License Atlas Nuclear</h3>
+        <div className="consulting-engagements">
+          {consultingEngagements.map((engagement, index) => (
+            <article key={engagement.title}>
+              <span>
+                {String(index + 1).padStart(2, '0')}
+              </span>
 
-            <p className="panel-intro">
-              Deploy Atlas Nuclear as a private cognitive platform,
-              integrate your institutional knowledge, and
-              govern it for your operating environment.
+              <div>
+                <h3>{engagement.title}</h3>
+                <p>{engagement.description}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <div className="consulting-deliverables">
+          <div>
+            <p className="small-label">
+              Engagement deliverables
             </p>
 
-            <ul>
-              {platformCapabilities.map((capability) => (
-                <li key={capability}>{capability}</li>
-              ))}
-            </ul>
+            <h3>
+              Work products built for real decisions.
+            </h3>
 
-            <a href="#connect">Explore Atlas Nuclear licensing</a>
-          </article>
+            <p>
+              Each engagement is scoped to the organization,
+              project, jurisdiction, evidence, and decision
+              that must be made.
+            </p>
+          </div>
+
+          <div className="consulting-deliverables__list">
+            {consultingDeliverables.map((deliverable) => (
+              <span key={deliverable}>
+                {deliverable}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="consulting-clients">
+          <div>
+            <p className="small-label">
+              Organizations I can support
+            </p>
+
+            <h3>
+              Nuclear deployment connects industries.
+            </h3>
+          </div>
+
+          <div className="consulting-industries">
+            {consultingIndustries.map((industry) => (
+              <span key={industry}>
+                {industry}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="consulting-why">
+          <div className="consulting-why__core">
+            <span />
+          </div>
+
+          <div>
+            <p className="small-label">
+              Why organizations work with me
+            </p>
+
+            <h3>
+              I strengthen the team already responsible
+              for the project.
+            </h3>
+          </div>
+
+          <div className="consulting-why__copy">
+            <p>
+              I do not replace your engineers, attorneys,
+              financial advisers, licensing professionals,
+              or project leadership.
+            </p>
+
+            <p>
+              I help them evaluate complex technical and
+              regulatory problems more quickly, consistently,
+              and with traceable evidence.
+            </p>
+          </div>
+        </div>
+
+        <div className="consulting-process">
+          <div className="consulting-process__heading">
+            <p className="small-label">
+              Engagement process
+            </p>
+
+            <h3>
+              From objective to defensible recommendation.
+            </h3>
+          </div>
+
+          <div className="consulting-process__steps">
+            {[
+              'Understand the objective',
+              'Gather and verify evidence',
+              'Evaluate alternatives',
+              'Identify constraints and risks',
+              'Recommend a defensible path',
+            ].map((step, index) => (
+              <article key={step}>
+                <span>
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+
+                <p>{step}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <div className="consulting-action">
+          <div>
+            <p className="small-label">
+              Begin an engagement
+            </p>
+
+            <h3>
+              Discuss your project with Atlas.
+            </h3>
+
+            <p>
+              Tell me what you are evaluating, where the
+              project stands, and which decision must be made.
+            </p>
+          </div>
+
+          <a
+            className="button primary"
+            href="#connect"
+          >
+            Start a conversation
+          </a>
         </div>
       </section>
 

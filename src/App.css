@@ -2523,3 +2523,313 @@ color:#ff8a8a;
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================================================
+   Atlas Nuclear Consulting
+   ============================================================ */
+
+.consulting {
+  position: relative;
+}
+
+.consulting::before {
+  position: absolute;
+  inset: 3rem 0;
+  z-index: -1;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background:
+    radial-gradient(
+      circle at 5% 10%,
+      rgba(255, 52, 52, 0.09),
+      transparent 28rem
+    ),
+    rgba(255, 255, 255, 0.006);
+  content: '';
+}
+
+.consulting-introduction {
+  display: grid;
+  margin-top: 4rem;
+  padding: clamp(2rem, 5vw, 4rem);
+  border: 1px solid rgba(255, 70, 70, 0.28);
+  background:
+    radial-gradient(
+      circle at 100% 0,
+      rgba(255, 52, 52, 0.12),
+      transparent 28rem
+    ),
+    var(--surface);
+  grid-template-columns:
+    minmax(280px, 0.8fr)
+    minmax(0, 1.2fr);
+  align-items: center;
+  gap: clamp(2rem, 6vw, 6rem);
+}
+
+.consulting-introduction h3 {
+  margin: 0.9rem 0 0;
+  font-size: clamp(2rem, 4.6vw, 4rem);
+  font-weight: 540;
+  letter-spacing: -0.05em;
+  line-height: 1.02;
+}
+
+.consulting-introduction blockquote {
+  margin: 0;
+  padding-left: 1.7rem;
+  border-left: 1px solid rgba(255, 70, 70, 0.55);
+  color: #c9d3db;
+  font-size: clamp(1.15rem, 2.2vw, 1.55rem);
+  line-height: 1.75;
+}
+
+.consulting-engagements {
+  display: grid;
+  margin-top: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid var(--border);
+  border-left: 1px solid var(--border);
+}
+
+.consulting-engagements article {
+  display: grid;
+  min-height: 17rem;
+  padding: clamp(1.6rem, 4vw, 2.8rem);
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.008);
+  grid-template-columns: 3rem minmax(0, 1fr);
+  gap: 1.3rem;
+}
+
+.consulting-engagements article > span {
+  color: #ff7272;
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+}
+
+.consulting-engagements h3 {
+  margin: 0;
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  font-weight: 560;
+  letter-spacing: -0.03em;
+}
+
+.consulting-engagements p {
+  margin: 1rem 0 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.consulting-deliverables,
+.consulting-clients {
+  display: grid;
+  margin-top: 1rem;
+  padding: clamp(2rem, 5vw, 4rem);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  grid-template-columns:
+    minmax(280px, 0.7fr)
+    minmax(0, 1.3fr);
+  align-items: center;
+  gap: clamp(2rem, 6vw, 6rem);
+}
+
+.consulting-deliverables h3,
+.consulting-clients h3,
+.consulting-process h3,
+.consulting-action h3 {
+  margin: 0.9rem 0 1rem;
+  font-size: clamp(1.8rem, 4vw, 3.3rem);
+  font-weight: 550;
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+}
+
+.consulting-deliverables > div:first-child > p:last-child {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.consulting-deliverables__list,
+.consulting-industries {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.consulting-deliverables__list span,
+.consulting-industries span {
+  padding: 1rem 0;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.consulting-deliverables__list span::before,
+.consulting-industries span::before {
+  margin-right: 0.65rem;
+  color: #ff6565;
+  content: '↗';
+}
+
+.consulting-why {
+  display: grid;
+  margin-top: 1rem;
+  padding: clamp(2rem, 5vw, 4rem);
+  border: 1px solid var(--border-strong);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 52, 52, 0.08),
+      transparent 50%
+    ),
+    var(--surface);
+  grid-template-columns:
+    auto
+    minmax(280px, 0.8fr)
+    minmax(0, 1.2fr);
+  align-items: center;
+  gap: clamp(1.5rem, 4vw, 3rem);
+}
+
+.consulting-why__core {
+  display: grid;
+  width: 4.5rem;
+  height: 4.5rem;
+  place-items: center;
+  border: 1px solid rgba(255, 70, 70, 0.4);
+  border-radius: 50%;
+  box-shadow:
+    0 0 32px rgba(255, 52, 52, 0.15),
+    inset 0 0 20px rgba(255, 52, 52, 0.08);
+}
+
+.consulting-why__core span {
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow:
+    0 0 12px #ffb4b4,
+    0 0 36px #ff3434;
+}
+
+.consulting-why h3 {
+  margin: 0.9rem 0 0;
+  font-size: clamp(1.6rem, 3.4vw, 2.8rem);
+  font-weight: 550;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+}
+
+.consulting-why__copy p {
+  color: var(--muted);
+  line-height: 1.75;
+}
+
+.consulting-process {
+  display: grid;
+  margin-top: 1rem;
+  padding: clamp(2rem, 5vw, 4rem);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  grid-template-columns:
+    minmax(280px, 0.65fr)
+    minmax(0, 1.35fr);
+  gap: clamp(2rem, 6vw, 6rem);
+}
+
+.consulting-process__steps {
+  display: grid;
+}
+
+.consulting-process__steps article {
+  display: grid;
+  padding: 1.1rem 0;
+  border-top: 1px solid var(--border);
+  grid-template-columns: 3rem minmax(0, 1fr);
+  align-items: center;
+  gap: 1rem;
+}
+
+.consulting-process__steps article:first-child {
+  border-top: 0;
+}
+
+.consulting-process__steps span {
+  color: #ff6f6f;
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  font-size: 0.7rem;
+}
+
+.consulting-process__steps p {
+  margin: 0;
+  color: #c3ced6;
+}
+
+.consulting-action {
+  display: flex;
+  margin-top: 1rem;
+  padding: clamp(2rem, 5vw, 4rem);
+  border: 1px solid rgba(255, 70, 70, 0.3);
+  background:
+    radial-gradient(
+      circle at 100% 0,
+      rgba(255, 52, 52, 0.12),
+      transparent 25rem
+    ),
+    var(--surface);
+  align-items: center;
+  justify-content: space-between;
+  gap: 3rem;
+}
+
+.consulting-action > div {
+  max-width: 680px;
+}
+
+.consulting-action p:last-child {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.consulting-action .button {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 900px) {
+  .consulting-introduction,
+  .consulting-deliverables,
+  .consulting-clients,
+  .consulting-why,
+  .consulting-process {
+    grid-template-columns: 1fr;
+  }
+
+  .consulting-action {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 680px) {
+  .consulting-engagements,
+  .consulting-deliverables__list,
+  .consulting-industries {
+    grid-template-columns: 1fr;
+  }
+
+  .consulting-engagements article {
+    grid-template-columns: 2.5rem 1fr;
+  }
+}
