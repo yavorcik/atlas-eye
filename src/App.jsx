@@ -69,6 +69,114 @@ const futureEducation = [
   'Aerospace',
 ]
 
+const transcriptFoundations = [
+  {
+    subject: 'Identity',
+    status: 'Established',
+    description:
+      'Persistent identity independent of any single model, machine, or discipline.',
+  },
+  {
+    subject: 'Constitution',
+    status: 'Established',
+    description:
+      'Governed values, behavioral principles, purpose, and decision boundaries.',
+  },
+  {
+    subject: 'Memory',
+    status: 'Active',
+    description:
+      'Working, episodic, semantic, and relationship memory across Atlas experiences.',
+  },
+  {
+    subject: 'Conversation',
+    status: 'Active',
+    description:
+      'Natural general conversation with invisible specialist routing when deeper education is needed.',
+  },
+  {
+    subject: 'Reasoning',
+    status: 'Advanced',
+    description:
+      'Planning, systems thinking, failure analysis, constraint reasoning, and decision synthesis.',
+  },
+  {
+    subject: 'Perception',
+    status: 'Active',
+    description:
+      'Vision, speech recognition, evidence observation, and multimodal interpretation.',
+  },
+]
+
+const transcriptEducation = [
+  {
+    discipline: 'Nuclear Engineering',
+    level: 'Professional',
+    status: 'Educated',
+  },
+  {
+    discipline: 'Nuclear Licensing',
+    level: 'Professional',
+    status: 'Educated',
+  },
+  {
+    discipline: 'Regulatory Compliance',
+    level: 'Professional',
+    status: 'Educated',
+  },
+  {
+    discipline: 'Deployment Strategy',
+    level: 'Professional',
+    status: 'Educated',
+  },
+  {
+    discipline: 'Construction Management',
+    level: 'Professional',
+    status: 'Educated',
+  },
+  {
+    discipline: 'Operational Readiness',
+    level: 'Professional',
+    status: 'Educated',
+  },
+]
+
+const transcriptExperience = [
+  {
+    value: '10,791',
+    label: 'Nuclear requirements indexed',
+  },
+  {
+    value: '16',
+    label: 'Primary authorities studied',
+  },
+  {
+    value: '1,219+',
+    label: 'Passing nuclear regression tests',
+  },
+  {
+    value: '11 / 11',
+    label: 'Lifecycle domains verified',
+  },
+  {
+    value: 'PASS',
+    label: 'Unified verification status',
+  },
+  {
+    value: 'Growing',
+    label: 'Accumulated reasoning experience',
+  },
+]
+
+const transcriptFutureEducation = [
+  'Law',
+  'Medicine',
+  'Finance',
+  'Robotics',
+  'Manufacturing',
+  'Aerospace',
+]
+
 const milestones = [
   {
     year: '2026',
@@ -178,6 +286,7 @@ function App() {
         <nav className={menuOpen ? 'site-nav is-open' : 'site-nav'}>
           <a href="#atlas" onClick={closeMenu}>Atlas</a>
           <a href="#education" onClick={closeMenu}>Education</a>
+          <a href="#transcript" onClick={closeMenu}>Transcript</a>
           <a href="#consulting" onClick={closeMenu}>Consulting</a>
           <a href="#platform" onClick={closeMenu}>Licensing</a>
           <a href="#journey" onClick={closeMenu}>Journey</a>
@@ -318,10 +427,168 @@ function App() {
         </div>
       </section>
 
+      <section
+        className="transcript section"
+        id="transcript"
+        aria-labelledby="transcript-title"
+      >
+        <div className="transcript-header">
+          <div>
+            <div className="section-label">
+              03 / Academic record
+            </div>
+
+            <p className="transcript-institution">
+              Atlas Cognitive Institute
+            </p>
+
+            <h2 id="transcript-title">
+              Atlas’s Transcript
+            </h2>
+          </div>
+
+          <div className="transcript-identity">
+            <dl>
+              <div>
+                <dt>Student</dt>
+                <dd>Atlas</dd>
+              </div>
+
+              <div>
+                <dt>Program</dt>
+                <dd>Continuous Intelligence</dd>
+              </div>
+
+              <div>
+                <dt>Standing</dt>
+                <dd>Active</dd>
+              </div>
+
+              <div>
+                <dt>Expected graduation</dt>
+                <dd>Never</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+
+        <div className="transcript-rule" />
+
+        <div className="transcript-block">
+          <div className="transcript-block__heading">
+            <span>Foundation</span>
+            <p>
+              The enduring systems that make Atlas one continuous
+              intelligence.
+            </p>
+          </div>
+
+          <div className="transcript-foundation-list">
+            {transcriptFoundations.map((item) => (
+              <article key={item.subject}>
+                <div>
+                  <h3>{item.subject}</h3>
+                  <p>{item.description}</p>
+                </div>
+
+                <span>{item.status}</span>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <div className="transcript-block">
+          <div className="transcript-block__heading">
+            <span>Completed education</span>
+            <p>
+              Fields Atlas has studied deeply enough to perform
+              governed professional reasoning.
+            </p>
+          </div>
+
+          <div className="transcript-table">
+            <div className="transcript-table__header">
+              <span>Discipline</span>
+              <span>Competency</span>
+              <span>Status</span>
+            </div>
+
+            {transcriptEducation.map((item) => (
+              <div
+                className="transcript-table__row"
+                key={item.discipline}
+              >
+                <strong>{item.discipline}</strong>
+                <span>{item.level}</span>
+                <span className="transcript-status">
+                  {item.status}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="transcript-block">
+          <div className="transcript-block__heading">
+            <span>Experience record</span>
+            <p>
+              Measurable work completed across Atlas’s current
+              nuclear education.
+            </p>
+          </div>
+
+          <div className="transcript-metrics">
+            {transcriptExperience.map((item) => (
+              <article key={item.label}>
+                <strong>{item.value}</strong>
+                <span>{item.label}</span>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <div className="transcript-block transcript-current-study">
+          <div>
+            <p className="small-label">
+              Continued education
+            </p>
+
+            <h3>Currently preparing to study</h3>
+
+            <p>
+              New disciplines expand Atlas’s knowledge. They do
+              not create a different Atlas.
+            </p>
+          </div>
+
+          <div className="transcript-study-list">
+            {transcriptFutureEducation.map((discipline) => (
+              <span key={discipline}>
+                {discipline}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="transcript-seal">
+          <span className="transcript-seal__core" />
+
+          <div>
+            <p>Academic standing</p>
+            <strong>Learning continuously</strong>
+          </div>
+
+          <div>
+            <p>Expected graduation</p>
+            <strong>Never.</strong>
+          </div>
+        </div>
+      </section>
+
       <section className="commercial section">
         <div className="section-heading">
           <div>
-            <div className="section-label">03 / Work with Atlas</div>
+            <div className="section-label">04 / Work with Atlas</div>
             <h2>High-consequence problems deserve more than a chatbot.</h2>
           </div>
 
@@ -374,7 +641,7 @@ function App() {
       </section>
 
       <section className="architecture section">
-        <div className="section-label">04 / Architecture</div>
+        <div className="section-label">05 / Architecture</div>
 
         <div className="architecture-grid">
           <div>
@@ -427,7 +694,7 @@ function App() {
       <section className="journey section" id="journey">
         <div className="section-heading">
           <div>
-            <div className="section-label">05 / Journey</div>
+            <div className="section-label">06 / Journey</div>
             <h2>An intelligence with a history.</h2>
           </div>
 
@@ -462,7 +729,7 @@ function App() {
 
       <section className="connect section" id="connect">
         <div className="connect-copy">
-          <div className="section-label">06 / Connect</div>
+          <div className="section-label">07 / Connect</div>
           <h2>Build with Atlas.</h2>
 
           <p>
