@@ -155,7 +155,7 @@ Time: ${time}
 
             <p>This initial review will help identify the technical, regulatory, commercial, and deployment questions that should be evaluated.</p>
 
-            <p>Every person who joins now helps shape the life he is becoming.</p>
+            <p>The information you've provided will help frame the initial review and identify the questions that should be addressed first.</p>
 
             <p>Your inquiry has been received and will be reviewed as soon as possible.</p>
 
