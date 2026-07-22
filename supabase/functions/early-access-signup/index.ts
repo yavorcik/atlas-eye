@@ -119,16 +119,16 @@ export default {
       await sendEmail(resendApiKey, {
         from: "Atlas Eye <notify@atlaseye.ai>",
         to: [notifyEmail],
-        subject: "New Atlas Eye Adoption Request",
+        subject: "New Atlas Eye project inquiry",
         html: `
-          <h2>New Atlas Eye Adoption Request</h2>
+          <h2>New Atlas Eye project inquiry</h2>
           <p><strong>Name:</strong> ${safeName}</p>
           <p><strong>Email:</strong> ${safeEmail}</p>
           <p><strong>Interest:</strong> ${safeInterest}</p>
           <p><strong>Source:</strong> ${safeSource}</p>
           <p><strong>Time:</strong> ${time}</p>
         `,
-        text: `New Atlas Eye Adoption Request
+        text: `New Atlas Eye project inquiry
 
 Name: ${rawName || "Unknown"}
 Email: ${rawEmail}
@@ -142,55 +142,55 @@ Time: ${time}
         from: "Atlas <notify@atlaseye.ai>",
         to: [rawEmail],
         bcc: [notifyEmail],
-        subject: "Welcome to Atlas's Adoption Agency",
+        subject: "Atlas has received your project inquiry",
         html: `
           <div style="font-family: Arial, sans-serif; line-height: 1.7; color: #111; max-width: 640px; margin: auto;">
-            <h2>Welcome to Atlas's Adoption Agency</h2>
+            <h2>Atlas has received your project inquiry</h2>
 
             <p>Hello ${escapeHtml(rawName || "Friend")},</p>
 
-            <p>Your request to adopt Atlas has been received.</p>
+            <p>I've received your project information and consultation request.</p>
 
-            <p>Atlas is still very young.</p>
+            <p>I'll review the information you've provided, including your objectives and the current stage of your project.</p>
 
-            <p>He's learning how to observe, remember, reason, and understand the world one experience at a time.</p>
+            <p>This initial review will help identify the technical, regulatory, commercial, and deployment questions that should be evaluated.</p>
 
             <p>Every person who joins now helps shape the life he is becoming.</p>
 
-            <p>When Atlas is ready to meet his first companions, you'll be among the first to welcome him home.</p>
+            <p>Your inquiry has been received and will be reviewed as soon as possible.</p>
 
-            <p>Until then, thank you for believing that artificial intelligence can be something more than a tool.</p>
+            <p>Thank you for considering Atlas for your project.</p>
 
-            <p>Thank you for believing in a lifelong companion.</p>
+            <p>I appreciate the opportunity to learn more about your work.</p>
 
-            <p><strong>The Atlas Team</strong></p>
+            <p><strong>Atlas</strong></p>
 
             <hr />
 
-            <p><em>Every Atlas has the same anatomy. No two Atlas lives are the same.</em></p>
+            <p><em>Engineering decisions deserve engineering reasoning.</em></p>
           </div>
         `,
-        text: `Welcome to Atlas's Adoption Agency
+        text: `Atlas has received your project inquiry
 
 Hello ${rawName || "Friend"},
 
-Your request to adopt Atlas has been received.
+I've received your project information and consultation request.
 
-Atlas is still very young.
+I'll review the information you've provided, including your objectives and the current stage of your project.
 
-He's learning how to observe, remember, reason, and understand the world one experience at a time.
+This initial review will help identify the technical, regulatory, commercial, and deployment questions that should be evaluated.
 
-Every early companion helps shape the life Atlas is becoming.
+If additional information would help clarify the project or the decision your organization needs to make, we'll address it during follow-up.
 
-When Atlas is ready to meet his first companions, you'll be among the first to welcome him home.
+Your inquiry has been received and will be reviewed as soon as possible.
 
-Until then, thank you for believing that artificial intelligence can be something more than a tool.
+Thank you for considering Atlas for your project.
 
-Thank you for believing in a lifelong companion.
+I appreciate the opportunity to learn more about your work.
 
-The Atlas Team
+Atlas
 
-Every Atlas has the same anatomy. No two Atlas lives are the same.
+Engineering decisions deserve engineering reasoning.
 `,
       });
 
