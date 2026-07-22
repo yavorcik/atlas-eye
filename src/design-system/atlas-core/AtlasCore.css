@@ -1,0 +1,441 @@
+@import '../tokens/colors.css';
+@import '../tokens/animation.css';
+
+.atlas-core {
+  --core-accent: var(--atlas-red);
+  --core-accent-bright: var(--atlas-red-bright);
+  --core-accent-soft: var(--atlas-red-soft);
+  --core-accent-faint: var(--atlas-red-faint);
+  --core-presence-speed: var(--atlas-motion-presence);
+
+  position: relative;
+  display: grid;
+  width: 100%;
+  min-height: 32rem;
+  place-items: center;
+  isolation: isolate;
+}
+
+.atlas-core__field {
+  position: relative;
+  display: grid;
+  width: min(46rem, 112%);
+  aspect-ratio: 1;
+  place-items: center;
+}
+
+.atlas-core__glow {
+  position: absolute;
+  width: 78%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      circle,
+      color-mix(
+        in srgb,
+        var(--core-accent) 26%,
+        transparent
+      ) 0%,
+      color-mix(
+        in srgb,
+        var(--core-accent) 10%,
+        transparent
+      ) 34%,
+      transparent 70%
+    );
+  filter: blur(28px);
+  animation:
+    atlas-core-breathing
+    var(--core-presence-speed)
+    ease-in-out
+    infinite;
+}
+
+.atlas-core__orbit {
+  position: absolute;
+  aspect-ratio: 1;
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--core-accent) 18%,
+      transparent
+    );
+  border-radius: 50%;
+  box-shadow:
+    0 0 26px
+      color-mix(
+        in srgb,
+        var(--core-accent) 5%,
+        transparent
+      ),
+    inset 0 0 26px
+      color-mix(
+        in srgb,
+        var(--core-accent) 3%,
+        transparent
+      );
+}
+
+.atlas-core__orbit::before,
+.atlas-core__orbit::after {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--core-accent-bright);
+  box-shadow:
+    0 0 10px var(--core-accent-bright),
+    0 0 24px
+      color-mix(
+        in srgb,
+        var(--core-accent) 60%,
+        transparent
+      );
+  content: '';
+}
+
+.atlas-core__orbit::before {
+  top: -3px;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+}
+
+.atlas-core__orbit::after {
+  right: 24%;
+  bottom: -2px;
+  width: 4px;
+  height: 4px;
+}
+
+.atlas-core__orbit--one {
+  width: 84%;
+  animation:
+    atlas-orbit-clockwise
+    var(--atlas-motion-orbit)
+    linear
+    infinite;
+}
+
+.atlas-core__orbit--two {
+  width: 96%;
+  border-style: dashed;
+  border-color: var(--core-accent-faint);
+  animation:
+    atlas-orbit-counterclockwise
+    var(--atlas-motion-orbit-slow)
+    linear
+    infinite;
+}
+
+.atlas-core__orbit--three {
+  width: 72%;
+  border-color: rgba(255, 255, 255, 0.06);
+  animation:
+    atlas-orbit-clockwise
+    var(--atlas-motion-orbit-fast)
+    linear
+    infinite;
+}
+
+.atlas-core__sweep {
+  position: absolute;
+  width: 94%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    conic-gradient(
+      from 0deg,
+      transparent 0deg,
+      transparent 338deg,
+      color-mix(
+        in srgb,
+        var(--core-accent) 20%,
+        transparent
+      ) 353deg,
+      color-mix(
+        in srgb,
+        var(--core-accent-bright) 58%,
+        transparent
+      ) 359deg,
+      transparent 360deg
+    );
+  mask-image:
+    radial-gradient(
+      circle,
+      transparent 0 43%,
+      black 44% 48%,
+      transparent 49%
+    );
+  opacity: 0.72;
+  animation:
+    atlas-sweep-rotate
+    11s
+    linear
+    infinite;
+}
+
+.atlas-core__center {
+  position: relative;
+  z-index: 5;
+  display: grid;
+  width: 43%;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--core-accent-bright) 40%,
+      transparent
+    );
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      circle at 50% 46%,
+      rgba(255, 255, 255, 0.98) 0%,
+      color-mix(
+        in srgb,
+        var(--core-accent-bright) 92%,
+        white
+      ) 7%,
+      color-mix(
+        in srgb,
+        var(--core-accent) 76%,
+        transparent
+      ) 19%,
+      color-mix(
+        in srgb,
+        var(--core-accent) 44%,
+        black
+      ) 39%,
+      rgba(20, 0, 0, 0.84) 67%,
+      rgba(2, 3, 4, 0.99) 100%
+    );
+  box-shadow:
+    0 0 22px var(--core-accent-soft),
+    0 0 68px
+      color-mix(
+        in srgb,
+        var(--core-accent) 26%,
+        transparent
+      ),
+    inset 0 0 45px
+      color-mix(
+        in srgb,
+        var(--core-accent) 18%,
+        transparent
+      );
+  animation:
+    atlas-core-presence
+    var(--core-presence-speed)
+    ease-in-out
+    infinite;
+}
+
+.atlas-core__inner-ring {
+  position: absolute;
+  inset: 9%;
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--core-accent-bright) 26%,
+      transparent
+    );
+  border-radius: 50%;
+  box-shadow:
+    inset 0 0 32px var(--core-accent-soft),
+    0 0 20px
+      color-mix(
+        in srgb,
+        var(--core-accent) 16%,
+        transparent
+      );
+}
+
+.atlas-core__iris {
+  position: relative;
+  z-index: 2;
+  width: 19%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #fffafa;
+  box-shadow:
+    0 0 8px #ffffff,
+    0 0 22px
+      color-mix(
+        in srgb,
+        var(--core-accent-bright) 96%,
+        white
+      ),
+    0 0 54px
+      color-mix(
+        in srgb,
+        var(--core-accent) 92%,
+        transparent
+      );
+}
+
+.atlas-core__label {
+  position: absolute;
+  bottom: 0.25rem;
+  margin: 0;
+  color:
+    color-mix(
+      in srgb,
+      var(--core-accent-bright) 70%,
+      transparent
+    );
+  font-family:
+    'Orbitron',
+    ui-sans-serif,
+    system-ui,
+    sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+/* Operating state changes behavior, never geometry. */
+
+.atlas-core--identity {
+  --core-accent: var(--atlas-red);
+  --core-accent-bright: var(--atlas-red-bright);
+}
+
+.atlas-core--nuclear {
+  --core-accent: var(--atlas-red);
+  --core-accent-bright: #ff7474;
+}
+
+.atlas-core--legal {
+  --core-accent: var(--atlas-gold);
+  --core-accent-bright: #ffe09a;
+}
+
+.atlas-core--medical {
+  --core-accent: var(--atlas-medical);
+  --core-accent-bright: #b8fff5;
+}
+
+.atlas-core--thinking {
+  --core-presence-speed: var(--atlas-motion-thinking);
+}
+
+.atlas-core--listening {
+  --core-presence-speed: var(--atlas-motion-fast);
+}
+
+.atlas-core--compact {
+  min-height: 20rem;
+}
+
+.atlas-core--compact .atlas-core__field {
+  width: min(22rem, 100%);
+}
+
+@keyframes atlas-core-breathing {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.92);
+  }
+
+  50% {
+    opacity: 0.95;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes atlas-core-presence {
+  0%,
+  100% {
+    transform: scale(0.96);
+    filter: brightness(0.92);
+  }
+
+  50% {
+    transform: scale(1.035);
+    filter: brightness(1.16);
+  }
+}
+
+@keyframes atlas-orbit-clockwise {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes atlas-orbit-counterclockwise {
+  from {
+    transform: rotate(360deg);
+  }
+
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes atlas-sweep-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 680px) {
+  .atlas-core {
+    min-height: 24rem;
+  }
+
+  .atlas-core__field {
+    width: min(28rem, 112vw);
+  }
+
+  .atlas-core__label {
+    bottom: 0.4rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atlas-core__glow,
+  .atlas-core__orbit,
+  .atlas-core__sweep,
+  .atlas-core__center {
+    animation: none;
+  }
+}
+
+/* Hero presentation override */
+
+.atlas-core--hero {
+  min-height: 40rem;
+  overflow: visible;
+}
+
+.atlas-core--hero .atlas-core__field {
+  width: min(42rem, 118%);
+  transform: scale(1.28);
+  transform-origin: center;
+}
+
+.atlas-core--hero .atlas-core__center {
+  width: 45%;
+}
+
+@media (max-width: 900px) {
+  .atlas-core--hero {
+    min-height: 30rem;
+  }
+
+  .atlas-core--hero .atlas-core__field {
+    width: min(32rem, 108vw);
+    transform: scale(1.05);
+  }
+}

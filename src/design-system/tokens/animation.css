@@ -1,0 +1,8 @@
+:root {
+  --atlas-motion-fast: 1.6s;
+  --atlas-motion-thinking: 2.4s;
+  --atlas-motion-presence: 4.8s;
+  --atlas-motion-orbit-fast: 25s;
+  --atlas-motion-orbit: 34s;
+  --atlas-motion-orbit-slow: 52s;
+}
