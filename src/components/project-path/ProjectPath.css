@@ -1,0 +1,291 @@
+.project-path {
+  position: relative;
+}
+
+.project-path::before {
+  position: absolute;
+  inset: 3rem 0;
+  z-index: -1;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background:
+    radial-gradient(
+      circle at 90% 8%,
+      rgba(255, 52, 52, 0.09),
+      transparent 28rem
+    ),
+    rgba(255, 255, 255, 0.006);
+  content: '';
+}
+
+.project-path__layout {
+  display: grid;
+  margin-top: 4rem;
+  grid-template-columns:
+    minmax(300px, 0.78fr)
+    minmax(0, 1.22fr);
+  gap: 1rem;
+}
+
+.project-path__choices {
+  display: grid;
+  align-content: start;
+}
+
+.project-path__choice {
+  display: grid;
+  width: 100%;
+  padding: 1.15rem 1.25rem;
+  border: 1px solid var(--border);
+  border-bottom: 0;
+  background: rgba(255, 255,255, 0.006);
+  color: var(--muted);
+  text-align: left;
+  grid-template-columns: 3rem minmax(0, 1fr);
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+}
+
+.project-path__choice:last-child {
+  border-bottom: 1px solid var(--border);
+}
+
+.project-path__choice:hover,
+.project-path__choice.is-active {
+  border-color: rgba(255, 70, 70, 0.32);
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255, 52, 52, 0.1),
+      rgba(255, 52, 52, 0.025)
+    );
+  color: var(--text);
+}
+
+.project-path__choice > span {
+  color: #ff7070;
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  font-size: 0.68rem;
+}
+
+.project-path__response {
+  display: flex;
+  min-height: 42rem;
+  padding: clamp(2rem, 5vw, 4rem);
+  border: 1px solid rgba(255, 70, 70, 0.28);
+  background:
+    radial-gradient(
+      circle at 100% 0,
+      rgba(255, 52, 52, 0.12),
+      transparent 28rem
+    ),
+    var(--surface);
+  flex-direction: column;
+}
+
+.project-path__response h3 {
+  margin: 1rem 0 1.2rem;
+  font-size: clamp(2rem, 4.5vw, 4rem);
+  font-weight: 540;
+  letter-spacing: -0.05em;
+  line-height: 1.02;
+}
+
+.project-path__summary {
+  max-width: 720px;
+  margin: 0;
+  color: #c0ccd5;
+  font-size: 1.05rem;
+  line-height: 1.75;
+}
+
+.project-path__support {
+  display: grid;
+  margin: 2.5rem 0;
+}
+
+.project-path__support > div {
+  display: grid;
+  padding: 1rem 0;
+  border-top: 1px solid var(--border);
+  grid-template-columns: 3rem minmax(0, 1fr);
+  align-items: center;
+  gap: 1rem;
+}
+
+.project-path__support span {
+  color: #ff7070;
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  font-size: 0.68rem;
+}
+
+.project-path__support p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.project-path__response .button {
+  margin-top: auto;
+  align-self: flex-start;
+}
+
+@media (max-width: 900px) {
+  .project-path__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .project-path__response {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .project-path__choice {
+    grid-template-columns: 2.5rem 1fr;
+  }
+
+  .project-path__response .button {
+    width: 100%;
+  }
+}
+
+.project-path__assessment {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+
+.project-path__assessment-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.project-path__assessment-heading h4 {
+  margin: 0.75rem 0 0;
+  font-size: clamp(1.6rem, 3vw, 2.5rem);
+  font-weight: 550;
+  letter-spacing: -0.04em;
+}
+
+.project-path__assessment-heading > span {
+  color: #ff7070;
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  font-size: 0.75rem;
+}
+
+.project-path__questions {
+  display: grid;
+  margin-top: 2rem;
+  gap: 2rem;
+}
+
+.project-path__questions fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.project-path__questions legend {
+  display: grid;
+  width: 100%;
+  margin-bottom: 1rem;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  align-items: center;
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 580;
+}
+
+.project-path__questions legend span {
+  color: #ff7070;
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  font-size: 0.68rem;
+}
+
+.project-path__questions fieldset > div {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.project-path__questions button {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.012);
+  color: var(--muted);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    color 160ms ease;
+}
+
+.project-path__questions button:hover,
+.project-path__questions button.is-selected {
+  border-color: rgba(255, 70, 70, 0.45);
+  background: rgba(255, 52, 52, 0.1);
+  color: var(--text);
+}
+
+.project-path__questions button.is-selected::before {
+  margin-right: 0.6rem;
+  color: #ff7070;
+  content: '●';
+  font-size: 0.55rem;
+}
+
+.project-path__assessment-action {
+  display: flex;
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.project-path__assessment-action p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.project-path__assessment-action .button:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+
+@media (max-width: 680px) {
+  .project-path__questions fieldset > div {
+    grid-template-columns: 1fr;
+  }
+
+  .project-path__assessment-action {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .project-path__assessment-action .button {
+    width: 100%;
+  }
+}

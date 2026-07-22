@@ -2833,3 +2833,344 @@ color:#ff8a8a;
     grid-template-columns: 2.5rem 1fr;
   }
 }
+
+/* ============================================================
+   Atlas Nuclear Platform Licensing
+   ============================================================ */
+
+.platform {
+  position: relative;
+}
+
+.platform::before {
+  position: absolute;
+  inset: 3rem 0;
+  z-index: -1;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background:
+    radial-gradient(
+      circle at 92% 10%,
+      rgba(255, 52, 52, 0.09),
+      transparent 30rem
+    ),
+    rgba(255, 255, 255, 0.006);
+  content: '';
+}
+
+.platform-introduction {
+  display: grid;
+  margin-top: 4rem;
+  padding: clamp(2rem, 5vw, 4rem);
+  border: 1px solid rgba(255, 70, 70, 0.28);
+  background:
+    radial-gradient(
+      circle at 0 0,
+      rgba(255, 52, 52, 0.1),
+      transparent 26rem
+    ),
+    var(--surface);
+  grid-template-columns:
+    minmax(280px, 0.75fr)
+    repeat(2, minmax(0, 1fr));
+  gap: clamp(2rem, 5vw, 4rem);
+}
+
+.platform-introduction h3 {
+  margin: 0.9rem 0 0;
+  font-size: clamp(2rem, 4.5vw, 3.8rem);
+  font-weight: 540;
+  letter-spacing: -0.05em;
+  line-height: 1.03;
+}
+
+.platform-introduction > p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.75;
+}
+
+.platform-models {
+  display: grid;
+  margin-top: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid var(--border);
+  border-left: 1px solid var(--border);
+}
+
+.platform-models article {
+  display: grid;
+  min-height: 15rem;
+  padding: clamp(1.6rem, 4vw, 2.8rem);
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.008);
+  grid-template-columns: 3rem minmax(0, 1fr);
+  gap: 1.25rem;
+}
+
+.platform-models article > span {
+  color: #ff7272;
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  font-size: 0.7rem;
+}
+
+.platform-models h3 {
+  margin: 0;
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  font-weight: 560;
+  letter-spacing: -0.03em;
+}
+
+.platform-models p {
+  margin: 1rem 0 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.platform-applications,
+.platform-controls {
+  display: grid;
+  margin-top: 1rem;
+  padding: clamp(2rem, 5vw, 4rem);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  grid-template-columns:
+    minmax(280px, 0.7fr)
+    minmax(0, 1.3fr);
+  gap: clamp(2rem, 6vw, 6rem);
+}
+
+.platform-applications h3,
+.platform-controls h3,
+.platform-action h3 {
+  margin: 0.9rem 0 1rem;
+  font-size: clamp(1.8rem, 4vw, 3.3rem);
+  font-weight: 550;
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+}
+
+.platform-applications > div:first-child > p:last-child {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.platform-applications__list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.platform-applications__list span {
+  padding: 1rem 0;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.87rem;
+}
+
+.platform-applications__list span::before {
+  margin-right: 0.65rem;
+  color: #ff6565;
+  content: '↗';
+}
+
+.platform-controls__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+}
+
+.platform-controls__grid article {
+  display: grid;
+  padding: 1rem 0;
+  border-top: 1px solid var(--border);
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.platform-controls__grid article > span {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: #ff6262;
+  box-shadow: 0 0 12px rgba(255, 52, 52, 0.7);
+}
+
+.platform-controls__grid p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.87rem;
+}
+
+.platform-architecture {
+  display: grid;
+  margin-top: 1rem;
+  padding: clamp(2rem, 5vw, 4rem);
+  border: 1px solid var(--border-strong);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 52, 52, 0.08),
+      transparent 48%
+    ),
+    var(--surface);
+  grid-template-columns:
+    auto
+    minmax(280px, 0.75fr)
+    minmax(0, 1.25fr);
+  align-items: center;
+  gap: clamp(1.5rem, 4vw, 3rem);
+}
+
+.platform-architecture__core {
+  display: grid;
+  width: 4.5rem;
+  height: 4.5rem;
+  place-items: center;
+  border: 1px solid rgba(255, 70, 70, 0.4);
+  border-radius: 50%;
+  box-shadow:
+    0 0 32px rgba(255, 52, 52, 0.15),
+    inset 0 0 20px rgba(255, 52, 52, 0.08);
+}
+
+.platform-architecture__core span {
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow:
+    0 0 12px #ffb4b4,
+    0 0 36px #ff3434;
+}
+
+.platform-architecture h3 {
+  margin: 0.9rem 0 0;
+  font-size: clamp(1.6rem, 3.4vw, 2.7rem);
+  font-weight: 550;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+}
+
+.platform-architecture__layers {
+  display: grid;
+}
+
+.platform-architecture__layers article {
+  display: grid;
+  padding: 1rem 0;
+  border-top: 1px solid var(--border);
+  grid-template-columns: 2.5rem 1fr;
+  gap: 1rem;
+}
+
+.platform-architecture__layers article > span {
+  color: #ff7070;
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  font-size: 0.68rem;
+}
+
+.platform-architecture__layers strong {
+  font-size: 0.95rem;
+  font-weight: 620;
+}
+
+.platform-architecture__layers p {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.platform-action {
+  display: flex;
+  margin-top: 1rem;
+  padding: clamp(2rem, 5vw, 4rem);
+  border: 1px solid rgba(255, 70, 70, 0.3);
+  background:
+    radial-gradient(
+      circle at 100% 0,
+      rgba(255, 52, 52, 0.12),
+      transparent 25rem
+    ),
+    var(--surface);
+  align-items: center;
+  justify-content: space-between;
+  gap: 3rem;
+}
+
+.platform-action > div {
+  max-width: 700px;
+}
+
+.platform-action p:last-child {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.platform-action .button {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 900px) {
+  .platform-introduction,
+  .platform-applications,
+  .platform-controls,
+  .platform-architecture {
+    grid-template-columns: 1fr;
+  }
+
+  .platform-action {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 680px) {
+  .platform-models,
+  .platform-applications__list,
+  .platform-controls__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .platform-models article {
+    grid-template-columns: 2.5rem 1fr;
+  }
+}
+
+/* ============================================================
+   Atlas project consultation intake
+   ============================================================ */
+
+.connect-form textarea {
+  width: 100%;
+  min-height: 8rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.012);
+  color: var(--text);
+  font: inherit;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.connect-form textarea::placeholder {
+  color: var(--muted);
+  opacity: 0.7;
+}
+
+.connect-form textarea:focus {
+  border-color: rgba(255, 70, 70, 0.5);
+  outline: none;
+  box-shadow: 0 0 0 1px rgba(255, 52, 52, 0.12);
+}

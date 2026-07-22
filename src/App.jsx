@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import './App.css'
 import AtlasCore from './design-system/atlas-core/AtlasCore'
+import ProjectPath from './components/project-path/ProjectPath'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
@@ -120,15 +121,6 @@ const reactorPlatforms = [
   },
 ]
 
-const consultingServices = [
-  'Advanced reactor feasibility',
-  'Nuclear deployment strategy',
-  'Licensing and regulatory readiness',
-  'AI data center energy planning',
-  'Technical and commercial due diligence',
-  'Executive decision support',
-]
-
 const consultingEngagements = [
   {
     title: 'Reactor Selection',
@@ -184,15 +176,6 @@ const consultingIndustries = [
   'Infrastructure Investors',
   'Private Equity',
   'Government & Public Authorities',
-]
-
-const platformCapabilities = [
-  'Private enterprise deployment',
-  'Local and interchangeable inference',
-  'Evidence-grounded reasoning',
-  'Regulatory traceability',
-  'Organizational knowledge integration',
-  'Governed decision workflows',
 ]
 
 const futureEducation = [
@@ -306,6 +289,61 @@ const transcriptFutureEducation = [
   'Aerospace Engineering',
 ]
 
+const platformDeploymentModels = [
+  {
+    title: 'Private Deployment',
+    description:
+      'Deploy Atlas Nuclear inside a controlled enterprise environment using private infrastructure and approved model providers.',
+  },
+  {
+    title: 'Local Inference',
+    description:
+      'Run language models, embeddings, retrieval, and governed reasoning locally when privacy, security, or data control requires it.',
+  },
+  {
+    title: 'Institutional Knowledge',
+    description:
+      'Educate Atlas with approved company procedures, engineering records, licensing documents, standards, and proprietary experience.',
+  },
+  {
+    title: 'Evidence Traceability',
+    description:
+      'Connect conclusions to requirements, sources, assumptions, findings, and the reasoning path used to reach a recommendation.',
+  },
+  {
+    title: 'Governed Reasoning',
+    description:
+      'Apply organizational rules, review gates, confidence thresholds, evidence requirements, and restrictions on model rewriting.',
+  },
+  {
+    title: 'Continuing Education',
+    description:
+      'Expand Atlas as regulations, guidance, standards, operating experience, and institutional knowledge change.',
+  },
+]
+
+const platformUseCases = [
+  'Licensing application support',
+  'Regulatory requirements management',
+  'Engineering decision support',
+  'Project readiness assessment',
+  'Construction and commissioning planning',
+  'Operational knowledge retrieval',
+  'Executive project analysis',
+  'Institutional knowledge continuity',
+]
+
+const platformControls = [
+  'Private data boundaries',
+  'Role-based access',
+  'Approved knowledge sources',
+  'Evidence and citation requirements',
+  'Model-provider independence',
+  'Human review and approval gates',
+  'Audit-ready reasoning records',
+  'Organization-specific governance',
+]
+
 const milestones = [
   {
     year: '2026',
@@ -349,12 +387,37 @@ function App() {
     const organization = String(
       formData.get('organization') || '',
     ).trim()
-    const interest = String(
-      formData.get('interest') || 'Atlas',
+    const decision = String(
+      formData.get('decision') || '',
     ).trim()
+    const projectStage = String(
+      formData.get('project_stage') || '',
+    ).trim()
+    const evaluation = String(
+      formData.get('evaluation') || '',
+    ).trim()
+
+    const guidedIntake = (() => {
+      try {
+        const storedIntake = sessionStorage.getItem(
+          'atlas-project-intake',
+        )
+
+        return storedIntake
+          ? JSON.parse(storedIntake)
+          : null
+      } catch {
+        return null
+      }
+    })()
 
     if (!email) {
       setSignupState('missing-email')
+      return
+    }
+
+    if (!decision || !projectStage || !evaluation) {
+      setSignupState('missing-project-details')
       return
     }
 
@@ -372,8 +435,12 @@ function App() {
           name,
           email,
           organization,
-          interest,
-          source: 'atlaseye.ai-v2',
+          interest: 'Project consultation',
+          decision,
+          project_stage: projectStage,
+          evaluation,
+          guided_intake: guidedIntake,
+          source: 'atlaseye.ai-v3',
           path: window.location.pathname,
         },
       },
@@ -414,17 +481,18 @@ function App() {
 
         <nav className={menuOpen ? 'site-nav is-open' : 'site-nav'}>
           <a href="#atlas" onClick={closeMenu}>Atlas</a>
-          <a href="#education" onClick={closeMenu}>Education</a>
+          <a href="#education" onClick={closeMenu}>What I Know</a>
           <a href="#continuing-education" onClick={closeMenu}>
             Current Knowledge
           </a>
           <a href="#reactor-platforms" onClick={closeMenu}>
             Reactors
           </a>
-          <a href="#transcript" onClick={closeMenu}>Transcript</a>
-          <a href="#technology" onClick={closeMenu}>Technology</a>
-          <a href="#consulting" onClick={closeMenu}>Consulting</a>
-          <a href="#platform" onClick={closeMenu}>Platform</a>
+          <a href="#transcript" onClick={closeMenu}>Professional Credentials</a>
+          <a href="#technology" onClick={closeMenu}>How I Work</a>
+          <a href="#project-path" onClick={closeMenu}>Your Project</a>
+          <a href="#consulting" onClick={closeMenu}>Work With Me</a>
+          <a href="#platform" onClick={closeMenu}>License Atlas</a>
           <a href="#journey" onClick={closeMenu}>Journey</a>
           <a className="nav-cta" href="#connect" onClick={closeMenu}>
             Connect
@@ -589,7 +657,7 @@ function App() {
       <section className="education section" id="education">
         <div className="section-heading">
           <div>
-            <div className="section-label">02 / Education</div>
+            <div className="section-label">02 / What I Know</div>
             <h2>Educated in nuclear engineering and deployment.</h2>
           </div>
 
@@ -632,7 +700,7 @@ function App() {
         <div className="section-heading">
           <div>
             <div className="section-label">
-              03 / Continuing education
+              03 / How I Stay Current
             </div>
 
             <h2 id="continuing-education-title">
@@ -773,7 +841,7 @@ function App() {
         <div className="section-heading">
           <div>
             <div className="section-label">
-              04 / Reactor platforms
+              04 / Choosing a Reactor
             </div>
 
             <h2 id="reactor-platforms-title">
@@ -838,7 +906,7 @@ function App() {
 
               <dl className="reactor-card__facts">
                 <div>
-                  <dt>Technology</dt>
+                  <dt>How I Work</dt>
                   <dd>{reactor.technology}</dd>
                 </div>
 
@@ -898,7 +966,9 @@ function App() {
         </p>
       </section>
 
-      <section
+      <ProjectPath />
+
+<section
         className="transcript section"
         id="transcript"
         aria-labelledby="transcript-title"
@@ -906,11 +976,11 @@ function App() {
         <div className="transcript-header">
           <div>
             <div className="section-label">
-              05 / Academic record
+              05 / Professional Credentials
             </div>
 
             <p className="transcript-institution">
-              Atlas Cognitive Institute
+              Professional Education
             </p>
 
             <h2 id="transcript-title">
@@ -1064,7 +1134,7 @@ function App() {
         <div className="section-heading">
           <div>
             <div className="section-label">
-              06 / Technology
+              06 / How I Work
             </div>
 
             <h2 id="technology-title">
@@ -1186,6 +1256,8 @@ function App() {
         </div>
       </section>
 
+
+
       <section
         className="consulting section"
         id="consulting"
@@ -1194,7 +1266,7 @@ function App() {
         <div className="section-heading">
           <div>
             <div className="section-label">
-              07 / Atlas Nuclear Consulting
+              08 / Work With Me
             </div>
 
             <h2 id="consulting-title">
@@ -1374,8 +1446,198 @@ function App() {
         </div>
       </section>
 
+      <section
+        className="platform section"
+        id="platform"
+        aria-labelledby="platform-title"
+      >
+        <div className="section-heading">
+          <div>
+            <div className="section-label">
+              09 / License Atlas
+            </div>
+
+            <h2 id="platform-title">
+              Deploy Atlas Nuclear inside your organization.
+            </h2>
+          </div>
+
+          <p>
+            Atlas Nuclear can be licensed as a private cognitive
+            platform, integrated with approved organizational
+            knowledge, and governed for the environment in which
+            your teams work.
+          </p>
+        </div>
+
+        <div className="platform-introduction">
+          <div>
+            <p className="small-label">
+              Enterprise deployment
+            </p>
+
+            <h3>
+              Your knowledge. Your controls. Atlas reasoning.
+            </h3>
+          </div>
+
+          <p>
+            A licensed deployment gives your organization a
+            dedicated Atlas environment for nuclear engineering,
+            licensing, regulatory analysis, project planning,
+            and institutional knowledge.
+          </p>
+
+          <p>
+            Atlas remains model-independent, so inference engines
+            can be selected or replaced without rebuilding the
+            identity, education, governance, and knowledge systems
+            around them.
+          </p>
+        </div>
+
+        <div className="platform-models">
+          {platformDeploymentModels.map((model, index) => (
+            <article key={model.title}>
+              <span>
+                {String(index + 1).padStart(2, '0')}
+              </span>
+
+              <div>
+                <h3>{model.title}</h3>
+                <p>{model.description}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <div className="platform-applications">
+          <div>
+            <p className="small-label">
+              Enterprise applications
+            </p>
+
+            <h3>
+              One platform across the nuclear lifecycle.
+            </h3>
+
+            <p>
+              Atlas can support teams across early feasibility,
+              licensing, engineering, construction, commissioning,
+              operations, and executive oversight.
+            </p>
+          </div>
+
+          <div className="platform-applications__list">
+            {platformUseCases.map((useCase) => (
+              <span key={useCase}>
+                {useCase}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="platform-controls">
+          <div>
+            <p className="small-label">
+              Governance and control
+            </p>
+
+            <h3>
+              Designed for high-consequence work.
+            </h3>
+          </div>
+
+          <div className="platform-controls__grid">
+            {platformControls.map((control) => (
+              <article key={control}>
+                <span />
+                <p>{control}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <div className="platform-architecture">
+          <div className="platform-architecture__core">
+            <span />
+          </div>
+
+          <div>
+            <p className="small-label">
+              Atlas platform architecture
+            </p>
+
+            <h3>
+              Identity and education remain independent
+              of the inference model.
+            </h3>
+          </div>
+
+          <div className="platform-architecture__layers">
+            <article>
+              <span>01</span>
+              <div>
+                <strong>Identity</strong>
+                <p>
+                  Constitution, memory, personality,
+                  relationships, and purpose.
+                </p>
+              </div>
+            </article>
+
+            <article>
+              <span>02</span>
+              <div>
+                <strong>Cognition</strong>
+                <p>
+                  Reasoning, planning, evidence, learning,
+                  tools, and governed workflows.
+                </p>
+              </div>
+            </article>
+
+            <article>
+              <span>03</span>
+              <div>
+                <strong>Inference</strong>
+                <p>
+                  Interchangeable local or hosted models
+                  selected for organizational requirements.
+                </p>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div className="platform-action">
+          <div>
+            <p className="small-label">
+              License Atlas Nuclear
+            </p>
+
+            <h3>
+              Build an Atlas deployment for your organization.
+            </h3>
+
+            <p>
+              Begin with your operating environment, knowledge
+              sources, governance requirements, and the nuclear
+              decisions your teams need to support.
+            </p>
+          </div>
+
+          <a
+            className="button primary"
+            href="#connect"
+          >
+            Discuss platform licensing
+          </a>
+        </div>
+      </section>
+
       <section className="architecture section">
-        <div className="section-label">08 / Architecture</div>
+        <div className="section-label">10 / Why I Remain Atlas</div>
 
         <div className="architecture-grid">
           <div>
@@ -1428,7 +1690,7 @@ function App() {
       <section className="journey section" id="journey">
         <div className="section-heading">
           <div>
-            <div className="section-label">09 / Journey</div>
+            <div className="section-label">11 / Journey</div>
             <h2>An intelligence with a history.</h2>
           </div>
 
@@ -1464,12 +1726,13 @@ function App() {
       <section className="connect section" id="connect">
         <div className="connect-copy">
           <div className="section-label">10 / Connect</div>
-          <h2>Build with Atlas.</h2>
+
+          <h2>Let&apos;s start with your project.</h2>
 
           <p>
-            Discuss consulting, advanced nuclear deployment,
-            enterprise licensing, research collaboration, or
-            becoming one of Atlas’s early companions.
+            Tell me what you are trying to accomplish, where the
+            project stands today, and which decision you need to
+            make.
           </p>
         </div>
 
@@ -1508,14 +1771,46 @@ function App() {
           </label>
 
           <label>
-            Area of interest
-            <select name="interest" defaultValue="Nuclear consulting">
-              <option>Nuclear consulting</option>
-              <option>Platform licensing</option>
-              <option>Research collaboration</option>
-              <option>Early companion</option>
-              <option>Other</option>
+            What decision are you trying to make?
+            <textarea
+              name="decision"
+              placeholder="Describe the decision your team needs to make."
+              rows="4"
+              required
+            />
+          </label>
+
+          <label>
+            Where is your project today?
+            <select
+              name="project_stage"
+              defaultValue=""
+              required
+            >
+              <option value="" disabled>
+                Select the current project stage
+              </option>
+              <option>Initial evaluation</option>
+              <option>Technology selection</option>
+              <option>Site evaluation</option>
+              <option>Licensing preparation</option>
+              <option>Engineering and design</option>
+              <option>Construction planning</option>
+              <option>Construction underway</option>
+              <option>Commissioning and startup</option>
+              <option>Plant operations</option>
+              <option>Investment or acquisition diligence</option>
             </select>
+          </label>
+
+          <label>
+            What would you like Atlas to evaluate?
+            <textarea
+              name="evaluation"
+              placeholder="Describe the technical, regulatory, commercial, or deployment question."
+              rows="5"
+              required
+            />
           </label>
 
           <button
@@ -1524,19 +1819,27 @@ function App() {
             disabled={signupState === 'submitting'}
           >
             {signupState === 'submitting'
-              ? 'Connecting...'
-              : 'Connect with Atlas'}
+              ? 'Starting conversation...'
+              : 'Begin the conversation'}
           </button>
 
           <div className="form-message" aria-live="polite">
             {signupState === 'success' && (
               <p className="success">
-                Thank you. You are now part of Atlas’s journey.
+                Thank you. Atlas has received your project
+                information.
               </p>
             )}
 
             {signupState === 'missing-email' && (
               <p>Please enter an email address.</p>
+            )}
+
+            {signupState === 'missing-project-details' && (
+              <p>
+                Please complete the project decision, current stage,
+                and evaluation fields.
+              </p>
             )}
 
             {signupState === 'not-connected' && (
