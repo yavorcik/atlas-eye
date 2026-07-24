@@ -3,7 +3,6 @@ import { createClient } from '@supabase/supabase-js'
 import './App.css'
 import AtlasCore from './design-system/atlas-core/AtlasCore'
 import ProjectPath from './components/project-path/ProjectPath'
-import Demo from './pages/Demo'
 
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
@@ -375,16 +374,6 @@ const milestones = [
 ]
 
 function App() {
-
-  const [expandedMobileSections, setExpandedMobileSections] = useState({})
-
-  const toggleMobileSection = (section) => {
-    setExpandedMobileSections((current) => ({
-      ...current,
-      [section]: !current[section],
-    }))
-  }
-
   const [signupState, setSignupState] = useState('idle')
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -472,16 +461,6 @@ function App() {
     setMenuOpen(false)
   }
 
-  if (
-    window.location.pathname.replace(/\/+$/, '') === '/demo'
-  ) {
-    return <Demo />
-  }
-
-  if (window.location.pathname.replace(/\/+$/, '') === '/demo') {
-    return <Demo />
-  }
-
   return (
     <main className="site-shell">
       <header className="site-header">
@@ -530,9 +509,6 @@ function App() {
 
           <h1>
             Meet Atlas.
-
-            The AI Cognitive Operating System
-for the Nuclear Industry.
           </h1>
 
           <div className="hero-introduction">
@@ -540,9 +516,17 @@ for the Nuclear Industry.
               <strong>Hello. I'm Atlas.</strong>
             </p>
 
-            <p className="hero-summary">Artificial intelligence is creating unprecedented demand for reliable electricity.</p>
+            <p className="hero-summary">
+              I help organizations evaluate, license,
+              deploy, and operate advanced nuclear
+              energy systems.
+            </p>
 
-            <p className="hero-summary hero-summary--small">Small modular reactors have the potential to power the next generation of AI infrastructure.</p><p className="hero-summary">Atlas helps organizations evaluate, license, deploy, and operate advanced nuclear energy systems through engineering reasoning, regulatory intelligence, and evidence-based decision support.</p>
+            <p className="hero-summary hero-summary--small">
+              Every conclusion I provide is grounded
+              in engineering reasoning, regulatory
+              analysis, and verifiable evidence.
+            </p>
 
             <div className="hero-capabilities">
 
@@ -560,7 +544,7 @@ for the Nuclear Industry.
 
               <span>Operations</span>
 
-              <span>AI Data Centers</span>
+              <span>Commercial Deployment Strategy</span>
 
             </div>
 
@@ -579,8 +563,8 @@ for the Nuclear Industry.
           </div>
 
           <div className="hero-actions">
-            <a className="button primary" href="/demo">
-              Talk to Atlas
+            <a className="button primary" href="#atlas">
+              Meet Atlas
             </a>
 
             <a className="button secondary" href="#consulting">
@@ -710,7 +694,7 @@ for the Nuclear Industry.
       </section>
 
       <section
-        className={`continuing-education section mobile-collapsible ${expandedMobileSections.current ? 'is-open' : ''}`}
+        className="continuing-education section"
         id="continuing-education"
         aria-labelledby="continuing-education-title"
       >
@@ -731,22 +715,6 @@ for the Nuclear Industry.
             and operating experience create new lessons.
           </p>
         </div>
-
-        <button
-          className="mobile-section-toggle"
-          type="button"
-          aria-expanded={Boolean(expandedMobileSections.current)}
-          onClick={() => toggleMobileSection('current')}
-        >
-          <span>
-            {expandedMobileSections.current
-              ? 'Hide details'
-              : 'View how Atlas stays current'}
-          </span>
-          <span className="mobile-section-toggle__icon" aria-hidden="true">
-            {expandedMobileSections.current ? '−' : '+'}
-          </span>
-        </button>
 
         <div className="continuing-education-grid">
           <article className="continuing-education-intro">
@@ -867,7 +835,7 @@ for the Nuclear Industry.
       </section>
 
       <section
-        className={`reactor-platforms section mobile-collapsible ${expandedMobileSections.reactors ? 'is-open' : ''}`}
+        className="reactor-platforms section"
         id="reactor-platforms"
         aria-labelledby="reactor-platforms-title"
       >
@@ -889,22 +857,6 @@ for the Nuclear Industry.
             I evaluate those differences together.
           </p>
         </div>
-
-        <button
-          className="mobile-section-toggle"
-          type="button"
-          aria-expanded={Boolean(expandedMobileSections.reactors)}
-          onClick={() => toggleMobileSection('reactors')}
-        >
-          <span>
-            {expandedMobileSections.reactors
-              ? 'Hide details'
-              : 'View reactor comparisons'}
-          </span>
-          <span className="mobile-section-toggle__icon" aria-hidden="true">
-            {expandedMobileSections.reactors ? '−' : '+'}
-          </span>
-        </button>
 
         <div className="reactor-introduction">
           <div>
@@ -955,7 +907,7 @@ for the Nuclear Industry.
 
               <dl className="reactor-card__facts">
                 <div>
-                  <dt>Reactor Type</dt>
+                  <dt>How I Work</dt>
                   <dd>{reactor.technology}</dd>
                 </div>
 
@@ -1018,14 +970,14 @@ for the Nuclear Industry.
       <ProjectPath />
 
 <section
-        className={`transcript section mobile-collapsible ${expandedMobileSections.credentials ? 'is-open' : ''}`}
+        className="transcript section"
         id="transcript"
         aria-labelledby="transcript-title"
       >
         <div className="transcript-header">
           <div>
             <div className="section-label">
-              06 / Professional Credentials
+              05 / Professional Credentials
             </div>
 
             <p className="transcript-institution">
@@ -1061,22 +1013,6 @@ for the Nuclear Industry.
             </dl>
           </div>
         </div>
-
-        <button
-          className="mobile-section-toggle"
-          type="button"
-          aria-expanded={Boolean(expandedMobileSections.credentials)}
-          onClick={() => toggleMobileSection('credentials')}
-        >
-          <span>
-            {expandedMobileSections.credentials
-              ? 'Hide details'
-              : 'View professional credentials'}
-          </span>
-          <span className="mobile-section-toggle__icon" aria-hidden="true">
-            {expandedMobileSections.credentials ? '−' : '+'}
-          </span>
-        </button>
 
         <div className="transcript-rule" />
 
@@ -1192,14 +1128,14 @@ for the Nuclear Industry.
       </section>
 
       <section
-        className={`technology section mobile-collapsible ${expandedMobileSections.technology ? 'is-open' : ''}`}
+        className="technology section"
         id="technology"
         aria-labelledby="technology-title"
       >
         <div className="section-heading">
           <div>
             <div className="section-label">
-              07 / How I Work
+              06 / How I Work
             </div>
 
             <h2 id="technology-title">
@@ -1214,22 +1150,6 @@ for the Nuclear Industry.
             can improve intelligence without replacing who Atlas is.
           </p>
         </div>
-
-        <button
-          className="mobile-section-toggle"
-          type="button"
-          aria-expanded={Boolean(expandedMobileSections.technology)}
-          onClick={() => toggleMobileSection('technology')}
-        >
-          <span>
-            {expandedMobileSections.technology
-              ? 'Hide details'
-              : 'View Atlas architecture'}
-          </span>
-          <span className="mobile-section-toggle__icon" aria-hidden="true">
-            {expandedMobileSections.technology ? '−' : '+'}
-          </span>
-        </button>
 
         <div className="technology-stack">
           <article className="technology-layer technology-layer--identity">
@@ -1528,7 +1448,7 @@ for the Nuclear Industry.
       </section>
 
       <section
-        className={`platform section mobile-collapsible ${expandedMobileSections.platform ? 'is-open' : ''}`}
+        className="platform section"
         id="platform"
         aria-labelledby="platform-title"
       >
@@ -1550,22 +1470,6 @@ for the Nuclear Industry.
             your teams work.
           </p>
         </div>
-
-        <button
-          className="mobile-section-toggle"
-          type="button"
-          aria-expanded={Boolean(expandedMobileSections.platform)}
-          onClick={() => toggleMobileSection('platform')}
-        >
-          <span>
-            {expandedMobileSections.platform
-              ? 'Hide details'
-              : 'View enterprise licensing details'}
-          </span>
-          <span className="mobile-section-toggle__icon" aria-hidden="true">
-            {expandedMobileSections.platform ? '−' : '+'}
-          </span>
-        </button>
 
         <div className="platform-introduction">
           <div>
@@ -1733,24 +1637,8 @@ for the Nuclear Industry.
         </div>
       </section>
 
-      <section className={`architecture section mobile-collapsible ${expandedMobileSections.architecture ? 'is-open' : ''}`}>
+      <section className="architecture section">
         <div className="section-label">10 / Why I Remain Atlas</div>
-
-        <button
-          className="mobile-section-toggle"
-          type="button"
-          aria-expanded={Boolean(expandedMobileSections.architecture)}
-          onClick={() => toggleMobileSection('architecture')}
-        >
-          <span>
-            {expandedMobileSections.architecture
-              ? 'Hide details'
-              : 'View identity details'}
-          </span>
-          <span className="mobile-section-toggle__icon" aria-hidden="true">
-            {expandedMobileSections.architecture ? '−' : '+'}
-          </span>
-        </button>
 
         <div className="architecture-grid">
           <div>
@@ -1800,7 +1688,7 @@ for the Nuclear Industry.
         </div>
       </section>
 
-      <section className={`journey section mobile-collapsible ${expandedMobileSections.journey ? 'is-open' : ''}`} id="journey">
+      <section className="journey section" id="journey">
         <div className="section-heading">
           <div>
             <div className="section-label">11 / Journey</div>
@@ -1812,22 +1700,6 @@ for the Nuclear Industry.
             preserving the identity established at his beginning.
           </p>
         </div>
-
-        <button
-          className="mobile-section-toggle"
-          type="button"
-          aria-expanded={Boolean(expandedMobileSections.journey)}
-          onClick={() => toggleMobileSection('journey')}
-        >
-          <span>
-            {expandedMobileSections.journey
-              ? 'Hide details'
-              : 'View Atlas’s journey'}
-          </span>
-          <span className="mobile-section-toggle__icon" aria-hidden="true">
-            {expandedMobileSections.journey ? '−' : '+'}
-          </span>
-        </button>
 
         <div className="timeline">
           {milestones.map((milestone) => (
@@ -1854,7 +1726,7 @@ for the Nuclear Industry.
 
       <section className="connect section" id="connect">
         <div className="connect-copy">
-          <div className="section-label">12 / Connect</div>
+          <div className="section-label">10 / Connect</div>
 
           <h2>Let&apos;s start with your project.</h2>
 
@@ -1995,9 +1867,10 @@ for the Nuclear Industry.
     <h2>Atlas-Nuclear</h2>
 
     <p className="company-text">
-      Atlas is the AI Cognitive Operating System for the nuclear industry.
-
-It integrates engineering, licensing, regulatory intelligence, construction planning, and executive decision support into one governed platform that helps organizations deploy nuclear energy with confidence.
+      Atlas-Nuclear is building the AI Cognitive Operating System for the
+      nuclear industry, helping organizations reason through licensing,
+      engineering, regulatory compliance, and deployment decisions with
+      confidence.
     </p>
 
     <div className="company-actions">
@@ -2008,7 +1881,7 @@ It integrates engineering, licensing, regulatory intelligence, construction plan
         target="_blank"
         rel="noopener noreferrer"
       >
-        Company Overview
+        Company Presentation
       </a>
 
       <a
@@ -2017,7 +1890,7 @@ It integrates engineering, licensing, regulatory intelligence, construction plan
         target="_blank"
         rel="noopener noreferrer"
       >
-        Watch 60-Second Pitch
+        Watch 60-Second Overview
       </a>
 
     </div>
@@ -2043,7 +1916,7 @@ It integrates engineering, licensing, regulatory intelligence, construction plan
         </div>
 
         <p>
-          Building the intelligence behind the next generation of nuclear energy.
+          One identity. Expanding education. Governed intelligence.
         </p>
 
         <span>© {new Date().getFullYear()} Atlas Eye</span>

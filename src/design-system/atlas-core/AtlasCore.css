@@ -439,3 +439,44 @@
     transform: scale(1.05);
   }
 }
+
+/* Mobile hero core correction */
+
+@media (max-width: 767px) {
+  .atlas-core--hero {
+    width: 100%;
+    max-width: 20rem;
+    min-height: 20rem;
+    height: 20rem;
+    margin: 0 auto;
+    overflow: hidden;
+  }
+
+  .atlas-core--hero .atlas-core__field {
+    width: 100%;
+    max-width: 20rem;
+    height: 100%;
+    margin: 0 auto;
+    transform: none;
+  }
+
+  .atlas-core--hero .atlas-core__center {
+    width: 38%;
+  }
+
+  .atlas-core--hero .atlas-core__label {
+    bottom: 0.65rem;
+  }
+}
+
+@media (max-width: 390px) {
+  .atlas-core--hero {
+    max-width: 18rem;
+    min-height: 18rem;
+    height: 18rem;
+  }
+
+  .atlas-core--hero .atlas-core__field {
+    max-width: 18rem;
+  }
+}
