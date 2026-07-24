@@ -1,0 +1,26 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/api/ask"
+  to = "/.netlify/functions/ask"
+  status = 200
+
+
+[[redirects]]
+  from = "/api/listen"
+  to = "/.netlify/functions/listen"
+  status = 200
+
+
+[[redirects]]
+  from = "/api/speak"
+  to = "/.netlify/functions/speak"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
