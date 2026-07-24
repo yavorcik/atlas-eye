@@ -3200,3 +3200,394 @@ color:#ff8a8a;
     border:1px solid var(--border);
     overflow:hidden;
 }
+
+
+/* ==========================================================================
+   ATLAS MOBILE HOMEPAGE REFINEMENT
+   ========================================================================== */
+
+@media (max-width: 767px) {
+  .hero {
+    min-height: auto;
+    padding: 3rem 1.25rem 4.5rem;
+    gap: 2.5rem;
+    align-items: flex-start;
+  }
+
+  .hero-copy {
+    width: 100%;
+    max-width: none;
+  }
+
+  .hero .eyebrow {
+    margin-bottom: 1.25rem;
+    font-size: 0.72rem;
+    line-height: 1;
+    letter-spacing: 0.16em;
+  }
+
+  .hero h1 {
+    width: 100%;
+    max-width: 22rem;
+    margin: 0;
+    font-size: clamp(2.85rem, 12.5vw, 3.35rem);
+    line-height: 0.96;
+    letter-spacing: -0.045em;
+    text-wrap: balance;
+  }
+
+  .hero h1 span {
+    display: block;
+  }
+
+  .hero-introduction {
+    margin-top: 2rem;
+  }
+
+  .hero-greeting {
+    margin-bottom: 1rem;
+    font-size: 1.35rem;
+    line-height: 1.25;
+  }
+
+  .hero-summary,
+  .hero-summary--small {
+    max-width: 34rem;
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+
+  .hero-capabilities {
+    gap: 0.55rem;
+    margin-top: 1.5rem;
+  }
+
+  .hero-capabilities span {
+    font-size: 0.76rem;
+  }
+
+  .hero-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
+    gap: 0.75rem;
+    margin-top: 1.75rem;
+  }
+
+  .hero-actions a,
+  .hero-actions button {
+    width: 100%;
+    min-height: 3.25rem;
+    justify-content: center;
+  }
+
+  .hero-visual {
+    width: 100%;
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 374px) {
+  .hero {
+    padding-inline: 1rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.55rem, 13vw, 2.9rem);
+  }
+}
+
+
+/* ==========================================================================
+   ATLAS MOBILE CONTENT ACCORDIONS
+   ========================================================================== */
+
+.mobile-section-toggle {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .mobile-collapsible {
+    padding-top: 3.5rem;
+    padding-bottom: 3.5rem;
+  }
+
+  .mobile-collapsible > .mobile-section-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 1.35rem;
+    padding: 1rem 0;
+    border: 0;
+    border-top: 1px solid
+      color-mix(in srgb, currentColor 18%, transparent);
+    border-bottom: 1px solid
+      color-mix(in srgb, currentColor 18%, transparent);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .mobile-section-toggle__icon {
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    flex: 0 0 2rem;
+    place-items: center;
+    margin-left: 1rem;
+    border: 1px solid
+      color-mix(in srgb, currentColor 24%, transparent);
+    border-radius: 999px;
+    font-size: 1.2rem;
+    font-weight: 400;
+    line-height: 1;
+  }
+  .mobile-collapsible:not(.is-open)
+    > :not(.section-heading):not(.transcript-header):not(.section-label):not(.mobile-section-toggle) {
+    display: none !important;
+  }
+
+  .mobile-collapsible:not(.is-open) {
+    min-height: 0;
+  }
+
+  .mobile-collapsible:not(.is-open) .section-heading,
+  .mobile-collapsible:not(.is-open) .transcript-header {
+    margin-bottom: 0;
+  }
+
+  .mobile-collapsible.is-open > .mobile-section-toggle {
+    margin-bottom: 1.75rem;
+  }
+
+  .architecture.mobile-collapsible > .section-label {
+    display: block;
+  }
+}
+
+/* ==========================================================================
+   ATLAS MOBILE HERO CENTERING
+   ========================================================================== */
+
+@media (max-width: 767px) {
+  .hero,
+  .hero-copy,
+  .hero-introduction {
+    text-align: center;
+  }
+
+  .hero-copy,
+  .hero-introduction,
+  .hero-visual {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero h1,
+  .hero .eyebrow,
+  .hero-summary,
+  .hero-summary--small,
+  .hero-greeting {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+  }
+
+  .hero-capabilities {
+    justify-content: center;
+  }
+
+  .hero-capabilities span {
+    text-align: center;
+  }
+
+  .hero-actions {
+    justify-items: center;
+  }
+
+  .hero-actions a,
+  .hero-actions button {
+    text-align: center;
+  }
+
+  .hero-introduction {
+    align-items: center;
+  }
+}
+
+/* ==========================================================================
+   ATLAS IPHONE HERO WIDTH + HEADER FIX
+   ========================================================================== */
+
+html,
+body,
+#root {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+@media (max-width: 767px) {
+  .site-header {
+    width: 100%;
+    max-width: 100vw;
+  }
+
+  .hero {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100vw;
+    min-width: 0;
+    margin: 0;
+    padding:
+      calc(7.5rem + env(safe-area-inset-top))
+      1.25rem
+      4rem;
+    overflow: hidden;
+  }
+
+  .hero-copy,
+  .hero-introduction,
+  .hero-actions,
+  .hero-capabilities,
+  .hero-visual {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero h1 {
+    display: block;
+    width: 100%;
+    max-width: 20rem;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: clamp(2.7rem, 12vw, 3.25rem);
+    line-height: 0.96;
+    letter-spacing: -0.05em;
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+
+  .hero h1 span {
+    display: inline;
+  }
+
+  .hero .eyebrow,
+  .hero-greeting,
+  .hero-summary,
+  .hero-summary--small {
+    width: 100%;
+    max-width: 21rem;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+
+  .hero-summary,
+  .hero-summary--small {
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+
+  .hero-capabilities {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .hero-capabilities span {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .hero-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .hero-actions a,
+  .hero-actions button {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* ==========================================================================
+   ATLAS MOBILE HERO VISUAL SCALE
+   ========================================================================== */
+
+@media (max-width: 767px) {
+  .hero {
+    gap: 2.25rem;
+  }
+
+  .hero-visual {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    max-width: 22rem;
+    margin: 1rem auto 0;
+  }
+
+  .hero-visual .atlas-core,
+  .hero-visual > div {
+    width: min(78vw, 20rem);
+    max-width: 20rem;
+    height: auto;
+    aspect-ratio: 1;
+    margin: 0 auto;
+  }
+
+  .atlas-core--hero {
+    width: min(78vw, 20rem);
+    height: min(78vw, 20rem);
+    max-width: 20rem;
+    max-height: 20rem;
+    margin: 0 auto;
+  }
+
+  .hero-actions {
+    margin-bottom: 0.5rem;
+  }
+}
+
+@media (max-width: 390px) {
+  .hero-visual .atlas-core,
+  .hero-visual > div,
+  .atlas-core--hero {
+    width: min(76vw, 18rem);
+    height: min(76vw, 18rem);
+  }
+}
+
+@media (max-width: 767px) {
+  .hero-visual {
+    width: 100%;
+    max-width: 20rem;
+    min-height: 20rem;
+    margin: 1rem auto 0;
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 390px) {
+  .hero-visual {
+    max-width: 18rem;
+    min-height: 18rem;
+  }
+}

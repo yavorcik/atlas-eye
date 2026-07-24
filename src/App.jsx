@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import './App.css'
 import AtlasCore from './design-system/atlas-core/AtlasCore'
 import ProjectPath from './components/project-path/ProjectPath'
+import Demo from './pages/Demo'
 
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
@@ -374,6 +375,16 @@ const milestones = [
 ]
 
 function App() {
+
+  const [expandedMobileSections, setExpandedMobileSections] = useState({})
+
+  const toggleMobileSection = (section) => {
+    setExpandedMobileSections((current) => ({
+      ...current,
+      [section]: !current[section],
+    }))
+  }
+
   const [signupState, setSignupState] = useState('idle')
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -461,6 +472,16 @@ function App() {
     setMenuOpen(false)
   }
 
+  if (
+    window.location.pathname.replace(/\/+$/, '') === '/demo'
+  ) {
+    return <Demo />
+  }
+
+  if (window.location.pathname.replace(/\/+$/, '') === '/demo') {
+    return <Demo />
+  }
+
   return (
     <main className="site-shell">
       <header className="site-header">
@@ -509,6 +530,9 @@ function App() {
 
           <h1>
             Meet Atlas.
+
+            The AI Cognitive Operating System
+for the Nuclear Industry.
           </h1>
 
           <div className="hero-introduction">
@@ -516,17 +540,9 @@ function App() {
               <strong>Hello. I'm Atlas.</strong>
             </p>
 
-            <p className="hero-summary">
-              I help organizations evaluate, license,
-              deploy, and operate advanced nuclear
-              energy systems.
-            </p>
+            <p className="hero-summary">Artificial intelligence is creating unprecedented demand for reliable electricity.</p>
 
-            <p className="hero-summary hero-summary--small">
-              Every conclusion I provide is grounded
-              in engineering reasoning, regulatory
-              analysis, and verifiable evidence.
-            </p>
+            <p className="hero-summary hero-summary--small">Small modular reactors have the potential to power the next generation of AI infrastructure.</p><p className="hero-summary">Atlas helps organizations evaluate, license, deploy, and operate advanced nuclear energy systems through engineering reasoning, regulatory intelligence, and evidence-based decision support.</p>
 
             <div className="hero-capabilities">
 
@@ -544,7 +560,7 @@ function App() {
 
               <span>Operations</span>
 
-              <span>Commercial Deployment Strategy</span>
+              <span>AI Data Centers</span>
 
             </div>
 
@@ -563,8 +579,8 @@ function App() {
           </div>
 
           <div className="hero-actions">
-            <a className="button primary" href="#atlas">
-              Meet Atlas
+            <a className="button primary" href="/demo">
+              Talk to Atlas
             </a>
 
             <a className="button secondary" href="#consulting">
@@ -694,7 +710,7 @@ function App() {
       </section>
 
       <section
-        className="continuing-education section"
+        className={`continuing-education section mobile-collapsible ${expandedMobileSections.current ? 'is-open' : ''}`}
         id="continuing-education"
         aria-labelledby="continuing-education-title"
       >
@@ -715,6 +731,22 @@ function App() {
             and operating experience create new lessons.
           </p>
         </div>
+
+        <button
+          className="mobile-section-toggle"
+          type="button"
+          aria-expanded={Boolean(expandedMobileSections.current)}
+          onClick={() => toggleMobileSection('current')}
+        >
+          <span>
+            {expandedMobileSections.current
+              ? 'Hide details'
+              : 'View how Atlas stays current'}
+          </span>
+          <span className="mobile-section-toggle__icon" aria-hidden="true">
+            {expandedMobileSections.current ? '−' : '+'}
+          </span>
+        </button>
 
         <div className="continuing-education-grid">
           <article className="continuing-education-intro">
@@ -835,7 +867,7 @@ function App() {
       </section>
 
       <section
-        className="reactor-platforms section"
+        className={`reactor-platforms section mobile-collapsible ${expandedMobileSections.reactors ? 'is-open' : ''}`}
         id="reactor-platforms"
         aria-labelledby="reactor-platforms-title"
       >
@@ -857,6 +889,22 @@ function App() {
             I evaluate those differences together.
           </p>
         </div>
+
+        <button
+          className="mobile-section-toggle"
+          type="button"
+          aria-expanded={Boolean(expandedMobileSections.reactors)}
+          onClick={() => toggleMobileSection('reactors')}
+        >
+          <span>
+            {expandedMobileSections.reactors
+              ? 'Hide details'
+              : 'View reactor comparisons'}
+          </span>
+          <span className="mobile-section-toggle__icon" aria-hidden="true">
+            {expandedMobileSections.reactors ? '−' : '+'}
+          </span>
+        </button>
 
         <div className="reactor-introduction">
           <div>
@@ -907,7 +955,7 @@ function App() {
 
               <dl className="reactor-card__facts">
                 <div>
-                  <dt>How I Work</dt>
+                  <dt>Reactor Type</dt>
                   <dd>{reactor.technology}</dd>
                 </div>
 
@@ -970,14 +1018,14 @@ function App() {
       <ProjectPath />
 
 <section
-        className="transcript section"
+        className={`transcript section mobile-collapsible ${expandedMobileSections.credentials ? 'is-open' : ''}`}
         id="transcript"
         aria-labelledby="transcript-title"
       >
         <div className="transcript-header">
           <div>
             <div className="section-label">
-              05 / Professional Credentials
+              06 / Professional Credentials
             </div>
 
             <p className="transcript-institution">
@@ -1013,6 +1061,22 @@ function App() {
             </dl>
           </div>
         </div>
+
+        <button
+          className="mobile-section-toggle"
+          type="button"
+          aria-expanded={Boolean(expandedMobileSections.credentials)}
+          onClick={() => toggleMobileSection('credentials')}
+        >
+          <span>
+            {expandedMobileSections.credentials
+              ? 'Hide details'
+              : 'View professional credentials'}
+          </span>
+          <span className="mobile-section-toggle__icon" aria-hidden="true">
+            {expandedMobileSections.credentials ? '−' : '+'}
+          </span>
+        </button>
 
         <div className="transcript-rule" />
 
@@ -1128,14 +1192,14 @@ function App() {
       </section>
 
       <section
-        className="technology section"
+        className={`technology section mobile-collapsible ${expandedMobileSections.technology ? 'is-open' : ''}`}
         id="technology"
         aria-labelledby="technology-title"
       >
         <div className="section-heading">
           <div>
             <div className="section-label">
-              06 / How I Work
+              07 / How I Work
             </div>
 
             <h2 id="technology-title">
@@ -1150,6 +1214,22 @@ function App() {
             can improve intelligence without replacing who Atlas is.
           </p>
         </div>
+
+        <button
+          className="mobile-section-toggle"
+          type="button"
+          aria-expanded={Boolean(expandedMobileSections.technology)}
+          onClick={() => toggleMobileSection('technology')}
+        >
+          <span>
+            {expandedMobileSections.technology
+              ? 'Hide details'
+              : 'View Atlas architecture'}
+          </span>
+          <span className="mobile-section-toggle__icon" aria-hidden="true">
+            {expandedMobileSections.technology ? '−' : '+'}
+          </span>
+        </button>
 
         <div className="technology-stack">
           <article className="technology-layer technology-layer--identity">
@@ -1448,7 +1528,7 @@ function App() {
       </section>
 
       <section
-        className="platform section"
+        className={`platform section mobile-collapsible ${expandedMobileSections.platform ? 'is-open' : ''}`}
         id="platform"
         aria-labelledby="platform-title"
       >
@@ -1470,6 +1550,22 @@ function App() {
             your teams work.
           </p>
         </div>
+
+        <button
+          className="mobile-section-toggle"
+          type="button"
+          aria-expanded={Boolean(expandedMobileSections.platform)}
+          onClick={() => toggleMobileSection('platform')}
+        >
+          <span>
+            {expandedMobileSections.platform
+              ? 'Hide details'
+              : 'View enterprise licensing details'}
+          </span>
+          <span className="mobile-section-toggle__icon" aria-hidden="true">
+            {expandedMobileSections.platform ? '−' : '+'}
+          </span>
+        </button>
 
         <div className="platform-introduction">
           <div>
@@ -1637,8 +1733,24 @@ function App() {
         </div>
       </section>
 
-      <section className="architecture section">
+      <section className={`architecture section mobile-collapsible ${expandedMobileSections.architecture ? 'is-open' : ''}`}>
         <div className="section-label">10 / Why I Remain Atlas</div>
+
+        <button
+          className="mobile-section-toggle"
+          type="button"
+          aria-expanded={Boolean(expandedMobileSections.architecture)}
+          onClick={() => toggleMobileSection('architecture')}
+        >
+          <span>
+            {expandedMobileSections.architecture
+              ? 'Hide details'
+              : 'View identity details'}
+          </span>
+          <span className="mobile-section-toggle__icon" aria-hidden="true">
+            {expandedMobileSections.architecture ? '−' : '+'}
+          </span>
+        </button>
 
         <div className="architecture-grid">
           <div>
@@ -1688,7 +1800,7 @@ function App() {
         </div>
       </section>
 
-      <section className="journey section" id="journey">
+      <section className={`journey section mobile-collapsible ${expandedMobileSections.journey ? 'is-open' : ''}`} id="journey">
         <div className="section-heading">
           <div>
             <div className="section-label">11 / Journey</div>
@@ -1700,6 +1812,22 @@ function App() {
             preserving the identity established at his beginning.
           </p>
         </div>
+
+        <button
+          className="mobile-section-toggle"
+          type="button"
+          aria-expanded={Boolean(expandedMobileSections.journey)}
+          onClick={() => toggleMobileSection('journey')}
+        >
+          <span>
+            {expandedMobileSections.journey
+              ? 'Hide details'
+              : 'View Atlas’s journey'}
+          </span>
+          <span className="mobile-section-toggle__icon" aria-hidden="true">
+            {expandedMobileSections.journey ? '−' : '+'}
+          </span>
+        </button>
 
         <div className="timeline">
           {milestones.map((milestone) => (
@@ -1726,7 +1854,7 @@ function App() {
 
       <section className="connect section" id="connect">
         <div className="connect-copy">
-          <div className="section-label">10 / Connect</div>
+          <div className="section-label">12 / Connect</div>
 
           <h2>Let&apos;s start with your project.</h2>
 
@@ -1867,10 +1995,9 @@ function App() {
     <h2>Atlas-Nuclear</h2>
 
     <p className="company-text">
-      Atlas-Nuclear is building the AI Cognitive Operating System for the
-      nuclear industry, helping organizations reason through licensing,
-      engineering, regulatory compliance, and deployment decisions with
-      confidence.
+      Atlas is the AI Cognitive Operating System for the nuclear industry.
+
+It integrates engineering, licensing, regulatory intelligence, construction planning, and executive decision support into one governed platform that helps organizations deploy nuclear energy with confidence.
     </p>
 
     <div className="company-actions">
@@ -1881,7 +2008,7 @@ function App() {
         target="_blank"
         rel="noopener noreferrer"
       >
-        Company Presentation
+        Company Overview
       </a>
 
       <a
@@ -1890,7 +2017,7 @@ function App() {
         target="_blank"
         rel="noopener noreferrer"
       >
-        Watch 60-Second Overview
+        Watch 60-Second Pitch
       </a>
 
     </div>
@@ -1916,7 +2043,7 @@ function App() {
         </div>
 
         <p>
-          One identity. Expanding education. Governed intelligence.
+          Building the intelligence behind the next generation of nuclear energy.
         </p>
 
         <span>© {new Date().getFullYear()} Atlas Eye</span>

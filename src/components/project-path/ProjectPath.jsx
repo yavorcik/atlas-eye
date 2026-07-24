@@ -396,7 +396,7 @@ function ProjectPath() {
       <div className="section-heading">
         <div>
           <div className="section-label">
-            07 / Your Project
+            05 / Your Project
           </div>
 
           <h2 id="project-path-title">
