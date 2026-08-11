@@ -3,7 +3,6 @@ import { createClient } from '@supabase/supabase-js'
 import './App.css'
 import AtlasCore from './design-system/atlas-core/AtlasCore'
 import ProjectPath from './components/project-path/ProjectPath'
-import Demo from './pages/Demo'
 
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
@@ -472,14 +471,9 @@ function App() {
     setMenuOpen(false)
   }
 
-  if (
-    window.location.pathname.replace(/\/+$/, '') === '/demo'
-  ) {
-    return <Demo />
-  }
-
   if (window.location.pathname.replace(/\/+$/, '') === '/demo') {
-    return <Demo />
+    window.location.replace('https://lab.atlaseye.ai')
+    return null
   }
 
   return (
@@ -583,7 +577,7 @@ for the Nuclear Industry.
 
           <div className="hero-actions">
             <a className="button primary" href="/demo">
-              Talk to Atlas
+              Start the Atlas Nuclear demonstration
             </a>
 
             <a className="button secondary" href="#consulting">
