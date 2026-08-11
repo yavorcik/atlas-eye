@@ -513,6 +513,7 @@ function App() {
           <a href="#transcript" onClick={closeMenu}>Professional Credentials</a>
           <a href="#technology" onClick={closeMenu}>How I Work</a>
           <a href="#project-path" onClick={closeMenu}>Your Project</a>
+          <a href="https://lab.atlaseye.ai" onClick={closeMenu}>Try Atlas Lab</a>
           <a href="#consulting" onClick={closeMenu}>Work With Me</a>
           <a href="#platform" onClick={closeMenu}>License Atlas</a>
           <a href="#journey" onClick={closeMenu}>Journey</a>
@@ -543,6 +544,8 @@ for the Nuclear Industry.
             <p className="hero-summary">Artificial intelligence is creating unprecedented demand for reliable electricity.</p>
 
             <p className="hero-summary hero-summary--small">Small modular reactors have the potential to power the next generation of AI infrastructure.</p><p className="hero-summary">Atlas helps organizations evaluate, license, deploy, and operate advanced nuclear energy systems through engineering reasoning, regulatory intelligence, and evidence-based decision support.</p>
+
+            <p className="hero-summary hero-summary--small">Talk to Atlas explains. Atlas Lab evaluates project readiness. Mission Control protects controlled evidence, verification, review, and authority.</p>
 
             <div className="hero-capabilities">
 
@@ -585,6 +588,10 @@ for the Nuclear Industry.
 
             <a className="button secondary" href="#consulting">
               Work with Atlas
+            </a>
+
+            <a className="button secondary" href="https://lab.atlaseye.ai">
+              Try the Ohio Lab sample
             </a>
           </div>
 
@@ -1522,8 +1529,9 @@ for the Nuclear Industry.
             className="button primary"
             href="#connect"
           >
-            Start a conversation
+            Request private evaluation access
           </a>
+          <a className="button secondary" href="#connect">Request a guided demonstration</a>
         </div>
       </section>
 
