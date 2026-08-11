@@ -4,6 +4,12 @@
   functions = "netlify/functions"
 
 [[redirects]]
+  from = "/demo"
+  to = "https://lab.atlaseye.ai"
+  status = 302
+  force = true
+
+[[redirects]]
   from = "/api/ask"
   to = "/.netlify/functions/ask"
   status = 200
