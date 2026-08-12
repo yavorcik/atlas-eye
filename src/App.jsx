@@ -1,4 +1,6 @@
+import { useCallback, useState } from 'react'
 import './App.css'
+import ReadinessReviewForm from './ReadinessReviewForm.jsx'
 
 const DEMO = 'https://lab.atlaseye.ai'
 
@@ -24,6 +26,9 @@ const audiences = [
 const outputs = ['SMR readiness assessment', 'Critical-gap register', 'Evidence inventory', 'Requirements traceability', 'Organizational-capability assessment', 'Licensing-preparation issues', '30/60/90-day action plan', 'Downloadable advisory readiness report', 'Read-only decision and authority status']
 
 function App() {
+  const [reviewOpen, setReviewOpen] = useState(false)
+  const closeReview = useCallback(() => setReviewOpen(false), [])
+  if (window.location.pathname.replace(/\/+$/, '') === '/privacy') return <main><section className="section"><p className="eyebrow">PRIVACY NOTICE</p><h1>Atlas Nuclear inquiry privacy</h1><p>Atlas Nuclear uses project-readiness inquiry information only to respond to the inquiry. Do not submit safeguards information, security-sensitive information, export-controlled technical data, proprietary reactor information, or controlled project records.</p><p>Inquiry content is delivered through our existing email provider and is not written to Atlas Core, Mission Control, governed records, protected evidence, or a lead database. Short-lived pseudonymous controls prevent abuse and duplicate delivery.</p><p>Submitting an inquiry does not create an attorney-client relationship, engineering engagement, project approval, regulatory submission, or authorization to proceed.</p><a className="button primary" href="/">Return to Atlas Nuclear</a></section></main>
   if (window.location.pathname.replace(/\/+$/, '') === '/demo') {
     window.location.replace(DEMO)
     return null
@@ -32,7 +37,7 @@ function App() {
   return <main>
     <header className="site-header">
       <a className="brand" href="#top" aria-label="Atlas Nuclear home"><span>A</span> ATLAS NUCLEAR</a>
-      <nav aria-label="Primary navigation"><a href="#product">Product</a><a href="#how">How It Works</a><a href="#who">Who It Helps</a><a href={DEMO}>Demonstration</a><a href="#review">Readiness Review</a><a href="#about">About</a></nav>
+      <nav aria-label="Primary navigation"><a href="#product">Product</a><a href="#how">How It Works</a><a href="#who">Who It Helps</a><a href={DEMO}>Demonstration</a><button className="nav-link" type="button" onClick={() => setReviewOpen(true)}>Readiness Review</button><a href="#about">About</a></nav>
       <a className="button primary compact" href={DEMO}>Run the SMR readiness demonstration</a>
     </header>
 
@@ -54,8 +59,9 @@ function App() {
 
     <section className="section trust" id="about"><p className="eyebrow">ACCOUNTABLE DECISIONS</p><h2>Atlas helps organizations prepare for accountable decisions. It does not make those decisions for them.</h2><p>Licensed engineers, qualified nuclear professionals, counsel, responsible executives, regulators, and established approval authorities retain their respective roles. Atlas does not design reactors, license projects, operate reactors, replace engineers or counsel, issue NRC approval, authorize nuclear work, or provide NQA-1 certification.</p><details><summary>Full prototype and authority limitations</summary><p>The public demonstration is advisory and non-governed. Its analysis is not engineering approval, legal advice, regulatory acceptance, work authorization, governed release, or permission to perform nuclear work. Mission Control presents the read-only boundary between technical verification and authority.</p></details></section>
 
-    <section className="closing" id="review"><p className="eyebrow">THE NEXT CREDIBLE DECISION</p><h2>Before your organization says an SMR project is ready, make sure the evidence supports it.</h2><div className="actions"><a className="button primary" href={DEMO}>Run the guided demonstration</a><a className="button secondary" href="mailto:contact@atlaseye.ai?subject=Atlas%20Nuclear%20project-readiness%20review">Request a project-readiness review</a></div></section>
-    <footer><b>ATLAS NUCLEAR</b><span>SMR project readiness + evidence control</span><a href="mailto:contact@atlaseye.ai">contact@atlaseye.ai</a></footer>
+    <section className="closing" id="review"><p className="eyebrow">THE NEXT CREDIBLE DECISION</p><h2>Before your organization says an SMR project is ready, make sure the evidence supports it.</h2><div className="actions"><a className="button primary" href={DEMO}>Run the guided demonstration</a><button className="button secondary" type="button" onClick={() => setReviewOpen(true)}>Request a project-readiness review</button></div></section>
+    <footer><b>ATLAS NUCLEAR</b><span>SMR project readiness + evidence control</span><button className="footer-contact" type="button" onClick={() => setReviewOpen(true)}>Request a project-readiness review</button></footer>
+    <ReadinessReviewForm open={reviewOpen} onClose={closeReview} />
   </main>
 }
 
