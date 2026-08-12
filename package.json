@@ -8,6 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "test:positioning": "node scripts/validate-positioning.mjs",
+    "test:contact": "node --test tests/contact-form.test.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
