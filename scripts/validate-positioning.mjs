@@ -2,7 +2,8 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 
 const app = readFileSync(new URL('../src/App.jsx', import.meta.url), 'utf8')
-const publicText = app.toLowerCase()
+const document = readFileSync(new URL('../index.html', import.meta.url), 'utf8')
+const publicText = `${app}\n${document}`.toLowerCase()
 
 for (const prohibited of [
   'cognitive operating system',
@@ -18,5 +19,6 @@ assert.match(app, /Know what is ready\. Know what is missing\. Know what must ha
 assert.match(app, /Run the guided demonstration/)
 assert.match(app, /https:\/\/lab\.atlaseye\.ai/)
 assert.match(app, /Atlas does not design reactors, license projects, operate reactors/)
+assert.match(document, /Atlas Nuclear \| SMR Project Readiness \+ Evidence Control/)
 
 console.log('Atlas Eye positioning controls: PASS')
