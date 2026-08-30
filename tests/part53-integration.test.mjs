@@ -29,9 +29,19 @@ test('Netlify routes bypass the SPA fallback for canonical and compatibility pat
   assert.match(redirects, /\/part53-demo\.html\s+\/part53\/\s+301!/)
 })
 
-test('homepage CTA is a semantic Part 53 link', () => {
-  assert.match(app, /<a className="button primary" href="\/part53">BUILD A PART 53 APPLICATION<\/a>/)
-  assert.doesNotMatch(app, /BUILD A PART 53 APPLICATION[\s\S]{0,200}(?:onClick|window\.location)/)
+test('Part 53 Builder is the semantic primary homepage action', () => {
+  assert.match(app, /<a className="button primary compact" href="\/part53">Build a Part 53 Application<\/a>/)
+  assert.match(app, /<a className="button primary hero-primary" href="\/part53">Build a Part 53 Application/)
+  assert.match(app, /THE ATLAS PART 53 APPLICATION BUILDER/)
+  assert.doesNotMatch(app, /<button[^>]*>Build a Part 53 Application<\/button>/)
+  assert.doesNotMatch(app, /window\.location[^\n]*part53/)
+})
+
+test('readiness assessment is named and visually secondary', () => {
+  assert.match(app, /Assess SMR Project Readiness/)
+  assert.match(app, /Run the Readiness Assessment/)
+  assert.doesNotMatch(app, />Demonstration</)
+  assert.doesNotMatch(app, /Run the guided demonstration/)
 })
 
 test('builder remains browser-only and preserves the legal-review boundary', () => {
