@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "test:positioning": "node scripts/validate-positioning.mjs",
     "test:contact": "node --test tests/contact-form.test.mjs",
+    "test:part53": "node --test tests/part53-integration.test.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

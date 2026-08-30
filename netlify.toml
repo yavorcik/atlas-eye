@@ -4,6 +4,24 @@
   functions = "netlify/functions"
 
 [[redirects]]
+  from = "/part53"
+  to = "/part53/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/part53/"
+  to = "/part53/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/part53-demo.html"
+  to = "/part53/"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/demo"
   to = "https://lab.atlaseye.ai"
   status = 302
