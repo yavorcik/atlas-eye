@@ -2,4 +2,5 @@
 /api/ask      /.netlify/functions/ask      200
 /api/listen   /.netlify/functions/listen   200
 /api/speak    /.netlify/functions/speak    200
+/part53-demo.html  /part53/                    301!
 /*            /index.html                  200
