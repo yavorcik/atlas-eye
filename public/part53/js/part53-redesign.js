@@ -80,8 +80,8 @@
   const guideIndex = () => record().guide || 0;
   const nextFieldLabel = () => fields[state.field + 1]?.[2] || "the next field";
   const fieldLabel = (index = state.field) => fields[index]?.[2] || "next field";
-  const capture = (preferred = null) => { const active = preferred || document.activeElement; const anchor = active && active !== document.body ? active : workspace; return { id: active?.id || "", top: anchor.getBoundingClientRect().top, scroll: window.scrollY }; };
-  const restore = (snapshot) => requestAnimationFrame(() => { const focus = snapshot.id ? document.getElementById(snapshot.id) : null; focus?.focus({preventScroll:true}); const anchor = focus || workspace; window.scrollTo(0, Math.max(0, window.scrollY + anchor.getBoundingClientRect().top - snapshot.top)); });
+  const capture = (preferred = null) => { const active = preferred || document.activeElement; const anchor = active && active !== document.body ? active : workspace; const selector = active?.id ? `#${active.id}` : active?.dataset?.action ? `[data-action="${active.dataset.action}"]` : ""; return { id: active?.id || "", selector, top: anchor.getBoundingClientRect().top, scroll: window.scrollY }; };
+  const restore = (snapshot) => requestAnimationFrame(() => { const focus = snapshot.id ? document.getElementById(snapshot.id) : null; focus?.focus({preventScroll:true}); const anchor = focus || (snapshot.selector ? workspace.querySelector(snapshot.selector) : null) || workspace; window.scrollTo(0, Math.max(0, window.scrollY + anchor.getBoundingClientRect().top - snapshot.top)); });
   let transitionBusy = false;
   const update = (preserve = true) => { const snapshot = preserve === true ? capture() : preserve || null; render(); workspace.classList.add("is-entering"); requestAnimationFrame(() => workspace.classList.remove("is-entering")); if (snapshot) restore(snapshot); transitionBusy = Boolean(preserve); window.setTimeout(() => { transitionBusy = false; }, 220); };
   const statusText = () => record().status || "NOT STARTED";
