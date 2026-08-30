@@ -10,6 +10,12 @@
     "test:positioning": "node scripts/validate-positioning.mjs",
     "test:contact": "node --test tests/contact-form.test.mjs",
     "test:part53": "node --test tests/part53-integration.test.mjs",
+    "test:part53:adversarial": "node tests/part53-adversarial-runner.mjs --profile standard",
+    "test:part53:smoke": "node tests/part53-adversarial-runner.mjs --profile smoke",
+    "test:part53:soak": "node tests/part53-adversarial-runner.mjs --profile soak",
+    "test:part53:production-smoke": "node tests/part53-adversarial-runner.mjs --profile production-smoke",
+    "test:part53:replay": "node tests/part53-adversarial-runner.mjs --profile replay",
+    "test:part53:self-test": "node tests/part53-adversarial-runner.mjs --self-test",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -26,6 +32,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.3",
     "globals": "^17.7.0",
+    "playwright": "1.55.1",
     "supabase": "^2.109.0",
     "vite": "^8.1.1"
   }
