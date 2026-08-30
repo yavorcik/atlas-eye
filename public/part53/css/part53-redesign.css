@@ -78,6 +78,8 @@ button, input, select { font: inherit; }
 .evidence-options .primary { width: 100%; }
 .evidence-options button b, .evidence-options button small { display: block; }
 .evidence-options button small { margin-top: 3px; color: var(--muted); }
+.evidence-status { display: grid; gap: 4px; margin-top: 24px; padding: 16px 18px; border-left: 3px solid var(--red); background: var(--raised); }
+.evidence-status span { color: var(--muted); }
 .drawer-host { position: fixed; inset: 0; z-index: 3; background: rgba(0,0,0,.62); }
 .drawer-panel { position: absolute; top: 0; right: 0; bottom: 0; width: min(460px, 100%); overflow: auto; padding: 32px; background: #11151b; box-shadow: -8px 0 30px rgba(0, 0, 0, .35); }
 .drawer-close { float: right; }

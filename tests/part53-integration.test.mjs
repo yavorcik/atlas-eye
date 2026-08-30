@@ -51,6 +51,14 @@ test('builder remains browser-only and preserves the legal-review boundary', () 
   assert.doesNotMatch(page, /<form\b|type="file"|\blogin\b|\bpassword\b/i)
 })
 
+test('missing controlled evidence presents actionable next steps instead of a dead control', () => {
+  assert.match(workflow, /class="evidence-status" role="status"/)
+  assert.match(workflow, /No controlled record has been added/)
+  assert.match(workflow, /data-action="request-record"/)
+  assert.match(workflow, /data-action="hold-field"/)
+  assert.doesNotMatch(workflow, /No existing controlled record is available<\/button>/)
+})
+
 test('structured person mutations use the preserving workspace update path', () => {
   assert.match(workflow, /if \(action === "add-person"\)[\s\S]*?record\(\)\.status = "EVIDENCE REQUIRED"; update\(snapshot\); return/)
   assert.match(workflow, /if \(action === "edit-person"\)[\s\S]*?record\(\)\.editing = Number\(button\.dataset\.personIndex\); update\(\);/)
