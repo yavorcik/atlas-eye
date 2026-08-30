@@ -42,7 +42,7 @@ test('builder remains browser-only and preserves the legal-review boundary', () 
 })
 
 test('structured person mutations use the preserving workspace update path', () => {
-  assert.match(workflow, /if \(action === "add-person"\)[\s\S]*?record\(\)\.status = "EVIDENCE REQUIRED"; update\(\); return/)
+  assert.match(workflow, /if \(action === "add-person"\)[\s\S]*?record\(\)\.status = "EVIDENCE REQUIRED"; update\(snapshot\); return/)
   assert.match(workflow, /if \(action === "edit-person"\)[\s\S]*?record\(\)\.editing = Number\(button\.dataset\.personIndex\); update\(\);/)
   assert.match(workflow, /if \(action === "remove-person"\)[\s\S]*?record\(\)\.status = record\(\)\.people\.length \? "EVIDENCE REQUIRED" : "NOT STARTED"; update\(\); return/)
 })
