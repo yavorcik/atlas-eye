@@ -193,8 +193,15 @@ async function saveFailure(page, context, error, run, actions) {
 
 async function runSelfTest() {
   const before = { url: 'http://fixture', text: 'same', focus: 'button', controls: 1, state: 'AVAILABLE' }
-  const after = { ...before }
-  if (observableChange(before, after)) throw new Error('self-test fixture incorrectly considered observable')
+  const fixtureEnabled = process.argv.includes('--self-test-fixture')
+  const after = fixtureEnabled ? { ...before } : { ...before, state: 'GUIDANCE_ACTIVE' }
+  if (fixtureEnabled) {
+    if (observableChange(before, after)) throw new Error('self-test dead-control fixture was not unchanged')
+    console.error('SELF-TEST FIXTURE DETECTED: probable dead control')
+    process.exitCode = 1
+    return
+  }
+  if (!observableChange(before, after)) throw new Error('self-test healthy fixture was incorrectly considered dead')
   console.log('SELF-TEST PASS: controlled unchanged fixture detected as probable dead control')
 }
 

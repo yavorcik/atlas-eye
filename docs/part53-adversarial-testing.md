@@ -13,6 +13,7 @@ npm run test:part53:soak -- --runs 500 --seed 12345
 npm run test:part53:replay -- --seed 12345
 npm run test:part53:production-smoke -- --target https://atlaseye.ai/part53/
 npm run test:part53:self-test
+node tests/part53-adversarial-runner.mjs --self-test --self-test-fixture  # expected nonzero detector demonstration
 ```
 
 Configuration is available through `PART53_TEST_RUNS`, `PART53_TEST_SEED`, `PART53_TEST_TARGET`, `PART53_TEST_HEADLESS`, `PART53_TEST_ARTIFACTS`, and `PART53_TEST_MAX_MINUTES`. Production is never the default and production-smoke is low-rate, read-only.
@@ -27,7 +28,7 @@ Every exercised action must produce navigation, a visible/focus/state/accessibil
 
 Failures exit nonzero and are written under `artifacts/part53-adversarial/run-*/` with JSON metadata, DOM, screenshot, and Playwright trace. `report.json` and `summary.md` are generated at the artifact root. A suspected defect is not confirmed until the same seed is replayed; the original trace is retained before minimization.
 
-Invariants belong in `invariantFailures` or the canonical journey. New journeys should use the `action` helper so dead controls cannot be silently ignored. The self-test uses an in-memory unchanged fixture and proves the dead-control oracle detects it without changing the production application.
+Invariants belong in `invariantFailures` or the canonical journey. New journeys should use the `action` helper so dead controls cannot be silently ignored. The normal self-test passes a healthy in-memory fixture; adding `--self-test-fixture` intentionally makes it exit nonzero after detecting an unchanged control, proving the oracle without changing the production application.
 
 ## Resource and safety limits
 
