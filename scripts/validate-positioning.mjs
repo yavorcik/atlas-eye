@@ -14,10 +14,13 @@ for (const prohibited of [
   'end-to-end nuclear operating system',
 ]) assert.equal(publicText.includes(prohibited), false, `prohibited positioning: ${prohibited}`)
 
-assert.match(app, /An SMR project-readiness and evidence-control platform\./)
-assert.match(app, /Know what is ready\. Know what is missing\. Know what must happen next\./)
-assert.match(app, /Run the guided demonstration/)
+assert.match(app, /THE ATLAS PART 53 APPLICATION BUILDER/)
+assert.match(app, /Build the application\. Keep every requirement tied to evidence\./)
+assert.match(app, /Build a Part 53 Application/)
+assert.match(app, /Assess SMR Project Readiness/)
 assert.match(app, /https:\/\/lab\.atlaseye\.ai/)
+assert.doesNotMatch(app, />Demonstration</)
+assert.doesNotMatch(app, /Run the guided demonstration/)
 assert.match(app, /Atlas does not design reactors, license projects, operate reactors/)
 assert.match(document, /Atlas Nuclear \| SMR Project Readiness \+ Evidence Control/)
 
