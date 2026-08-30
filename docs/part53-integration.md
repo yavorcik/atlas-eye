@@ -9,7 +9,7 @@ regulatory, legal, engineering, or eligibility approval.
 - Source repository: `yavorcik/atlas-nuclear`
 - Source merge commit: `d341664ad7ebc205fabbb4bc0b3cdd54c8f88844`
 - Target repository: `yavorcik/atlas-eye`
-- Target integration commit: `963e785d843a65d8c416d78f225cbb6c3808e03c`
+- Target integration commit: `2b10b2dcbf65f73c693dcf988555461e5ac544e4`
 
 The static builder was adapted from the source commit into the target Vite
 public tree. The adapted files are:
