@@ -202,7 +202,7 @@ async function runSelfTest() {
     return
   }
   if (!observableChange(before, after)) throw new Error('self-test healthy fixture was incorrectly considered dead')
-  console.log('SELF-TEST PASS: controlled unchanged fixture detected as probable dead control')
+  console.log('SELF-TEST PASS: healthy observable change accepted')
 }
 
 async function run() {

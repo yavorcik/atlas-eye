@@ -1,6 +1,10 @@
 import assert from 'node:assert/strict'
+import { spawnSync } from 'node:child_process'
 import test from 'node:test'
+import { fileURLToPath } from 'node:url'
 import { SOURCE_COMMIT, configFrom, invariantFailures, observableChange, rng } from './part53-adversarial-runner.mjs'
+
+const runnerPath = fileURLToPath(new URL('./part53-adversarial-runner.mjs', import.meta.url))
 
 test('configuration is bounded and deterministic', () => {
   const config = configFrom(['--profile', 'soak', '--runs', '99999', '--seed', '7'], {})
@@ -14,6 +18,18 @@ test('dead-control oracle distinguishes unchanged and changed observations', () 
   const before = { url: '/', text: 'same', focus: 'x', controls: 1, state: 'AVAILABLE' }
   assert.equal(observableChange(before, before), false)
   assert.equal(observableChange(before, { ...before, state: 'GUIDANCE_ACTIVE' }), true)
+})
+
+test('self-test reports healthy and fixture outcomes with exact exit behavior', () => {
+  const healthy = spawnSync(process.execPath, [runnerPath, '--self-test'], { encoding: 'utf8' })
+  assert.equal(healthy.status, 0)
+  assert.equal(healthy.stdout.trim(), 'SELF-TEST PASS: healthy observable change accepted')
+  assert.equal(healthy.stderr, '')
+
+  const fixture = spawnSync(process.execPath, [runnerPath, '--self-test', '--self-test-fixture'], { encoding: 'utf8' })
+  assert.equal(fixture.status, 1)
+  assert.equal(fixture.stdout, '')
+  assert.equal(fixture.stderr.trim(), 'SELF-TEST FIXTURE DETECTED: probable dead control')
 })
 
 test('boundary oracle requires provenance and NONE authority effect', () => {
