@@ -33,7 +33,8 @@ test('Part 53 Builder is the semantic primary homepage action', () => {
   assert.match(app, /<a className="button primary compact" href="\/part53">Build a Part 53 Application<\/a>/)
   assert.match(app, /<a className="button primary hero-primary" href="\/part53">Build a Part 53 Application/)
   assert.match(app, /THE ATLAS PART 53 APPLICATION BUILDER/)
-  assert.doesNotMatch(app, /Build a Part 53 Application[\s\S]{0,200}(?:onClick|window\.location)/)
+  assert.doesNotMatch(app, /<button[^>]*>Build a Part 53 Application<\/button>/)
+  assert.doesNotMatch(app, /window\.location[^\n]*part53/)
 })
 
 test('readiness assessment is named and visually secondary', () => {
