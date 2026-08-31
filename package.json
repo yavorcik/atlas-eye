@@ -16,6 +16,8 @@
     "test:part53:production-smoke": "node tests/part53-adversarial-runner.mjs --profile production-smoke",
     "test:part53:replay": "node tests/part53-adversarial-runner.mjs --profile replay",
     "test:part53:self-test": "node tests/part53-adversarial-runner.mjs --self-test",
+    "demo:preflight": "node scripts/demo-check.mjs",
+    "demo:rehearsal": "node scripts/demo-check.mjs --rehearsal",
     "preview": "vite preview"
   },
   "dependencies": {
