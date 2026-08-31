@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, rename, writeFile } from 'node:fs/promises'
 import { createHash } from 'node:crypto'
 import { spawn } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
@@ -34,12 +34,27 @@ export function configFrom(argv = process.argv.slice(2), env = process.env) {
     artifacts: get('PART53_TEST_ARTIFACTS', 'artifacts/part53-adversarial'),
     maxMinutes: Number(get('PART53_TEST_MAX_MINUTES', profile.maxMinutes)),
     production: profile.production || /^https:\/\/atlaseye\.ai\//.test(target),
+    checkpoint: value('--checkpoint', get('PART53_TEST_CHECKPOINT', '')),
+    resume: argv.includes('--resume'),
   }
 }
 
 export function rng(seed) {
   let value = seed >>> 0
-  return () => { value = (1664525 * value + 1013904223) >>> 0; return value / 0x100000000 }
+  const next = () => { value = (1664525 * value + 1013904223) >>> 0; return value / 0x100000000 }
+  next.state = () => value
+  next.restore = (state) => { value = Number(state) >>> 0 }
+  return next
+}
+
+export function checkpointData(report, random, config) {
+  return { version: 1, profile: config.profile, seed: config.seed, target: config.target, runs: config.runs, rngState: random.state(), completedIterations: report.runs.length, runsCompleted: report.runs, findings: report.findings }
+}
+
+async function writeAtomic(path, value) {
+  const temporary = `${path}.tmp-${process.pid}`
+  await writeFile(temporary, typeof value === 'string' ? value : JSON.stringify(value, null, 2))
+  await rename(temporary, path)
 }
 
 export function observableChange(before, after) {
@@ -212,9 +227,18 @@ async function run() {
   await mkdir(context.artifacts, { recursive: true })
   const random = rng(context.seed)
   const report = { profile: context.profile, seed: context.seed, target: context.target, sourceCommit: SOURCE_COMMIT, runs: [], findings: [], startedAt: new Date().toISOString() }
+  if (context.resume) {
+    if (!context.checkpoint) throw new Error('--resume requires --checkpoint or PART53_TEST_CHECKPOINT')
+    const saved = JSON.parse(await readFile(context.checkpoint, 'utf8'))
+    for (const key of ['seed', 'target', 'runs']) if (saved[key] !== context[key]) throw new Error(`checkpoint ${key} does not match requested campaign`)
+    random.restore(saved.rngState)
+    report.runs = saved.runsCompleted || []
+    report.findings = saved.findings || []
+    report.resumedAt = new Date().toISOString()
+  }
   const browser = await chromium.launch({ headless: context.headless })
   try {
-    for (let runNumber = 1; runNumber <= context.runs; runNumber += 1) {
+    for (let runNumber = report.runs.length + 1; runNumber <= context.runs; runNumber += 1) {
       if ((Date.now() - context.started) > context.maxMinutes * 60_000) break
       const errors = []; const failedRequests = []; const actions = []
       const browserContext = await browser.newContext({ viewport: runNumber % 3 === 0 ? { width: 390, height: 844 } : runNumber % 3 === 1 ? { width: 1024, height: 768 } : { width: 1440, height: 900 }, reducedMotion: runNumber % 2 === 0 ? 'reduce' : 'no-preference' })
@@ -233,6 +257,7 @@ async function run() {
         const finalFailures = invariantFailures(result)
         if (finalFailures.length) throw new Error(finalFailures.join('; '))
         report.runs.push({ iteration: runNumber, status: 'pass', viewport: page.viewportSize(), actionCount: actions.length })
+        if (context.checkpoint) await writeAtomic(context.checkpoint, checkpointData(report, random, context))
         console.log(`PASS iteration=${runNumber} seed=${context.seed} viewport=${page.viewportSize().width}x${page.viewportSize().height}`)
       } catch (error) {
         const artifact = await saveFailure(page, runContext, error, runNumber, actions)
@@ -248,8 +273,11 @@ async function run() {
   } finally { await browser.close() }
   report.completedAt = new Date().toISOString(); report.durationMs = Date.now() - context.started
   report.completedIterations = report.runs.length
-  await writeFile(`${context.artifacts}/report.json`, JSON.stringify(report, null, 2))
-  await writeFile(`${context.artifacts}/summary.md`, `# Part 53 adversarial run\n\n- Profile: ${context.profile}\n- Seed: ${context.seed}\n- Target: ${context.target}\n- Source: ${SOURCE_COMMIT}\n- Iterations: ${report.completedIterations}\n- Findings: ${report.findings.length}\n- Duration: ${report.durationMs} ms\n\nAll completed iterations passed the configured oracles.\n`)
+  report.status = report.completedIterations === context.runs ? 'PASS' : 'INCOMPLETE'
+  const summary = `# Part 53 adversarial run\n\n- Status: **${report.status}**\n- Profile: ${context.profile}\n- Seed: ${context.seed}\n- Target: ${context.target}\n- Source: ${SOURCE_COMMIT}\n- Iterations: ${report.completedIterations}/${context.runs}\n- Findings: ${report.findings.length}\n- Duration: ${report.durationMs} ms\n\n${report.status === 'PASS' ? 'All configured iterations passed the configured oracles.' : 'Campaign incomplete; do not treat this report as a pass. Resume from the checkpoint.'}\n`
+  await writeAtomic(`${context.artifacts}/report.json`, report)
+  await writeAtomic(`${context.artifacts}/summary.md`, summary)
+  if (report.status !== 'PASS') { console.error(`INCOMPLETE iterations=${report.completedIterations}/${context.runs}; resume from ${context.checkpoint || 'a checkpoint'}`); process.exitCode = 1; return }
   console.log(`SUMMARY iterations=${report.completedIterations} findings=${report.findings.length} artifacts=${context.artifacts}`)
 }
 
