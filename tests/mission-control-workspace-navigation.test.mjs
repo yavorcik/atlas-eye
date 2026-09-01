@@ -23,7 +23,7 @@ test('Mission Control uses dedicated workspaces without blue branding or hash ju
   page.on('console', m => { if (m.type() === 'error') errors.push(m.text()) })
   try {
     await page.goto('http://127.0.0.1:4173/', { waitUntil: 'networkidle' })
-    await assertVisible(page, 'text=ENTER MISSION CONTROL')
+    await assertVisible(page, 'text=ENTER ATLAS')
     assert.equal(await page.locator('[data-primary-cover-cta="true"]').count(), 1)
     await page.click('[data-primary-cover-cta="true"]')
     await page.waitForURL('**/mission-control/')

@@ -1,6 +1,7 @@
 import './App.css'
 import ReadinessReviewForm from './ReadinessReviewForm.jsx'
 import { useCallback, useState } from 'react'
+import AtlasEye from './components/AtlasEye.jsx'
 
 const modules = [
   { href: '/mission-control/nuclear-readiness/', code: '01', title: 'Nuclear Readiness', text: 'Project readiness, blockers, lifecycle status, and readiness gates.' },
@@ -23,10 +24,11 @@ function Shell({ title, eyebrow = 'MISSION CONTROL', children }) {
 function Cover() {
   return <main className="cover-page">
     <section className="cover-panel" aria-labelledby="cover-title">
-      <p className="eyebrow">ATLAS NUCLEAR</p>
-      <h1 id="cover-title">Governed. Traceable. Defensible.</h1>
-      <p className="cover-copy">Mission Control organizes nuclear readiness work into evidence-bound decisions. Atlas does not grant regulatory approval or legal authorization.</p>
-      <a className="button primary hero-primary" href="/mission-control/" data-primary-cover-cta="true">ENTER MISSION CONTROL <span aria-hidden="true">→</span></a>
+      <AtlasEye />
+      <p className="eyebrow">ATLAS EYE</p>
+      <h1 id="cover-title">ATLAS</h1>
+      <p className="cover-copy">From concept to governed readiness.</p>
+      <a className="button primary hero-primary" href="/mission-control/" data-primary-cover-cta="true">ENTER ATLAS <span aria-hidden="true">→</span></a>
     </section>
   </main>
 }
