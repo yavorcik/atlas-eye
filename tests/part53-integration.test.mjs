@@ -5,6 +5,7 @@ import test from 'node:test'
 const sourceCommit = 'd341664ad7ebc205fabbb4bc0b3cdd54c8f88844'
 const page = await readFile('public/part53/index.html', 'utf8')
 const app = await readFile('src/App.jsx', 'utf8')
+const eye = await readFile('src/components/AtlasEye.jsx', 'utf8')
 const netlify = await readFile('netlify.toml', 'utf8')
 const redirects = await readFile('public/_redirects', 'utf8')
 const workflow = await readFile('public/part53/js/part53-redesign.js', 'utf8')
@@ -22,7 +23,8 @@ test('Mission Control routes are real workspace routes before fallback', () => {
 })
 
 test('homepage has one Mission Control primary action and module choices link to workspaces', () => {
-  assert.match(app, /ENTER MISSION CONTROL/)
+  assert.match(app, /ENTER ATLAS/)
+  assert.match(eye, /data-active-eye="true"/)
   assert.match(app, /href: '\/transportation\/'/)
   assert.match(app, /href: '\/part53\/'/)
   assert.doesNotMatch(app, /href="#/)
