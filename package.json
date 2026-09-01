@@ -19,6 +19,7 @@
     "preview": "vite preview",
     "test:mission-control": "node --test tests/mission-control-workspace-navigation.test.mjs",
     "test:active-eye": "node --test tests/active-eye-homepage.test.mjs",
+    "test:historical-eye": "node --test tests/historical-atlas-eye-homepage.test.mjs",
     "test:transportation": "node --test tests/transportation-production-demo.test.mjs"
   },
   "dependencies": {
