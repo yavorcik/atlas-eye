@@ -14,14 +14,15 @@ for (const prohibited of [
   'end-to-end nuclear operating system',
 ]) assert.equal(publicText.includes(prohibited), false, `prohibited positioning: ${prohibited}`)
 
-assert.match(app, /THE ATLAS PART 53 APPLICATION BUILDER/)
-assert.match(app, /Build the application\. Keep every requirement tied to evidence\./)
-assert.match(app, /Build a Part 53 Application/)
-assert.match(app, /Assess SMR Project Readiness/)
-assert.match(app, /https:\/\/lab\.atlaseye\.ai/)
+assert.match(app, /ENTER MISSION CONTROL/)
+assert.match(app, /Governed\. Traceable\. Defensible\./)
+assert.match(app, /Mission Control organizes nuclear readiness work into evidence-bound decisions/)
+assert.match(app, /Part 53 Readiness/)
+assert.match(app, /Transportation Readiness/)
+assert.match(app, /Evidence \/ Governance/)
+assert.match(app, /Atlas cannot approve, license, or authorize nuclear work/)
+assert.doesNotMatch(app, /href="#|scrollIntoView|location\.hash|hashchange/)
 assert.doesNotMatch(app, />Demonstration</)
-assert.doesNotMatch(app, /Run the guided demonstration/)
-assert.match(app, /Atlas does not design reactors, license projects, operate reactors/)
 assert.match(document, /Atlas Nuclear \| SMR Project Readiness \+ Evidence Control/)
 
 console.log('Atlas Eye positioning controls: PASS')

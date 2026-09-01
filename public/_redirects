@@ -1,6 +1,16 @@
 /demo         https://lab.atlaseye.ai          302!
+/part53-demo.html  /part53/                    301!
+/part53      /part53/index.html               200!
+/part53/     /part53/index.html               200!
+/transportation      /transportation/index.html     200!
+/transportation/     /transportation/index.html     200!
+/mission-control     /index.html              200
+/mission-control/    /index.html              200
+/mission-control/evidence      /index.html    200
+/mission-control/evidence/     /index.html    200
+/mission-control/nuclear-readiness      /index.html 200
+/mission-control/nuclear-readiness/     /index.html 200
 /api/ask      /.netlify/functions/ask      200
 /api/listen   /.netlify/functions/listen   200
 /api/speak    /.netlify/functions/speak    200
-/part53-demo.html  /part53/                    301!
 /*            /index.html                  200

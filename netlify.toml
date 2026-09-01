@@ -21,6 +21,49 @@
   status = 301
   force = true
 
+
+[[redirects]]
+  from = "/transportation"
+  to = "/transportation/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/transportation/"
+  to = "/transportation/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/mission-control"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/mission-control/"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/mission-control/evidence"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/mission-control/evidence/"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/mission-control/nuclear-readiness"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/mission-control/nuclear-readiness/"
+  to = "/index.html"
+  status = 200
+
 [[redirects]]
   from = "/demo"
   to = "https://lab.atlaseye.ai"
