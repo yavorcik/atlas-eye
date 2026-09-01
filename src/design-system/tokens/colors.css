@@ -1,15 +1,14 @@
 :root {
-  --atlas-black: #020304;
-  --atlas-surface: #090c11;
-  --atlas-text: #f4f6f8;
-  --atlas-muted: #8d96a3;
-
-  --atlas-red: #ff3434;
+  --atlas-black: #050505;
+  --atlas-surface: #121214;
+  --atlas-charcoal: #0a0a0b;
+  --atlas-white: #ffffff;
+  --atlas-border: #2d2d31;
+  --atlas-text: #ffffff;
+  --atlas-muted: #b8b8bd;
   --atlas-red-bright: #ff6868;
-  --atlas-red-soft: rgba(255, 52, 52, 0.22);
+  --atlas-red-soft: rgba(237, 28, 36, 0.22);
   --atlas-red-faint: rgba(255, 45, 45, 0.08);
 
-  --atlas-blue: #84d7ff;
-  --atlas-gold: #ffc65c;
-  --atlas-medical: #66e0d0;
+  --atlas-red: #ed1c24;
 }

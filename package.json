@@ -16,7 +16,9 @@
     "test:part53:production-smoke": "node tests/part53-adversarial-runner.mjs --profile production-smoke",
     "test:part53:replay": "node tests/part53-adversarial-runner.mjs --profile replay",
     "test:part53:self-test": "node tests/part53-adversarial-runner.mjs --self-test",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:mission-control": "node --test tests/mission-control-workspace-navigation.test.mjs",
+    "test:transportation": "node --test tests/transportation-production-demo.test.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.110.0",

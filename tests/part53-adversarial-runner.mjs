@@ -142,8 +142,10 @@ async function answerCurrentField(page, value, context) {
 
 async function canonicalJourney(page, random, context) {
   await page.goto(`${new URL(context.target).origin}/`, { waitUntil: 'networkidle' })
-  await action(page, 'a.hero-primary[href="/part53"]', 'Homepage Part 53 CTA', context)
-  if (!page.url().includes('/part53')) throw new Error('homepage CTA did not reach /part53')
+  await action(page, '[data-primary-cover-cta="true"]', 'Homepage Mission Control CTA', context)
+  if (!page.url().includes('/mission-control')) throw new Error('homepage CTA did not reach Mission Control')
+  await action(page, 'a[href="/part53/"]', 'Mission Control Part 53 card', context)
+  if (!page.url().includes('/part53')) throw new Error('Mission Control card did not reach /part53')
   await page.goto(`${new URL(context.target).origin}/part53/`, { waitUntil: 'networkidle' })
   const payloads = ['O\'Brien & Sons', 'Δelta 🚀', '<img src=x onerror=alert(1)>', 'line one\nline two', 'https://example.invalid/claim', 'x'.repeat(240)]
   const fieldNumber = async () => Number((await page.locator('#progress').innerText()).match(/Field (\d+) of 14/)?.[1] || 0)
@@ -176,10 +178,14 @@ async function productionSmoke(page, context) {
     if (path === '/part53-demo.html' && !page.url().endsWith('/part53/')) throw new Error('compatibility route did not resolve to /part53/')
   }
   await page.goto(`${origin}/`, { waitUntil: 'networkidle', timeout: 20_000 })
-  const cta = page.getByRole('link', { name: /Build a Part 53 Application/i }).first()
-  if (await cta.count() !== 1 || await cta.getAttribute('href') !== '/part53') throw new Error('homepage CTA is unavailable or not canonical')
+  const cta = page.getByRole('link', { name: /ENTER MISSION CONTROL/i }).first()
+  if (await cta.count() !== 1 || await cta.getAttribute('href') !== '/mission-control/') throw new Error('homepage Mission Control CTA is unavailable or not canonical')
   await cta.click(); await page.waitForLoadState('networkidle')
-  if (!page.url().endsWith('/part53') && !page.url().endsWith('/part53/')) throw new Error('homepage CTA did not resolve to builder')
+  if (!page.url().includes('/mission-control')) throw new Error('homepage CTA did not resolve to Mission Control')
+  const part53 = page.getByRole('link', { name: /Part 53 Readiness/i }).first()
+  if (await part53.count() !== 1 || await part53.getAttribute('href') !== '/part53/') throw new Error('Part 53 card is unavailable or not canonical')
+  await part53.click(); await page.waitForLoadState('networkidle')
+  if (!page.url().endsWith('/part53') && !page.url().endsWith('/part53/')) throw new Error('Mission Control card did not resolve to builder')
 }
 
 async function saveFailure(page, context, error, run, actions) {
