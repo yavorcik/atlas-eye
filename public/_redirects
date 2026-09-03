@@ -4,6 +4,8 @@
 /part53/     /part53/index.html               200!
 /transportation      /transportation/index.html     200!
 /transportation/     /transportation/index.html     200!
+/industrial-base      /index.html             200
+/industrial-base/     /index.html             200
 /mission-control     /index.html              200
 /mission-control/    /index.html              200
 /mission-control/evidence      /index.html    200
@@ -13,4 +15,5 @@
 /api/ask      /.netlify/functions/ask      200
 /api/listen   /.netlify/functions/listen   200
 /api/speak    /.netlify/functions/speak    200
+/api/industrial-base  /.netlify/functions/industrial-base-contract  200
 /*            /index.html                  200

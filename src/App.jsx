@@ -2,12 +2,14 @@ import './App.css'
 import ReadinessReviewForm from './ReadinessReviewForm.jsx'
 import { useCallback, useState } from 'react'
 import HistoricalAtlasNuclearEye from './components/HistoricalAtlasNuclearEye.jsx'
+import IndustrialBaseWorkspace from './pages/IndustrialBaseWorkspace.jsx'
 
 const modules = [
   { href: '/mission-control/nuclear-readiness/', code: '01', title: 'Nuclear Readiness', text: 'Project readiness, blockers, lifecycle status, and readiness gates.' },
   { href: '/part53/', code: '02', title: 'Part 53 Readiness', text: 'Guided application workspace with controlled evidence gates.' },
   { href: '/transportation/', code: '03', title: 'Transportation Readiness', text: 'Material, package, carrier, route, security, execution, emergency, and governed review.' },
-  { href: '/mission-control/evidence/', code: '04', title: 'Evidence / Governance', text: 'Traceability, gaps, decision boundaries, and reviewable records.' },
+  { href: '/industrial-base/', code: '04', title: 'SUPPLIERS & COMPONENTS', text: 'Trace qualified suppliers, nuclear craft, components, evidence, and installed configuration.' },
+  { href: '/mission-control/evidence/', code: '05', title: 'Evidence / Governance', text: 'Traceability, gaps, decision boundaries, and reviewable records.' },
 ]
 
 function Shell({ title, eyebrow = 'MISSION CONTROL', children }) {
@@ -84,6 +86,7 @@ function App() {
   if (path === '/mission-control') return <><MissionControl /><ReadinessReviewForm open={reviewOpen} onClose={closeReview} /></>
   if (path === '/mission-control/nuclear-readiness') return <PlaceholderWorkspace kind="nuclear" />
   if (path === '/mission-control/evidence') return <PlaceholderWorkspace kind="evidence" />
+  if (path === '/industrial-base') return <IndustrialBaseWorkspace />
   if (path === '/demo') { window.location.replace('https://lab.atlaseye.ai'); return null }
   return <Cover />
 }
