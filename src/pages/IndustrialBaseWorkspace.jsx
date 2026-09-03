@@ -177,7 +177,9 @@ export default function IndustrialBaseWorkspace() {
                 contract={contract}
                 states={visibleTransitionStates}
                 activeTransition={activeTransition}
-                setActiveTransition={setActiveTransition}
+                showNextRecordedState={() => setActiveTransition(
+                  Math.min(activeTransition + 1, transitionStates.length - 1),
+                )}
               />
             )}
           </section>
@@ -355,44 +357,45 @@ function DemonstrationPanel({
   contract,
   states,
   activeTransition,
-  setActiveTransition,
+  showNextRecordedState,
 }) {
   const allStates = contract.demo_transition.states
   const canAdvance = activeTransition < allStates.length - 1
+  const nextState = canAdvance
+    ? allStates[activeTransition + 1]
+    : null
 
   return (
     <div className="industrial-demo">
+      <div className="industrial-status-split">
+        <div>
+          <span>CURRENT GOVERNED STATUS</span>
+          <strong>{contract.readiness.status}</strong>
+        </div>
+        <div>
+          <span>RECORDED DEMONSTRATION HISTORY</span>
+          <strong>{states.at(-1)?.status}</strong>
+        </div>
+      </div>
       <div className="industrial-human-boundary">
         <strong>Atlas findings are advisory.</strong>
         <span>
-          The displayed transition is supplied by Atlas Nuclear.
-          AtlasEye does not calculate, widen, or overwrite governed status.
+          These entries are read-only recorded history supplied by
+          Atlas Nuclear. AtlasEye does not submit evidence, exercise
+          reviewer authority, record decisions, calculate readiness,
+          widen scope, or overwrite governed status.
         </span>
       </div>
       <div className="industrial-action-row">
         <button
           type="button"
           className="industrial-action"
-          disabled={activeTransition >= 1}
-          onClick={() => setActiveTransition(1)}
-        >
-          Submit controlled resolution evidence
-        </button>
-        <button
-          type="button"
-          className="industrial-action"
-          disabled={activeTransition >= 2}
-          onClick={() => setActiveTransition(2)}
-        >
-          Route to qualified-human review
-        </button>
-        <button
-          type="button"
-          className="industrial-action"
           disabled={!canAdvance}
-          onClick={() => setActiveTransition(3)}
+          onClick={showNextRecordedState}
         >
-          Record controlled human decision
+          {nextState
+            ? recordedActionLabel(nextState.status)
+            : 'Recorded history complete'}
         </button>
       </div>
       <div className="industrial-transition-list">
@@ -417,6 +420,19 @@ function DemonstrationPanel({
       </p>
     </div>
   )
+}
+
+function recordedActionLabel(status) {
+  if (status === 'RESOLUTION_EVIDENCE_SUBMITTED') {
+    return 'View recorded resolution evidence'
+  }
+  if (status === 'READY_FOR_HUMAN_REVIEW') {
+    return 'View recorded human-review routing'
+  }
+  if (status === 'HUMAN_ACCEPTED_FOR_DEFINED_SCOPE') {
+    return 'View recorded scoped decision'
+  }
+  return 'View next recorded state'
 }
 
 function ScopedStatus({ status }) {

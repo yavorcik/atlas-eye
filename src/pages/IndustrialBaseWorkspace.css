@@ -264,6 +264,31 @@
   gap: .7rem;
 }
 
+.industrial-status-split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .75rem;
+}
+
+.industrial-status-split div {
+  display: grid;
+  gap: .35rem;
+  border: 1px solid #2d2d31;
+  background: #121214;
+  padding: 1rem;
+}
+
+.industrial-status-split span {
+  color: #b8b8bd;
+  font-size: .72rem;
+  font-weight: 900;
+  letter-spacing: .12em;
+}
+
+.industrial-status-split strong {
+  overflow-wrap: anywhere;
+}
+
 .industrial-transition-list strong {
   color: #ffffff;
 }
@@ -279,6 +304,7 @@
   .industrial-hero,
   .industrial-layout,
   .industrial-trace,
+  .industrial-status-split,
   .industrial-status-detail dl,
   .industrial-profile dl,
   .industrial-fail dl {

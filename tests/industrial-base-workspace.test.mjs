@@ -64,15 +64,29 @@ test('Mission Control selector opens Suppliers & Components governed workspace',
     await assertVisible(page, 'text=FINDING-LOKRING-HEAT-MISMATCH')
     await assertVisible(page, 'text=TASK-LOKRING-MTR-HEAT-RESOLUTION')
     await page.click('button:has-text("DEMONSTRATE")')
+    await assertVisible(page, 'text=CURRENT GOVERNED STATUS')
+    await assertVisible(page, 'text=RECORDED DEMONSTRATION HISTORY')
     await assertVisible(page, 'text=BLOCKED')
-    await page.click('text=Submit controlled resolution evidence')
+    assert.equal(
+      await page.locator('text=HUMAN_ACCEPTED_FOR_DEFINED_SCOPE').count(),
+      0,
+    )
+    await page.click('text=View recorded resolution evidence')
     await assertVisible(page, 'text=RESOLUTION_EVIDENCE_SUBMITTED')
-    await page.click('text=Route to qualified-human review')
+    assert.equal(
+      await page.locator('text=View recorded scoped decision').count(),
+      0,
+    )
+    await page.click('text=View recorded human-review routing')
     await assertVisible(page, 'text=READY_FOR_HUMAN_REVIEW')
-    await page.click('text=Record controlled human decision')
+    await page.click('text=View recorded scoped decision')
     await assertVisible(page, 'text=HUMAN_ACCEPTED_FOR_DEFINED_SCOPE')
     await assertVisible(page, 'text=EV-CONTROLLED-HUMAN-DECISION-LOK-0001')
     await assertVisible(page, 'text=c1a64d91116cf0924f5f1d70a6f4f681fdda009e1ae0b9d303c27d3e47490722')
+    await assertVisible(page, 'text=CURRENT GOVERNED STATUS')
+    const currentStatusText = await page.locator('.industrial-status-split').innerText()
+    assert.match(currentStatusText, /CURRENT GOVERNED STATUS\s+BLOCKED/)
+    assert.match(currentStatusText, /RECORDED DEMONSTRATION HISTORY\s+HUMAN_ACCEPTED_FOR_DEFINED_SCOPE/)
     assert.deepEqual(await colorAudit(page), [])
     const body = await page.locator('body').innerText()
     assert.doesNotMatch(body, /NRC-approved supplier|NQA-1 certified|legally authorized/i)
@@ -82,7 +96,7 @@ test('Mission Control selector opens Suppliers & Components governed workspace',
   }
 })
 
-test('industrial base workspace fails closed for unavailable or contradictory backend', async () => {
+test('industrial base workspace fails closed for unavailable and malformed backend data', async () => {
   await ensureBuild()
   const child = await server()
   const browser = await chromium.launch({ headless: true })
@@ -111,6 +125,61 @@ test('industrial base workspace fails closed for unavailable or contradictory ba
     await page.reload({ waitUntil: 'networkidle' })
     await assertVisible(page, 'text=SERVICE UNAVAILABLE')
     await assertVisible(page, 'text=readiness fields disagree')
+
+    await page.unroute('**/api/industrial-base')
+    await routeIndustrialBase(page, industrialBaseFixture({
+      generated_at: null,
+    }))
+    await page.reload({ waitUntil: 'networkidle' })
+    await assertVisible(page, 'text=SERVICE UNAVAILABLE')
+    await assertVisible(page, 'text=timestamp is missing')
+  } finally {
+    await browser.close()
+    try { process.kill(-child.pid, 'SIGTERM') } catch {}
+  }
+})
+
+test('reload preserves backend current status and no browser mutation endpoint is called', async () => {
+  await ensureBuild()
+  const child = await server()
+  const browser = await chromium.launch({ headless: true })
+  const page = await browser.newPage({
+    viewport: { width: 1366, height: 820 },
+  })
+  const requests = []
+
+  try {
+    await page.route('**/api/industrial-base', (route) => {
+      requests.push({
+        method: route.request().method(),
+        url: route.request().url(),
+      })
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(industrialBaseFixture()),
+      })
+    })
+    await page.goto(`${BASE_URL}/industrial-base/`, { waitUntil: 'networkidle' })
+    await page.click('button:has-text("DEMONSTRATE")')
+    await page.click('text=View recorded resolution evidence')
+    await page.click('text=View recorded human-review routing')
+    await page.click('text=View recorded scoped decision')
+    await assertVisible(page, 'text=HUMAN_ACCEPTED_FOR_DEFINED_SCOPE')
+    let currentStatusText = await page.locator('.industrial-status-split').innerText()
+    assert.match(currentStatusText, /CURRENT GOVERNED STATUS\s+BLOCKED/)
+    await page.reload({ waitUntil: 'networkidle' })
+    await page.click('button:has-text("DEMONSTRATE")')
+    currentStatusText = await page.locator('.industrial-status-split').innerText()
+    assert.match(currentStatusText, /CURRENT GOVERNED STATUS\s+BLOCKED/)
+    assert.equal(
+      await page.locator('text=HUMAN_ACCEPTED_FOR_DEFINED_SCOPE').count(),
+      0,
+    )
+    assert.deepEqual(
+      [...new Set(requests.map((request) => request.method))],
+      ['GET'],
+    )
   } finally {
     await browser.close()
     try { process.kill(-child.pid, 'SIGTERM') } catch {}

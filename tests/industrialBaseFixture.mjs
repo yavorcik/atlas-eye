@@ -2,6 +2,7 @@ export function industrialBaseFixture(overrides = {}) {
   const payload = {
     workspace: 'INDUSTRIAL_BASE',
     schema_version: 'industrial-base-traceability.v1',
+    generated_at: new Date().toISOString(),
     tenant_id: 'TENANT-ATLAS-DEMO',
     project_id: 'PROJECT-ATLAS-ONE-OHIO',
     record_hash:

@@ -1,26 +1,35 @@
 const DEFAULT_TIMEOUT_MS = 5000
 const MAX_RESPONSE_BYTES = 650000
+const MAX_AGE_SECONDS = 300
+const MAX_FUTURE_SKEW_SECONDS = 30
 const REQUIRED_SCHEMA_VERSION =
   'industrial-base-traceability.v1'
 
 export async function handler(event) {
   if (event.httpMethod === 'OPTIONS') {
-    return jsonResponse(204, {})
+    return preflightResponse(event)
   }
 
   if (event.httpMethod !== 'GET') {
-    return jsonResponse(405, {
+    return jsonResponse(event, 405, {
       error: 'Method not allowed.',
     })
   }
 
+  const originFailure = validateOrigin(event)
+  if (originFailure) return originFailure
+
   const upstream =
     process.env.ATLAS_INDUSTRIAL_BASE_URL
+  const expectedTenant =
+    process.env.ATLAS_INDUSTRIAL_BASE_TENANT_ID
+  const expectedProject =
+    process.env.ATLAS_INDUSTRIAL_BASE_PROJECT_ID
 
-  if (!upstream) {
-    return jsonResponse(503, {
+  if (!upstream || !expectedTenant || !expectedProject) {
+    return jsonResponse(event, 503, {
       error:
-        'Atlas Nuclear Industrial Base service is not configured.',
+        'Atlas Nuclear Industrial Base service scope is not configured.',
       status: 'SERVICE_UNAVAILABLE',
     })
   }
@@ -30,15 +39,15 @@ export async function handler(event) {
   try {
     url = new URL(upstream)
   } catch {
-    return jsonResponse(503, {
+    return jsonResponse(event, 503, {
       error:
         'Atlas Nuclear Industrial Base service configuration is invalid.',
       status: 'SERVICE_UNAVAILABLE',
     })
   }
 
-  if (!['https:', 'http:'].includes(url.protocol)) {
-    return jsonResponse(503, {
+  if (url.protocol !== 'https:') {
+    return jsonResponse(event, 503, {
       error:
         'Atlas Nuclear Industrial Base service configuration is not allowed.',
       status: 'SERVICE_UNAVAILABLE',
@@ -87,18 +96,21 @@ export async function handler(event) {
 
     if (
       payload?.workspace !== 'INDUSTRIAL_BASE' ||
-      payload?.schema_version !== REQUIRED_SCHEMA_VERSION
+      payload?.schema_version !== REQUIRED_SCHEMA_VERSION ||
+      payload?.tenant_id !== expectedTenant ||
+      payload?.project_id !== expectedProject ||
+      !isFresh(payload)
     ) {
-      return jsonResponse(502, {
+      return jsonResponse(event, 502, {
         error:
-          'Atlas Nuclear Industrial Base contract version is incompatible.',
+          'Atlas Nuclear Industrial Base contract is outside the configured scope or freshness window.',
         status: 'EVIDENCE_NOT_EVALUATED',
       })
     }
 
-    return jsonResponse(200, payload)
+    return jsonResponse(event, 200, payload)
   } catch {
-    return jsonResponse(502, {
+    return jsonResponse(event, 502, {
       error:
         'Atlas Nuclear Industrial Base service is unavailable.',
       status: 'SERVICE_UNAVAILABLE',
@@ -109,30 +121,118 @@ export async function handler(event) {
 }
 
 async function boundedText(response) {
-  const text = await response.text()
+  if (!response.body?.getReader) {
+    const text = await response.text()
 
-  if (text.length > MAX_RESPONSE_BYTES) {
-    throw new Error('Contract too large.')
+    if (text.length > MAX_RESPONSE_BYTES) {
+      throw new Error('Contract too large.')
+    }
+
+    return text
   }
 
-  return text
+  const reader = response.body.getReader()
+  const chunks = []
+  let total = 0
+
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) break
+    total += value.byteLength
+    if (total > MAX_RESPONSE_BYTES) {
+      throw new Error('Contract too large.')
+    }
+    chunks.push(value)
+  }
+
+  return new TextDecoder().decode(concatChunks(chunks, total))
 }
 
-function corsHeaders() {
+function concatChunks(chunks, total) {
+  const bytes = new Uint8Array(total)
+  let offset = 0
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset)
+    offset += chunk.byteLength
+  }
+  return bytes
+}
+
+function isFresh(payload) {
+  const generatedAt =
+    payload.generated_at || payload.contract_generated_at
+  if (typeof generatedAt !== 'string') return false
+  const generatedTime = Date.parse(generatedAt)
+  if (Number.isNaN(generatedTime)) return false
+  const now = Date.now()
+  return (
+    (now - generatedTime) / 1000 <= MAX_AGE_SECONDS &&
+    (generatedTime - now) / 1000 <= MAX_FUTURE_SKEW_SECONDS
+  )
+}
+
+function validateOrigin(event) {
+  const origin =
+    event.headers?.origin || event.headers?.Origin || ''
+  if (!origin) return null
+
+  const allowlist = (process.env.ATLAS_EYE_ALLOWED_ORIGINS || '')
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean)
+
+  if (!allowlist.includes(origin)) {
+    return {
+      statusCode: 403,
+      headers: {
+        Vary: 'Origin',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        error: 'Origin is not allowed.',
+        status: 'SERVICE_UNAVAILABLE',
+      }),
+    }
+  }
+
+  return null
+}
+
+function preflightResponse(event) {
+  const originFailure = validateOrigin(event)
+  if (originFailure) return originFailure
   return {
-    'Access-Control-Allow-Origin': '*',
+    statusCode: 204,
+    headers: corsHeaders(event),
+    body: '',
+  }
+}
+
+function corsHeaders(event) {
+  const origin =
+    event.headers?.origin || event.headers?.Origin || ''
+  const allowlist = (process.env.ATLAS_EYE_ALLOWED_ORIGINS || '')
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean)
+  const headers = {
     'Access-Control-Allow-Headers':
       'Content-Type, X-Atlas-Contract-Version',
     'Access-Control-Allow-Methods':
       'GET, OPTIONS',
     'Content-Type': 'application/json',
+    Vary: 'Origin',
   }
+  if (origin && allowlist.includes(origin)) {
+    headers['Access-Control-Allow-Origin'] = origin
+  }
+  return headers
 }
 
-function jsonResponse(statusCode, payload) {
+function jsonResponse(event, statusCode, payload) {
   return {
     statusCode,
-    headers: corsHeaders(),
+    headers: corsHeaders(event),
     body: JSON.stringify(payload),
   }
 }
