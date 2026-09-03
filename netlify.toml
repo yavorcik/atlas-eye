@@ -35,6 +35,16 @@
   force = true
 
 [[redirects]]
+  from = "/industrial-base"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/industrial-base/"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
   from = "/mission-control"
   to = "/index.html"
   status = 200
@@ -85,6 +95,11 @@
 [[redirects]]
   from = "/api/speak"
   to = "/.netlify/functions/speak"
+  status = 200
+
+[[redirects]]
+  from = "/api/industrial-base"
+  to = "/.netlify/functions/industrial-base-contract"
   status = 200
 
 [[redirects]]

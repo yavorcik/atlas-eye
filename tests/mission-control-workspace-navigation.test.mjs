@@ -27,6 +27,7 @@ test('Mission Control uses dedicated workspaces without blue branding or hash ju
     assert.equal(await page.locator('[data-primary-cover-cta="true"]').count(), 1)
     await page.click('[data-primary-cover-cta="true"]')
     await page.waitForURL('**/mission-control/')
+    await assertVisible(page, 'text=SUPPLIERS & COMPONENTS')
     await assertVisible(page, 'text=Transportation Readiness')
     assert.equal(await page.locator('#workspace, #transportation-readiness').count(), 0)
     await page.click('a[href="/part53/"]')

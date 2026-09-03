@@ -17,9 +17,10 @@ test('Part 53 route remains a real builder with source provenance', () => {
 })
 
 test('Mission Control routes are real workspace routes before fallback', () => {
-  for (const route of ['/part53', '/part53/', '/transportation', '/transportation/', '/mission-control/', '/mission-control/evidence/', '/mission-control/nuclear-readiness/']) assert.match(netlify + redirects, new RegExp(route.replaceAll('/', '\\/')))
+  for (const route of ['/part53', '/part53/', '/transportation', '/transportation/', '/industrial-base', '/industrial-base/', '/mission-control/', '/mission-control/evidence/', '/mission-control/nuclear-readiness/']) assert.match(netlify + redirects, new RegExp(route.replaceAll('/', '\\/')))
   assert.ok(redirects.indexOf('/part53-demo.html') < redirects.indexOf('/*'))
   assert.ok(redirects.indexOf('/transportation/') < redirects.indexOf('/*'))
+  assert.ok(redirects.indexOf('/industrial-base/') < redirects.indexOf('/*'))
 })
 
 test('homepage has one Mission Control primary action and module choices link to workspaces', () => {
@@ -27,6 +28,8 @@ test('homepage has one Mission Control primary action and module choices link to
   assert.match(eye, /data-active-eye="true"/)
   assert.match(app, /href: '\/transportation\/'/)
   assert.match(app, /href: '\/part53\/'/)
+  assert.match(app, /href: '\/industrial-base\/'/)
+  assert.match(app, /SUPPLIERS & COMPONENTS/)
   assert.doesNotMatch(app, /href="#/)
   assert.doesNotMatch(app, /scrollIntoView|location\.hash|hashchange/)
 })

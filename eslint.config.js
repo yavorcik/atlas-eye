@@ -19,7 +19,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['netlify/functions/*.js', 'scripts/*.mjs'],
+    files: ['netlify/functions/*.js', 'scripts/*.mjs', 'vite.config.js'],
     languageOptions: {
       globals: globals.node,
     },
