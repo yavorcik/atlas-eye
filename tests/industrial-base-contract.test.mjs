@@ -44,6 +44,20 @@ test('industrial base contract accepts only governed Atlas Nuclear schema', () =
     })),
     /workflow/,
   )
+
+  assert.throws(
+    () => validateIndustrialBaseContract(industrialBaseFixture({
+      tenant_id: 'TENANT-OTHER',
+    })),
+    /tenant_id/,
+  )
+
+  assert.throws(
+    () => validateIndustrialBaseContract(industrialBaseFixture({
+      project_id: 'PROJECT-OTHER',
+    })),
+    /project_id/,
+  )
 })
 
 test('industrial base contract requires current timestamps', () => {
@@ -92,13 +106,73 @@ test('industrial base contract fails closed on contradictory or unknown readines
   assert.throws(
     () => validateIndustrialBaseContract(industrialBaseFixture({
       readiness: {
-        status: 'APPROVED',
+        status: 'HUMAN_ACCEPTED_FOR_DEFINED_SCOPE',
         ready_for_human_acceptance: false,
         blockers: [],
       },
     })),
     /unknown status/,
   )
+
+  for (const readiness of [
+    {
+      status: 'BLOCKED',
+      ready_for_human_acceptance: false,
+      blockers: [],
+    },
+    {
+      status: 'BLOCKED',
+      ready_for_human_acceptance: true,
+      blockers: ['open issue'],
+    },
+    {
+      status: 'READY_FOR_HUMAN_ACCEPTANCE',
+      ready_for_human_acceptance: true,
+      blockers: ['open issue'],
+    },
+    {
+      status: 'READY_FOR_HUMAN_ACCEPTANCE',
+      ready_for_human_acceptance: false,
+      blockers: [],
+    },
+  ]) {
+    assert.throws(
+      () => validateIndustrialBaseContract(industrialBaseFixture({ readiness })),
+      /disagree/,
+    )
+  }
+
+  for (const readiness of [
+    {
+      status: 'BLOCKED',
+      ready_for_human_acceptance: false,
+      blockers: ['open issue'],
+      machine_findings_advisory: false,
+    },
+    {
+      status: 'BLOCKED',
+      ready_for_human_acceptance: false,
+      blockers: ['open issue'],
+      human_decision_required: false,
+    },
+    {
+      status: 'BLOCKED',
+      ready_for_human_acceptance: false,
+      blockers: ['open issue'],
+      display_label_authoritative: true,
+    },
+    {
+      status: 'BLOCKED',
+      ready_for_human_acceptance: false,
+      blockers: ['open issue'],
+      warnings: 'not-array',
+    },
+  ]) {
+    assert.throws(
+      () => validateIndustrialBaseContract(industrialBaseFixture({ readiness })),
+      /boundary|warnings/,
+    )
+  }
 })
 
 test('industrial base contract validates every rendered nested collection', () => {
@@ -221,6 +295,7 @@ test('industrial base proxy rejects unauthorized mutation methods', async () => 
   const response = await handler({ httpMethod: 'POST' })
   assert.equal(response.statusCode, 405)
   assert.match(response.body, /Method not allowed/)
+  assertNoStore(response)
 })
 
 test('industrial base proxy rejects hostile origin and plain HTTP upstream', async () => {
@@ -239,10 +314,61 @@ test('industrial base proxy rejects hostile origin and plain HTTP upstream', asy
 
   process.env.ATLAS_INDUSTRIAL_BASE_URL =
     'http://atlas-nuclear.example.test/api/industrial-base-traceability'
-  response = await handler({ httpMethod: 'GET', headers: {} })
+    response = await handler({ httpMethod: 'GET', headers: {} })
   restoreEnv(previous)
   assert.equal(response.statusCode, 503)
   assert.match(response.body, /SERVICE_UNAVAILABLE/)
+  assertNoStore(response)
+})
+
+test('industrial base proxy sanitizes upstream failure branches', async () => {
+  const previous = snapshotEnv()
+  const previousFetch = globalThis.fetch
+  process.env.ATLAS_INDUSTRIAL_BASE_URL =
+    'https://atlas-nuclear.example.test/api/industrial-base-traceability'
+  process.env.ATLAS_INDUSTRIAL_BASE_TENANT_ID = 'TENANT-ATLAS-DEMO'
+  process.env.ATLAS_INDUSTRIAL_BASE_PROJECT_ID = 'PROJECT-ATLAS-ONE-OHIO'
+
+  try {
+    for (const upstream of [
+      new Response('internal token leak candidate', {
+        status: 500,
+        headers: { 'content-type': 'application/json' },
+      }),
+      new Response('not found', {
+        status: 404,
+        headers: { 'content-type': 'application/json' },
+      }),
+      new Response('html', {
+        status: 200,
+        headers: { 'content-type': 'text/html' },
+      }),
+    ]) {
+      globalThis.fetch = async () => upstream.clone()
+      const response = await handler({ httpMethod: 'GET', headers: {} })
+      assert.equal(typeof response.statusCode, 'number')
+      assert.equal(response.statusCode, 502)
+      assert.doesNotThrow(() => JSON.parse(response.body))
+      assert.match(response.body, /SERVICE_UNAVAILABLE/)
+      assert.doesNotMatch(response.body, /token leak|not found|html/)
+      assertNoStore(response)
+    }
+
+    globalThis.fetch = async (_url, options) => new Promise((resolve, reject) => {
+      options.signal.addEventListener('abort', () => {
+        reject(new Error('upstream timeout secret'))
+      })
+    })
+    const timeout = await handler({ httpMethod: 'GET', headers: {} })
+    assert.equal(timeout.statusCode, 502)
+    assert.doesNotThrow(() => JSON.parse(timeout.body))
+    assert.match(timeout.body, /SERVICE_UNAVAILABLE/)
+    assert.doesNotMatch(timeout.body, /secret/)
+    assertNoStore(timeout)
+  } finally {
+    globalThis.fetch = previousFetch
+    restoreEnv(previous)
+  }
 })
 
 test('industrial base proxy preserves governed contract and rejects incompatible upstream', async () => {
@@ -269,6 +395,7 @@ test('industrial base proxy preserves governed contract and rejects incompatible
       'https://atlaseye.ai',
     )
     assert.match(ok.body, /IB-CMP-LOK-0001/)
+    assertNoStore(ok)
 
     globalThis.fetch = async () => new Response(
       JSON.stringify(industrialBaseFixture({ schema_version: 'wrong' })),
@@ -277,6 +404,7 @@ test('industrial base proxy preserves governed contract and rejects incompatible
     const bad = await handler({ httpMethod: 'GET' })
     assert.equal(bad.statusCode, 502)
     assert.match(bad.body, /EVIDENCE_NOT_EVALUATED/)
+    assertNoStore(bad)
   } finally {
     globalThis.fetch = previousFetch
     restoreEnv(previous)
@@ -304,6 +432,7 @@ test('industrial base proxy rejects tenant, project, stale, and oversized substi
       const response = await handler({ httpMethod: 'GET', headers: {} })
       assert.equal(response.statusCode, 502)
       assert.match(response.body, /EVIDENCE_NOT_EVALUATED/)
+      assertNoStore(response)
     }
 
     globalThis.fetch = async () => new Response(
@@ -318,6 +447,7 @@ test('industrial base proxy rejects tenant, project, stale, and oversized substi
     const oversized = await handler({ httpMethod: 'GET', headers: {} })
     assert.equal(oversized.statusCode, 502)
     assert.doesNotMatch(oversized.body, /700000|Contract too large/)
+    assertNoStore(oversized)
   } finally {
     globalThis.fetch = previousFetch
     restoreEnv(previous)
@@ -331,6 +461,15 @@ function snapshotEnv() {
     project: process.env.ATLAS_INDUSTRIAL_BASE_PROJECT_ID,
     origins: process.env.ATLAS_EYE_ALLOWED_ORIGINS,
   }
+}
+
+function assertNoStore(response) {
+  assert.equal(
+    response.headers['Cache-Control'],
+    'no-store, max-age=0',
+  )
+  assert.equal(response.headers.Pragma, 'no-cache')
+  assert.equal(response.headers.Vary, 'Origin')
 }
 
 function restoreEnv(previous) {

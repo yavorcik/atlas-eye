@@ -84,7 +84,7 @@ export async function handler(event) {
       !response.ok ||
       !contentType.includes('application/json')
     ) {
-      return jsonResponse(502, {
+      return jsonResponse(event, 502, {
         error:
           'Atlas Nuclear Industrial Base service did not return a current governed contract.',
         status: 'SERVICE_UNAVAILABLE',
@@ -187,6 +187,8 @@ function validateOrigin(event) {
       headers: {
         Vary: 'Origin',
         'Content-Type': 'application/json',
+        'Cache-Control': 'no-store, max-age=0',
+        Pragma: 'no-cache',
       },
       body: JSON.stringify({
         error: 'Origin is not allowed.',
@@ -221,6 +223,8 @@ function corsHeaders(event) {
     'Access-Control-Allow-Methods':
       'GET, OPTIONS',
     'Content-Type': 'application/json',
+    'Cache-Control': 'no-store, max-age=0',
+    Pragma: 'no-cache',
     Vary: 'Origin',
   }
   if (origin && allowlist.includes(origin)) {

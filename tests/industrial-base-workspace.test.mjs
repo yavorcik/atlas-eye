@@ -124,7 +124,7 @@ test('industrial base workspace fails closed for unavailable and malformed backe
     }))
     await page.reload({ waitUntil: 'networkidle' })
     await assertVisible(page, 'text=SERVICE UNAVAILABLE')
-    await assertVisible(page, 'text=readiness fields disagree')
+    await assertVisible(page, 'text=unknown status')
 
     await page.unroute('**/api/industrial-base')
     await routeIndustrialBase(page, industrialBaseFixture({

@@ -15,13 +15,12 @@ const DEFAULT_ENDPOINT = '/api/industrial-base'
 const MAX_CONTRACT_BYTES = 650000
 const MAX_AGE_SECONDS = 300
 const MAX_FUTURE_SKEW_SECONDS = 30
+const EXPECTED_TENANT_ID = 'TENANT-ATLAS-DEMO'
+const EXPECTED_PROJECT_ID = 'PROJECT-ATLAS-ONE-OHIO'
 
 const READINESS_STATUSES = new Set([
   'BLOCKED',
-  'READY_FOR_HUMAN_REVIEW',
-  'HUMAN_ACCEPTED_FOR_DEFINED_SCOPE',
-  'SERVICE_UNAVAILABLE',
-  'EVIDENCE_NOT_EVALUATED',
+  'READY_FOR_HUMAN_ACCEPTANCE',
 ])
 
 const SUPPLIER_STATUSES = new Set([
@@ -150,6 +149,8 @@ export function validateIndustrialBaseContract(payload, { now = Date.now() } = {
   )
   requireString(payload.tenant_id, 'tenant_id')
   requireString(payload.project_id, 'project_id')
+  requireEqual(payload.tenant_id, EXPECTED_TENANT_ID, 'tenant_id')
+  requireEqual(payload.project_id, EXPECTED_PROJECT_ID, 'project_id')
   requireString(payload.record_hash, 'record_hash')
   validateResponseFreshness(payload, now)
   validateRegistries(payload.registries)
@@ -191,10 +192,53 @@ export function validateIndustrialBaseContract(payload, { now = Date.now() } = {
     'readiness.status',
   )
   requireArray(readiness.blockers, 'readiness.blockers')
+  readiness.blockers.forEach((item) => requireString(item, 'readiness.blockers[]'))
+  requireArray(readiness.warnings, 'readiness.warnings')
+  readiness.warnings.forEach((item) => requireString(item, 'readiness.warnings[]'))
   if (typeof readiness.ready_for_human_acceptance !== 'boolean') {
     throw new IndustrialBaseContractError(
       'Atlas Nuclear readiness boolean is missing.',
       'MALFORMED_CONTRACT',
+    )
+  }
+  if (readiness.machine_findings_advisory !== true) {
+    throw new IndustrialBaseContractError(
+      'Atlas Nuclear readiness advisory boundary is missing.',
+      'INCOMPATIBLE_CONTRACT',
+    )
+  }
+  if (readiness.human_decision_required !== true) {
+    throw new IndustrialBaseContractError(
+      'Atlas Nuclear human-review boundary is missing.',
+      'INCOMPATIBLE_CONTRACT',
+    )
+  }
+  if (readiness.display_label_authoritative !== false) {
+    throw new IndustrialBaseContractError(
+      'Atlas Nuclear display label authority boundary is incompatible.',
+      'INCOMPATIBLE_CONTRACT',
+    )
+  }
+
+  if (
+    readiness.status === 'BLOCKED' &&
+    (readiness.ready_for_human_acceptance !== false ||
+      readiness.blockers.length < 1)
+  ) {
+    throw new IndustrialBaseContractError(
+      'Atlas Nuclear BLOCKED readiness fields disagree.',
+      'UI_API_DISAGREEMENT',
+    )
+  }
+
+  if (
+    readiness.status === 'READY_FOR_HUMAN_ACCEPTANCE' &&
+    (readiness.ready_for_human_acceptance !== true ||
+      readiness.blockers.length !== 0)
+  ) {
+    throw new IndustrialBaseContractError(
+      'Atlas Nuclear READY readiness fields disagree.',
+      'UI_API_DISAGREEMENT',
     )
   }
 

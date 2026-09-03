@@ -19,10 +19,14 @@ export function industrialBaseFixture(overrides = {}) {
     readiness: {
       status: 'BLOCKED',
       ready_for_human_acceptance: false,
+      machine_findings_advisory: true,
+      human_decision_required: true,
+      display_label_authoritative: false,
       blockers: [
         'material report heat or lot number does not match the component identity',
         'final human review is absent',
       ],
+      warnings: [],
     },
     registries: {
       workforce: [
