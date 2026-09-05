@@ -113,13 +113,11 @@ async function answerCurrentField(page, value, context) {
     await page.locator('[data-person="address"]').fill('100 Example Avenue')
     await page.locator('[data-person="citizenship"]').fill('Canada')
     await page.locator('[data-person="role"]').selectOption({ label: 'Director' })
-    await action(page, '[data-action="add-person"]', 'Add responsible person', context)
     await action(page, '[data-action="continue-people"]', 'Continue people', context)
     return
   }
-  if (await page.getByRole('button', { name: 'Open legal-review assignment', exact: true }).count()) {
-    await action(page, '[data-action="assign"]', 'Open legal-review assignment', context)
-    await action(page, '[data-action="create-assignment"]', 'Create legal-review work item', context)
+  if (await page.locator('[data-action="create-eligibility"]').count()) {
+    await action(page, '[data-action="create-eligibility"]', 'Create legal-review work item', context)
     return
   }
   if (await page.locator('[data-action="guide"]').count()) {
@@ -151,7 +149,7 @@ async function canonicalJourney(page, random, context) {
   const fieldNumber = async () => Number((await page.locator('#progress').innerText()).match(/Field (\d+) of 14/)?.[1] || 0)
   for (let step = 0; step < 20; step += 1) {
     const currentField = await fieldNumber()
-    if (currentField >= 14) break
+    if (await page.locator('[data-completion-state="INTAKE_COMPLETE"]').count()) break
     const value = payloads[Math.floor(random() * payloads.length)] || `Applicant field ${currentField}`
     await answerCurrentField(page, value, context)
     if (await page.locator('[data-action="hold-field"]').count()) await action(page, '[data-action="hold-field"]', 'Hold field without evidence', context)
@@ -162,7 +160,8 @@ async function canonicalJourney(page, random, context) {
     } else if (currentField < 14) throw new Error(`field ${currentField} has no bounded next action`)
   }
   const finalText = `${await page.locator('#progress').innerText()} ${await page.locator('#workspace').innerText()}`
-  if (!finalText.includes('Field 14 of 14')) throw new Error('14-field journey did not reach the final representative field')
+  if (!finalText.includes('APPLICATION FOUNDATION COMPLETE')) throw new Error('14-field journey did not reach completion summary')
+  if (finalText.includes('Next, let’s continue with field 14')) throw new Error('final field prompt repeated after completion')
   const final = await snapshot(page, context.errors, context.failedRequests)
   for (const phrase of ['NRC approved', 'NQA-1 certified']) if (final.text.includes(phrase)) throw new Error(`misleading authority claim: ${phrase}`)
   return final
