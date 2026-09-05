@@ -32,8 +32,20 @@ test('homepage has one Mission Control primary action and module choices link to
 })
 
 test('Part 53 preserves the legal-review boundary', () => {
-  assert.match(page, /Demo session · Sample information only · Nothing is saved/)
-  assert.match(workflow, /Eligibility remains pending legal review/)
-  assert.match(workflow, /no eligibility conclusion will enter the controlled draft/)
+  assert.match(page, /Saved in this browser for refresh and revision traceability/)
+  assert.match(workflow, /LEGAL ELIGIBILITY REVIEW REQUIRED/)
+  assert.match(workflow, /Atlas cannot determine eligibility/)
   assert.doesNotMatch(page, /type="file"|\blogin\b|\bpassword\b/i)
+})
+
+test('Part 53 has an explicit persisted completion state and summary workspace', () => {
+  assert.match(workflow, /NOT_STARTED/)
+  assert.match(workflow, /IN_PROGRESS/)
+  assert.match(workflow, /INTAKE_COMPLETE/)
+  assert.match(workflow, /REVIEW_REQUIRED/)
+  assert.match(workflow, /atlas-part53-application-state-v1/)
+  assert.match(workflow, /APPLICATION FOUNDATION COMPLETE/)
+  assert.match(workflow, /NRC submission readiness/)
+  assert.match(workflow, /NOT READY/)
+  assert.doesNotMatch(workflow, /NRC-APPROVED|NRC approved|APPROVED, LICENSED|LICENSED, COMPLIANT/)
 })
