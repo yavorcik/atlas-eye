@@ -192,6 +192,42 @@ test('cached transportation evaluation is recomputed after reload before accepta
   }
 })
 
+test('transportation reload during saved in-flight evaluation restarts evaluation', async () => {
+  const child = await server()
+  const browser = await chromium.launch({ headless: true })
+  const page = await browser.newPage({ viewport: { width: 1366, height: 768 } })
+  await page.addInitScript(() => {
+    window.__ATLAS_DEMO_TRANSPORT_EVALUATOR_DELAY_MS__ = Number(sessionStorage.getItem('atlasTransportDelay') || 0)
+  })
+  try {
+    await page.goto('http://127.0.0.1:4173/mission-control/transportation/', { waitUntil: 'networkidle' })
+    await page.evaluate(() => {
+      sessionStorage.setItem('atlasTransportDelay', '5000')
+      window.__ATLAS_DEMO_TRANSPORT_EVALUATOR_DELAY_MS__ = 5000
+    })
+    await completeTransport(page)
+    await page.waitForFunction(() => {
+      const project = JSON.parse(localStorage.getItem('atlas.publicDemoWorkspace.v2')).projects['fuel-transport']
+      return project.evaluationStatus === 'evaluating' && project.transportEvaluation === null && project.evaluatingRevision === project.transportRevision
+    })
+
+    await page.evaluate(() => sessionStorage.setItem('atlasTransportDelay', '1500'))
+    await page.reload({ waitUntil: 'networkidle' })
+    await assertContains(page, '[data-testid="transport-evaluation-state"]', 'Detailed transportation evaluation is running')
+    assert.equal(await page.getByRole('button', { name: 'Simulate governed acceptance' }).isDisabled(), true)
+    await assertContains(page, '[data-testid="transport-evaluation-state"]', 'Detailed transportation evaluation complete')
+    await assertContains(page, 'body', 'All applicable transportation gates are ready for governed demo review.')
+    await page.waitForFunction(() => JSON.parse(localStorage.getItem('atlas.publicDemoWorkspace.v2')).projects['fuel-transport'].evaluationStatus === 'complete')
+    const stored = await transportProjectState(page)
+    assert.equal(stored.evaluationStatus, 'complete')
+    assert.equal(stored.transportEvaluation.projectRevision, stored.transportRevision)
+    assert.equal(stored.transportEvaluation.lifecycle, 'complete')
+  } finally {
+    await browser.close()
+    try { process.kill(-child.pid, 'SIGTERM') } catch {}
+  }
+})
+
 async function completeTransport(page, omit = '') {
   if (omit !== 'package') await page.click('text=Load sample package evidence')
   await page.click('text=Resolve HRCQ facts')

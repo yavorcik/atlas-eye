@@ -1413,8 +1413,8 @@ function markTransportationDirty(project, reason) {
 function invalidateCachedTransportEvaluations(projects) {
   const next = structuredClone(projects)
   const transport = next['fuel-transport']
-  if (transport?.transportEvaluation) {
-    transport.staleTransportEvaluation = { ...transport.transportEvaluation, staleReason: 'browser reload validation pending', staleAt: nowIso() }
+  if (transport?.transportEvaluation || transport?.evaluationStatus === 'evaluating') {
+    if (transport.transportEvaluation) transport.staleTransportEvaluation = { ...transport.transportEvaluation, staleReason: 'browser reload validation pending', staleAt: nowIso() }
     transport.transportEvaluation = null
     transport.evaluationStatus = 'dirty'
     transport.evaluationError = ''
