@@ -4,6 +4,16 @@
   functions = "netlify/functions"
 
 [[redirects]]
+  from = "/part53-workspace"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/part53-workspace/"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
   from = "/part53"
   to = "/part53/index.html"
   status = 200
@@ -33,6 +43,16 @@
   to = "/transportation/index.html"
   status = 200
   force = true
+
+[[redirects]]
+  from = "/mission-control/transportation"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/mission-control/transportation/"
+  to = "/index.html"
+  status = 200
 
 [[redirects]]
   from = "/mission-control"

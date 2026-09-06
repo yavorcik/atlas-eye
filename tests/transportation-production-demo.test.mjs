@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { readFile } from 'node:fs/promises'
 import { spawn } from 'node:child_process'
 import test from 'node:test'
 import { chromium } from 'playwright'
@@ -14,73 +15,257 @@ async function server() {
   throw new Error('preview did not start')
 }
 
-test('Transportation governed demo runs through approval and supersession', async () => {
+test('Transportation workspace enforces each gate, hashes manifest, accepts only completed evaluation, and stales on changes', async () => {
+  await readFile('dist/index.html', 'utf8').catch(() => { throw new Error('run npm run build before this browser test') })
   const child = await server()
   const browser = await chromium.launch({ headless: true })
-  const page = await browser.newPage({ viewport: { width: 1366, height: 768 } })
+  const page = await browser.newPage({ viewport: { width: 1366, height: 768 }, acceptDownloads: true })
   try {
     await page.goto('http://127.0.0.1:4173/transportation/', { waitUntil: 'networkidle' })
-    await page.click('#transport-new-mission')
-    await expectText(page, '#transport-result-status', 'INCOMPLETE')
-    await page.click('[data-rehearsal-action="material"]')
-    await expectText(page, '#transport-package-status', 'BLOCKED')
-    await page.click('[data-rehearsal-action="package_claimed"]')
-    await expectText(page, '#transport-package-status', 'BLOCKED')
-    await page.click('[data-rehearsal-action="package_supported"]')
-    await expectText(page, '#transport-package-status', 'SUPPORTED')
-    for (const action of ['carrier_claimed','carrier_supported','route_claimed','route_supported','security_plan','security_supported','execution_bad_measurement','execution_supported','emergency_blocker','emergency_supported']) await page.click(`[data-rehearsal-action="${action}"]`)
-    await expectText(page, '#transport-result-status', 'READY_FOR_GOVERNED_REVIEW')
-    await expectText(page, '#transport-final-decision', 'PENDING')
-    await page.click('[data-rehearsal-action="reviewer_blocked"]')
-    assert.equal(await page.locator('#transport-demo-approve').isDisabled(), true)
-    await assertContains(page, '#transport-final-blockers', 'reviewer authority basis missing')
-    await page.click('[data-rehearsal-action="review_started"]')
-    await expectText(page, '#transport-final-decision', 'REVIEW_IN_PROGRESS')
-    await page.click('[data-rehearsal-action="approved"]')
-    await expectText(page, '#transport-final-decision', 'APPROVED_FOR_RELEASE_BY_AUTHORITY')
-    await assertContains(page, '#transport-governed-summary', 'DEMO ONLY')
-    await assertContains(page, '#transport-final-manifest', 'comprehensive coverage claim permitted: false')
-    const oldFp = await page.locator('#transport-governed-summary').innerText()
-    await page.click('#transport-capture-prior-approval')
-    await page.fill('#transport-enrichment', '19.50')
-    await page.dispatchEvent('#transport-enrichment', 'input')
+    await page.waitForURL('**/mission-control/transportation/')
+    await assertContains(page, 'body', 'Your transportation readiness package')
+    await assertContains(page, 'body', 'Exact unresolved prerequisite: Package')
+    await assertContains(page, 'body', 'transportation blockers')
+    assert.equal(await page.getByRole('button', { name: 'Simulate governed acceptance' }).isDisabled(), true)
+
+    await page.getByLabel('HRCQ threshold status').selectOption('claimed_only')
+    await page.getByLabel('HRCQ sample basis').fill('arbitrary words')
     await page.waitForTimeout(250)
-    await assertContains(page, '#transport-governed-summary', 'MANIFEST CHANGED')
-    await assertContains(page, '#transport-governed-summary', 'PRIOR GOVERNED DECISION: SUPERSEDED')
-    await expectText(page, '#transport-final-decision', 'PENDING')
-    assert.notEqual(oldFp, await page.locator('#transport-governed-summary').innerText())
-    await page.click('[data-rehearsal-action="multimodal"]')
-    await expectText(page, '#transport-carrier-status', 'BLOCKED')
-    await assertContains(page, '#transport-route-visual', 'VESSEL')
-    await page.click('[data-rehearsal-action="multimodal_supported"]')
-    await expectText(page, '#transport-emergency-status', 'SUPPORTED')
-    await expectText(page, '#transport-final-decision', 'PENDING')
+    await assertContains(page, 'body', 'HRCQ threshold status is unresolved')
+    assert.equal(await page.getByRole('button', { name: 'Simulate governed acceptance' }).isDisabled(), true)
+
+    await page.click('text=Load sample package evidence')
+    await page.click('text=Resolve HRCQ facts')
+    await page.click('text=Load sample emergency response evidence')
+    await page.getByLabel('Emergency response evidence').selectOption('domestic_supported')
+    await page.click('text=Assign demo reviewer')
+    await page.waitForTimeout(250)
+    const firstFingerprint = await fingerprint(page)
+    assert.match(firstFingerprint, /^[a-f0-9]{16}$/)
+    assert.equal(await page.getByRole('button', { name: 'Simulate governed acceptance' }).isEnabled(), true)
+    await page.click('text=Simulate governed acceptance')
+    await assertContains(page, 'body', 'Demonstration-only acceptance is current')
+    await assertContains(page, 'body', 'not shipment authorization')
+
+    await page.getByLabel('U-235 enrichment wt%').fill('19.50')
+    await page.waitForTimeout(250)
+    assert.notEqual(await fingerprint(page), firstFingerprint)
+    await assertContains(page, 'body', 'Shipment information changed. The previous review no longer applies.')
+    assert.equal(await page.getByRole('button', { name: 'Simulate governed acceptance' }).isEnabled(), true)
+
+    await page.click('text=Optional maritime/change scenarios')
+    await page.click('text=Apply optional maritime scope')
+    assert.equal(await page.getByLabel('Destination').inputValue(), 'Demo marine terminal and overseas receiving site')
+    await assertContains(page, 'body', 'port/terminal operator evidence unresolved')
+    assert.equal(await page.getByRole('button', { name: 'Simulate governed acceptance' }).isDisabled(), true)
+    await page.click('text=Resolve maritime sample scope')
+    await page.waitForTimeout(250)
+    assert.equal(await page.getByRole('button', { name: 'Simulate governed acceptance' }).isEnabled(), true)
+
+    await page.locator('.project-tabs').getByRole('button', { name: 'Report', exact: true }).click()
+    const download = await Promise.all([page.waitForEvent('download'), page.click('text=Download HTML report')]).then(([item]) => item)
+    const report = await readFile(await download.path(), 'utf8')
+    assert.match(report, /HALEU UF6 Highway Shipment Readiness/)
+    assert.match(report, /Prior transportation review marked stale|stale/i)
+    assert.match(report, /does not upload documents to Atlas|does not .*real shipment authorization/i)
   } finally {
     await browser.close()
     try { process.kill(-child.pid, 'SIGTERM') } catch {}
   }
 })
-async function expectText(page, selector, text) {
-  const locator = page.locator(selector)
-  await locator.waitFor({ state: 'visible', timeout: 5000 })
-  for (let i = 0; i < 30; i += 1) {
-    if ((await locator.innerText()).trim() === text) return
-    await page.waitForTimeout(100)
+
+test('each missing transportation gate prevents acceptance', async () => {
+  const child = await server()
+  const browser = await chromium.launch({ headless: true })
+  const page = await browser.newPage({ viewport: { width: 1366, height: 768 } })
+  try {
+    const gates = [
+      ['Atlas has not established an authorized package for the proposed contents/enrichment.', 'package', null],
+      ['shipper / offeror identity missing', '', async () => page.getByLabel('Carrier evidence').selectOption('none')],
+      ['route evidence missing', '', async () => page.getByLabel('Route evidence').selectOption('none')],
+      ['plan adequacy review unresolved', '', async () => page.getByLabel('Security evidence').selectOption('plan_only')],
+      ['measurement exceeds represented limit', '', async () => page.getByLabel('Execution evidence').selectOption('measurement_out_of_range')],
+      ['response organization missing', 'emergency', null],
+      ['reviewer not assigned', 'reviewer', null],
+    ]
+    for (const [message, omit, mutate] of gates) {
+      await page.goto('http://127.0.0.1:4173/mission-control/transportation/', { waitUntil: 'networkidle' })
+      await page.evaluate(() => localStorage.clear())
+      await page.reload({ waitUntil: 'networkidle' })
+      await completeTransport(page, omit)
+      if (mutate) await mutate()
+      await page.waitForTimeout(250)
+      await assertContains(page, 'body', message)
+      assert.equal(await page.getByRole('button', { name: 'Simulate governed acceptance' }).isDisabled(), true)
+    }
+  } finally {
+    await browser.close()
+    try { process.kill(-child.pid, 'SIGTERM') } catch {}
   }
-  assert.equal((await locator.innerText()).trim(), text)
+})
+
+test('transportation evaluator failures block acceptance and retry succeeds', async () => {
+  const cases = [
+    ['script unavailable', () => { window.__ATLAS_DEMO_TRANSPORT_SCRIPT_UNAVAILABLE__ = true }, 'script could not be loaded', () => { window.__ATLAS_DEMO_TRANSPORT_SCRIPT_UNAVAILABLE__ = false }],
+    ['evaluator throws', () => { window.__ATLAS_DEMO_TRANSPORT_EVALUATOR_THROWS__ = true }, 'evaluator threw', () => { window.__ATLAS_DEMO_TRANSPORT_EVALUATOR_THROWS__ = false }],
+    ['hashing fails', () => { window.__ATLAS_DEMO_TRANSPORT_HASH_FAIL__ = true }, 'hashing failed', () => { window.__ATLAS_DEMO_TRANSPORT_HASH_FAIL__ = false }],
+  ]
+  for (const [, setup, message, clear] of cases) {
+    const child = await server()
+    const browser = await chromium.launch({ headless: true })
+    const page = await browser.newPage({ viewport: { width: 1366, height: 768 } })
+    await page.addInitScript(setup)
+    try {
+      await page.goto('http://127.0.0.1:4173/mission-control/transportation/', { waitUntil: 'networkidle' })
+      await completeTransport(page)
+      await assertContains(page, '[data-testid="transport-evaluation-state"]', 'Shipment checking failed')
+      await assertContains(page, 'body', message)
+      assert.equal(await page.getByRole('button', { name: 'Simulate governed acceptance' }).isDisabled(), true)
+      await forceAcceptanceClick(page)
+      assert.notEqual((await transportProjectState(page)).review?.simulatedAcceptance, true)
+      await page.evaluate(clear)
+      await page.getByRole('button', { name: 'Retry detailed evaluation', exact: true }).click()
+      await assertContains(page, 'body', 'The sample package is ready for review.')
+      assert.equal(await page.getByRole('button', { name: 'Simulate governed acceptance' }).isEnabled(), true)
+      await page.click('text=Simulate governed acceptance')
+      await assertContains(page, 'body', 'Demonstration-only acceptance is current')
+    } finally {
+      await browser.close()
+      try { process.kill(-child.pid, 'SIGTERM') } catch {}
+    }
+  }
+})
+
+test('transportation acceptance waits for current revision and discards superseded evaluations', async () => {
+  const child = await server()
+  const browser = await chromium.launch({ headless: true })
+  const page = await browser.newPage({ viewport: { width: 1366, height: 768 } })
+  await page.addInitScript(() => { window.__ATLAS_DEMO_TRANSPORT_EVALUATOR_DELAY_MS__ = 5000 })
+  try {
+    await page.goto('http://127.0.0.1:4173/mission-control/transportation/', { waitUntil: 'networkidle' })
+    await completeTransport(page)
+    await assertContains(page, '[data-testid="transport-evaluation-state"]', 'Checking the updated shipment information.')
+    assert.equal(await page.getByRole('button', { name: 'Simulate governed acceptance' }).isDisabled(), true)
+    await forceAcceptanceClick(page)
+    assert.notEqual((await transportProjectState(page)).review?.simulatedAcceptance, true)
+
+    await page.evaluate(() => { window.__ATLAS_DEMO_TRANSPORT_EVALUATOR_DELAY_MS__ = 0 })
+    await page.getByLabel('U-235 enrichment wt%').fill('19.40')
+    await page.getByLabel('U-235 enrichment wt%').fill('19.60')
+    await assertContains(page, '[data-testid="transport-evaluation-state"]', 'The sample package is ready for review.')
+    await assertContains(page, 'body', 'The sample package is ready for review.')
+    await page.waitForFunction(() => JSON.parse(localStorage.getItem('atlas.publicDemoWorkspace.v2')).projects['fuel-transport'].inputs.enrichment === '19.60')
+    const stored = await transportProjectState(page)
+    assert.equal(stored.inputs.enrichment, '19.60')
+    assert.equal(stored.transportEvaluation.projectRevision, stored.transportRevision)
+    assert.equal(stored.transportEvaluation.lifecycle, 'complete')
+    assert.equal(stored.review?.simulatedAcceptance, false)
+    await page.click('text=Simulate governed acceptance')
+    await assertContains(page, 'body', 'Demonstration-only acceptance is current')
+  } finally {
+    await browser.close()
+    try { process.kill(-child.pid, 'SIGTERM') } catch {}
+  }
+})
+
+test('cached transportation evaluation is recomputed after reload before acceptance is enabled', async () => {
+  const child = await server()
+  const browser = await chromium.launch({ headless: true })
+  const page = await browser.newPage({ viewport: { width: 1366, height: 768 } })
+  try {
+    await page.goto('http://127.0.0.1:4173/mission-control/transportation/', { waitUntil: 'networkidle' })
+    await completeTransport(page)
+    await assertContains(page, 'body', 'The sample package is ready for review.')
+    await page.click('text=Simulate governed acceptance')
+    await assertContains(page, 'body', 'Demonstration-only acceptance is current')
+    await page.waitForFunction(() => JSON.parse(localStorage.getItem('atlas.publicDemoWorkspace.v2')).projects['fuel-transport'].review?.simulatedAcceptance === true)
+
+    await page.addInitScript(() => { window.__ATLAS_DEMO_TRANSPORT_EVALUATOR_DELAY_MS__ = 600 })
+    await page.reload({ waitUntil: 'networkidle' })
+    assert.equal(await page.getByRole('button', { name: 'Simulate governed acceptance' }).isDisabled(), true)
+    await assertContains(page, 'body', 'Checking the updated shipment information.')
+    await assertContains(page, 'body', 'Demonstration-only acceptance is current')
+  } finally {
+    await browser.close()
+    try { process.kill(-child.pid, 'SIGTERM') } catch {}
+  }
+})
+
+test('transportation reload during saved in-flight evaluation restarts evaluation', async () => {
+  const child = await server()
+  const browser = await chromium.launch({ headless: true })
+  const page = await browser.newPage({ viewport: { width: 1366, height: 768 } })
+  await page.addInitScript(() => {
+    window.__ATLAS_DEMO_TRANSPORT_EVALUATOR_DELAY_MS__ = Number(sessionStorage.getItem('atlasTransportDelay') || 0)
+  })
+  try {
+    await page.goto('http://127.0.0.1:4173/mission-control/transportation/', { waitUntil: 'networkidle' })
+    await page.evaluate(() => {
+      sessionStorage.setItem('atlasTransportDelay', '5000')
+      window.__ATLAS_DEMO_TRANSPORT_EVALUATOR_DELAY_MS__ = 5000
+    })
+    await completeTransport(page)
+    await page.waitForFunction(() => {
+      const project = JSON.parse(localStorage.getItem('atlas.publicDemoWorkspace.v2')).projects['fuel-transport']
+      return project.evaluationStatus === 'evaluating' && project.transportEvaluation === null && project.evaluatingRevision === project.transportRevision
+    })
+
+    await page.evaluate(() => sessionStorage.setItem('atlasTransportDelay', '1500'))
+    await page.reload({ waitUntil: 'networkidle' })
+    await assertContains(page, '[data-testid="transport-evaluation-state"]', 'Checking the updated shipment information.')
+    assert.equal(await page.getByRole('button', { name: 'Simulate governed acceptance' }).isDisabled(), true)
+    await assertContains(page, '[data-testid="transport-evaluation-state"]', 'The sample package is ready for review.')
+    await assertContains(page, 'body', 'The sample package is ready for review.')
+    await page.waitForFunction(() => JSON.parse(localStorage.getItem('atlas.publicDemoWorkspace.v2')).projects['fuel-transport'].evaluationStatus === 'complete')
+    const stored = await transportProjectState(page)
+    assert.equal(stored.evaluationStatus, 'complete')
+    assert.equal(stored.transportEvaluation.projectRevision, stored.transportRevision)
+    assert.equal(stored.transportEvaluation.lifecycle, 'complete')
+  } finally {
+    await browser.close()
+    try { process.kill(-child.pid, 'SIGTERM') } catch {}
+  }
+})
+
+async function completeTransport(page, omit = '') {
+  if (omit !== 'package') await page.click('text=Load sample package evidence')
+  await page.click('text=Resolve HRCQ facts')
+  if (omit !== 'emergency') {
+    await page.click('text=Load sample emergency response evidence')
+    await page.getByLabel('Emergency response evidence').selectOption('domestic_supported')
+  }
+  if (omit !== 'reviewer') await page.click('text=Assign demo reviewer')
+  await page.waitForTimeout(250)
 }
 
-function escapeRegExp(value) {
-  return value.replace(/[.*+?^$\{\}()|[\]\\]/g, '\\$&')
+async function fingerprint(page) {
+  const details = page.locator('details').filter({ has: page.getByText('Evaluation details and prior records', { exact: true }) })
+  await details.locator('summary').click()
+  const text = await details.innerText()
+  await details.locator('summary').click()
+  return text.match(/Fingerprint: ([a-f0-9]{16})/)?.[1] || ''
+}
+
+async function forceAcceptanceClick(page) {
+  await page.evaluate(() => {
+    const buttons = [...document.querySelectorAll('button')]
+    const button = buttons.find((item) => item.textContent?.includes('Simulate governed acceptance'))
+    if (button) button.disabled = false
+    button?.removeAttribute('disabled')
+    button?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+  })
+}
+
+async function transportProjectState(page) {
+  return page.evaluate(() => JSON.parse(localStorage.getItem('atlas.publicDemoWorkspace.v2')).projects['fuel-transport'])
 }
 
 async function assertContains(page, selector, text) {
-  const pattern = new RegExp(escapeRegExp(text))
-  const locator = page.locator(selector)
-  for (let i = 0; i < 30; i += 1) {
+  const locator = page.locator(selector).first()
+  for (let i = 0; i < 40; i += 1) {
     const value = await locator.innerText()
-    if (pattern.test(value)) return
+    if (value.includes(text)) return
     await page.waitForTimeout(100)
   }
-  assert.match(await locator.innerText(), pattern)
+  assert.match(await locator.innerText(), new RegExp(text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
 }
