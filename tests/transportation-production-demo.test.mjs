@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { readFile } from 'node:fs/promises'
 import { spawn } from 'node:child_process'
 import test from 'node:test'
 import { chromium } from 'playwright'
@@ -14,73 +15,53 @@ async function server() {
   throw new Error('preview did not start')
 }
 
-test('Transportation governed demo runs through approval and supersession', async () => {
+test('Transportation workspace resolves blocker, records demo acceptance, and stales on material change', async () => {
+  await readFile('dist/index.html', 'utf8').catch(() => { throw new Error('run npm run build before this browser test') })
   const child = await server()
   const browser = await chromium.launch({ headless: true })
-  const page = await browser.newPage({ viewport: { width: 1366, height: 768 } })
+  const page = await browser.newPage({ viewport: { width: 1366, height: 768 }, acceptDownloads: true })
   try {
     await page.goto('http://127.0.0.1:4173/transportation/', { waitUntil: 'networkidle' })
-    await page.click('#transport-new-mission')
-    await expectText(page, '#transport-result-status', 'INCOMPLETE')
-    await page.click('[data-rehearsal-action="material"]')
-    await expectText(page, '#transport-package-status', 'BLOCKED')
-    await page.click('[data-rehearsal-action="package_claimed"]')
-    await expectText(page, '#transport-package-status', 'BLOCKED')
-    await page.click('[data-rehearsal-action="package_supported"]')
-    await expectText(page, '#transport-package-status', 'SUPPORTED')
-    for (const action of ['carrier_claimed','carrier_supported','route_claimed','route_supported','security_plan','security_supported','execution_bad_measurement','execution_supported','emergency_blocker','emergency_supported']) await page.click(`[data-rehearsal-action="${action}"]`)
-    await expectText(page, '#transport-result-status', 'READY_FOR_GOVERNED_REVIEW')
-    await expectText(page, '#transport-final-decision', 'PENDING')
-    await page.click('[data-rehearsal-action="reviewer_blocked"]')
-    assert.equal(await page.locator('#transport-demo-approve').isDisabled(), true)
-    await assertContains(page, '#transport-final-blockers', 'reviewer authority basis missing')
-    await page.click('[data-rehearsal-action="review_started"]')
-    await expectText(page, '#transport-final-decision', 'REVIEW_IN_PROGRESS')
-    await page.click('[data-rehearsal-action="approved"]')
-    await expectText(page, '#transport-final-decision', 'APPROVED_FOR_RELEASE_BY_AUTHORITY')
-    await assertContains(page, '#transport-governed-summary', 'DEMO ONLY')
-    await assertContains(page, '#transport-final-manifest', 'comprehensive coverage claim permitted: false')
-    const oldFp = await page.locator('#transport-governed-summary').innerText()
-    await page.click('#transport-capture-prior-approval')
-    await page.fill('#transport-enrichment', '19.50')
-    await page.dispatchEvent('#transport-enrichment', 'input')
+    await page.waitForURL('**/mission-control/transportation/')
+    await assertContains(page, 'body', 'Your transportation readiness package')
+    await assertContains(page, 'body', 'Exact unresolved prerequisite: package compatibility evidence')
+    await assertContains(page, 'body', '4 unresolved findings')
+
+    await page.click('text=Load sample package evidence')
+    await page.click('text=Resolve HRCQ facts')
     await page.waitForTimeout(250)
-    await assertContains(page, '#transport-governed-summary', 'MANIFEST CHANGED')
-    await assertContains(page, '#transport-governed-summary', 'PRIOR GOVERNED DECISION: SUPERSEDED')
-    await expectText(page, '#transport-final-decision', 'PENDING')
-    assert.notEqual(oldFp, await page.locator('#transport-governed-summary').innerText())
-    await page.click('[data-rehearsal-action="multimodal"]')
-    await expectText(page, '#transport-carrier-status', 'BLOCKED')
-    await assertContains(page, '#transport-route-visual', 'VESSEL')
-    await page.click('[data-rehearsal-action="multimodal_supported"]')
-    await expectText(page, '#transport-emergency-status', 'SUPPORTED')
-    await expectText(page, '#transport-final-decision', 'PENDING')
+    assert.equal(await page.getByRole('button', { name: 'Simulate governed acceptance' }).isEnabled(), true)
+    await page.click('text=Simulate governed acceptance')
+    await assertContains(page, 'body', 'Demonstration-only acceptance is current')
+    await assertContains(page, 'body', 'not a real shipment authorization')
+
+    await page.getByLabel('U-235 enrichment wt%').fill('19.50')
+    await page.waitForTimeout(250)
+    await assertContains(page, 'body', 'Prior demonstration review is stale')
+    assert.equal(await page.getByRole('button', { name: 'Simulate governed acceptance' }).isEnabled(), true)
+
+    await page.click('text=Optional maritime/change scenarios')
+    await page.click('text=Apply optional maritime destination')
+    assert.equal(await page.getByLabel('Destination').inputValue(), 'Demo marine terminal and overseas receiving site')
+
+    await page.locator('.project-tabs').getByRole('button', { name: 'Report', exact: true }).click()
+    const download = await Promise.all([page.waitForEvent('download'), page.click('text=Download HTML report')]).then(([item]) => item)
+    const report = await readFile(await download.path(), 'utf8')
+    assert.match(report, /HALEU UF6 Highway Shipment Readiness/)
+    assert.match(report, /Prior transportation review marked stale|stale/i)
+    assert.match(report, /does not upload documents to Atlas|does not .*real shipment authorization/i)
   } finally {
     await browser.close()
     try { process.kill(-child.pid, 'SIGTERM') } catch {}
   }
 })
-async function expectText(page, selector, text) {
-  const locator = page.locator(selector)
-  await locator.waitFor({ state: 'visible', timeout: 5000 })
-  for (let i = 0; i < 30; i += 1) {
-    if ((await locator.innerText()).trim() === text) return
-    await page.waitForTimeout(100)
-  }
-  assert.equal((await locator.innerText()).trim(), text)
-}
-
-function escapeRegExp(value) {
-  return value.replace(/[.*+?^$\{\}()|[\]\\]/g, '\\$&')
-}
 
 async function assertContains(page, selector, text) {
-  const pattern = new RegExp(escapeRegExp(text))
-  const locator = page.locator(selector)
-  for (let i = 0; i < 30; i += 1) {
+  const locator = page.locator(selector).first()
+  for (let i = 0; i < 40; i += 1) {
     const value = await locator.innerText()
-    if (pattern.test(value)) return
+    if (value.includes(text)) return
     await page.waitForTimeout(100)
   }
-  assert.match(await locator.innerText(), pattern)
+  assert.match(await locator.innerText(), new RegExp(text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
 }

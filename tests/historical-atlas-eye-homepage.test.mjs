@@ -94,9 +94,11 @@ test('homepage restores the historical Atlas Nuclear launch eye and enters Missi
     assert.equal(await page.locator('.module-card').count(), 4)
 
     await page.goto(`${BASE_URL}/part53/`, { waitUntil: 'networkidle' })
-    await assertVisible(page, '#workspace')
+    await page.waitForURL('**/part53-workspace/')
+    await assertVisible(page, '[data-testid="part53-builder"]')
     await page.goto(`${BASE_URL}/transportation/`, { waitUntil: 'networkidle' })
-    await assertVisible(page, '#transport-new-mission')
+    await page.waitForURL('**/mission-control/transportation/')
+    await assertVisible(page, 'text=Your transportation readiness package')
 
     assert.deepEqual(errors, [])
     assert.deepEqual(failed, [])

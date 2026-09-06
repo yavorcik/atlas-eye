@@ -1,4 +1,7 @@
 import assert from 'node:assert/strict'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import path from 'node:path'
 import { spawn } from 'node:child_process'
 import test from 'node:test'
 import { chromium } from 'playwright'
@@ -14,39 +17,103 @@ async function server() {
   throw new Error('preview did not start')
 }
 
-test('Mission Control uses dedicated workspaces without blue branding or hash jumps', async () => {
-  await import('node:fs/promises').then(fs => fs.access('dist/index.html')).catch(() => { throw new Error('run npm run build before this browser test') })
+test('customer-testable Mission Control workspace journeys', async () => {
+  await readFile('dist/index.html', 'utf8').catch(() => { throw new Error('run npm run build before this browser test') })
   const child = await server()
   const browser = await chromium.launch({ headless: true })
-  const page = await browser.newPage({ viewport: { width: 1366, height: 768 } })
+  const context = await browser.newContext({ viewport: { width: 1366, height: 768 }, acceptDownloads: true })
+  const page = await context.newPage()
   const errors = []
   page.on('console', m => { if (m.type() === 'error') errors.push(m.text()) })
   try {
-    await page.goto('http://127.0.0.1:4173/', { waitUntil: 'networkidle' })
-    await assertVisible(page, 'text=ENTER ATLAS')
-    assert.equal(await page.locator('[data-primary-cover-cta="true"]').count(), 1)
-    await page.click('[data-primary-cover-cta="true"]')
-    await page.waitForURL('**/mission-control/')
-    await assertVisible(page, 'text=Transportation Readiness')
-    assert.equal(await page.locator('#workspace, #transportation-readiness').count(), 0)
-    await page.click('a[href="/part53/"]')
-    await page.waitForURL('**/part53/')
-    await assertVisible(page, 'text=Mission Control / Part 53 Application Workspace')
-    assert.equal(await page.locator('#transportation-readiness').count(), 0)
-    await page.goBack({ waitUntil: 'networkidle' })
-    await page.waitForURL('**/mission-control/')
-    await page.click('a[href="/transportation/"]')
-    await page.waitForURL('**/transportation/')
-    await assertVisible(page, '#transportation-readiness')
-    assert.equal(await page.locator('#workspace').count(), 0)
-    assert.equal(new URL(page.url()).hash, '')
+    await page.goto('http://127.0.0.1:4173/mission-control/', { waitUntil: 'networkidle' })
+    await expectText(page, 'h1', 'Open a sample project.')
+    assert.equal(await page.locator('.project-card').count(), 3)
+    await assertContains(page, 'body', '3 evidence gaps or review findings')
+    await assertContains(page, 'body', 'Saved in this browser')
+
+    await page.click('text=Piketon Advanced Reactor COL Assembly')
+    await page.getByRole('button', { name: 'Requirements / application' }).click()
+    for (let i = 0; i < 5; i += 1) {
+      await page.locator('textarea').first().fill(`Retained answer ${i}`)
+      await page.click(i === 4 ? 'text=Finish guided demonstration' : 'text=Save and continue')
+      await page.waitForTimeout(140)
+    }
+    await page.locator('[data-testid="part53-results"]').waitFor({ state: 'visible' })
+    await page.getByRole('button', { name: 'Edit answer' }).first().click()
+    await page.locator('textarea').first().fill('Edited applicant identity answer')
+    await page.click('text=Save edit')
+    await assertContains(page, '[data-testid="part53-results"]', 'Edited applicant identity answer')
+    await assertContains(page, '[data-testid="part53-results"]', 'Financial, safety, environmental, and legal eligibility evidence still require human review.')
+
+    await page.locator('.project-tabs').getByRole('button', { name: 'Evidence', exact: true }).click()
+    await page.getByRole('button', { name: 'sample-formation-record.txt' }).click()
+    await assertContains(page, '[data-testid="evidence-preview"]', '5c9617d93085f488')
+    await assertContains(page, '[data-testid="evidence-preview"]', 'Entity: Atlas Demo Energy LLC')
+
+    const fixtureDir = path.join(tmpdir(), 'atlas-demo-fixtures')
+    await mkdir(fixtureDir, { recursive: true })
+    const unsafeFile = path.join(fixtureDir, 'unsafe.txt')
+    await writeFile(unsafeFile, '<script>window.__atlasUnsafeExecuted = true</script>\nplain text remains untrusted')
+    await page.locator('label:has-text("Attach unlinked evidence") input[type=file]').setInputFiles(unsafeFile)
+    await page.waitForTimeout(250)
+    assert.equal(await page.evaluate(() => window.__atlasUnsafeExecuted === true), false)
+    await page.getByRole('button', { name: 'unsafe.txt' }).click()
+    await assertContains(page, '[data-testid="evidence-preview"]', '<script>window.__atlasUnsafeExecuted = true</script>')
+
+    const badJson = path.join(fixtureDir, 'bad.json')
+    await writeFile(badJson, '{"missing":')
+    await page.locator('label:has-text("Attach unlinked evidence") input[type=file]').setInputFiles(badJson)
+    await page.waitForTimeout(250)
+    await page.getByRole('button', { name: 'bad.json' }).click()
+    await assertContains(page, '[data-testid="evidence-preview"]', 'Malformed JSON')
+
+    await page.locator('.project-tabs').getByRole('button', { name: 'Report', exact: true }).click()
+    const reportDownload = await Promise.all([page.waitForEvent('download'), page.click('text=Download HTML report')]).then(([download]) => download)
+    const reportPath = await reportDownload.path()
+    const report = await readFile(reportPath, 'utf8')
+    assert.match(report, /Piketon Advanced Reactor COL Assembly/)
+    assert.match(report, /Edited applicant identity answer/)
+    assert.match(report, /Evidence gap|Review needed/)
+
     await page.reload({ waitUntil: 'networkidle' })
-    await assertVisible(page, '#transport-new-mission')
-    await page.keyboard.press('PageDown')
-    await page.mouse.wheel(0, 600)
-    await assertVisible(page, '#transport-new-mission')
-    const colors = await page.evaluate(() => [...document.querySelectorAll('*')].slice(0, 500).flatMap(el => { const s = getComputedStyle(el); return [s.color, s.backgroundColor, s.borderColor] }).join(' '))
-    assert.doesNotMatch(colors, /0, 216, 255|132, 215, 255|0, 194, 255/i)
+    await page.locator('.project-tabs').getByRole('button', { name: 'Requirements / application', exact: true }).click()
+    await assertContains(page, 'body', 'Edited applicant identity answer')
+
+    await page.goto('http://127.0.0.1:4173/mission-control/transportation/', { waitUntil: 'networkidle' })
+    await assertContains(page, 'body', 'Exact unresolved prerequisite: package compatibility evidence')
+    await page.click('text=Load sample package evidence')
+    await page.click('text=Resolve HRCQ facts')
+    await page.waitForTimeout(250)
+    assert.equal(await page.getByRole('button', { name: 'Simulate governed acceptance' }).isEnabled(), true)
+    await page.click('text=Simulate governed acceptance')
+    await assertContains(page, 'body', 'Demonstration-only acceptance is current')
+    await page.getByLabel('U-235 enrichment wt%').fill('19.50')
+    await page.waitForTimeout(250)
+    await assertContains(page, 'body', 'Prior demonstration review is stale')
+    await page.locator('.project-tabs').getByRole('button', { name: 'Report', exact: true }).click()
+    const trnDownload = await Promise.all([page.waitForEvent('download'), page.click('text=Download HTML report')]).then(([download]) => download)
+    const trnReport = await readFile(await trnDownload.path(), 'utf8')
+    assert.match(trnReport, /Prior transportation review marked stale|stale/i)
+    assert.match(trnReport, /does not .*real shipment authorization/i)
+
+    await page.goto('http://127.0.0.1:4173/mission-control/evidence/', { waitUntil: 'networkidle' })
+    await page.locator('.project-tabs').getByRole('button', { name: 'Requirements', exact: true }).click()
+    await assertContains(page, 'body', 'superseded or conflicts')
+    await page.getByRole('button', { name: 'Load sample evidence' }).first().click()
+    await page.waitForTimeout(250)
+    await page.locator('.project-tabs').getByRole('button', { name: 'Findings and actions', exact: true }).click()
+    await assertContains(page, 'body', 'Replacement evidence is linked')
+    await page.locator('.project-tabs').getByRole('button', { name: 'History', exact: true }).click()
+    await assertContains(page, 'body', 'sample-supplier-quality-program-rev-c.txt')
+
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto('http://127.0.0.1:4173/mission-control/', { waitUntil: 'networkidle' })
+    await page.keyboard.press('Tab')
+    assert.equal(await page.locator('.project-card').count(), 3)
+    await mkdir('test-artifacts', { recursive: true })
+    await page.screenshot({ path: 'test-artifacts/mission-control-mobile.png', fullPage: true })
+
     assert.deepEqual(errors, [])
   } finally {
     await browser.close()
@@ -54,6 +121,35 @@ test('Mission Control uses dedicated workspaces without blue branding or hash ju
   }
 })
 
-async function assertVisible(page, selector) {
-  await page.locator(selector).first().waitFor({ state: 'visible', timeout: 5000 })
+test('storage failure shows an error instead of a false saved state', async () => {
+  const child = await server()
+  const browser = await chromium.launch({ headless: true })
+  const page = await browser.newPage()
+  await page.addInitScript(() => { window.__ATLAS_DEMO_FORCE_STORAGE_FAILURE__ = true })
+  try {
+    await page.goto('http://127.0.0.1:4173/mission-control/nuclear-readiness/', { waitUntil: 'networkidle' })
+    await page.getByRole('button', { name: 'Requirements / application' }).click()
+    await page.locator('textarea').first().fill('Storage failure test')
+    await page.click('text=Save and continue')
+    await assertContains(page, 'body', 'Save failed')
+  } finally {
+    await browser.close()
+    try { process.kill(-child.pid, 'SIGTERM') } catch {}
+  }
+})
+
+async function expectText(page, selector, text) {
+  const locator = page.locator(selector).first()
+  await locator.waitFor({ state: 'visible', timeout: 5000 })
+  assert.equal((await locator.innerText()).trim(), text)
+}
+
+async function assertContains(page, selector, text) {
+  const locator = page.locator(selector).first()
+  for (let i = 0; i < 40; i += 1) {
+    const value = await locator.innerText()
+    if (value.includes(text)) return
+    await page.waitForTimeout(100)
+  }
+  assert.match(await locator.innerText(), new RegExp(text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
 }
