@@ -81,7 +81,7 @@ test('customer polish, actual exports and printable reports on desktop and mobil
           assert.match(content, /scope/i)
           assert.match(content, /demo limitations/i)
           assert.match(content, /review/i)
-          if (ext === 'csv') assert.match(content, /Action,Responsible role/)
+          if (ext === 'csv') assert.match(content, /"Action","Responsible role"/)
           if (id === 'supplier-qualification') assert.ok(content.includes(action))
           if (id === 'reactor-app') assert.ok(content.includes('Customer answer 13'))
           if (id === 'fuel-transport') {

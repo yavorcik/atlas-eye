@@ -25,7 +25,8 @@ export function evidenceApplicability(project, requirementId, item, samples) {
   const mismatch = reason => ({ status: 'mismatched', reason })
   if (!item || !['processed', 'pending_review'].includes(item.status)) return unknown('No successfully processed record is linked. Attach a supported document.')
   const text = item.fullText || item.preview || ''
-  const sampleKey = Object.keys(samples).find(key => samples[key].text === text)
+  const legacyPackage = JSON.stringify({ label: 'Sample transport package compatibility record', material: 'HALEU UF6', enrichmentWtPercent: 19.75, quantity: '12 kgU', packageEvidence: 'Demo package compatibility record loaded for public demonstration', reviewerStatus: 'Pending governed review' }, null, 2)
+  const sampleKey = text === legacyPackage ? 'transportPackage' : Object.keys(samples).find(key => samples[key].text === text)
   let record
   try { record = JSON.parse(text) } catch { /* Arbitrary text remains inspectable. */ }
   if (record?.documentType === 'atlas-demo-package-compatibility' || (requirementId === 'trn-package' && record)) {
@@ -39,6 +40,7 @@ export function evidenceApplicability(project, requirementId, item, samples) {
   }
   if (!sampleKey || !sampleRequirement[sampleKey]) return unknown('Automated applicability assessment is unsupported for this uploaded document. Processing, filenames, and keywords do not establish relevance. Use the bounded sample or obtain qualified assessment outside this demo.')
   if (sampleRequirement[sampleKey] !== requirementId) return mismatch('Document type and represented scope do not match this requirement. Link the appropriate supporting record.')
+  if (sampleKey === 'routeRecord' && (project.inputs.origin !== 'Ohio enrichment facility' || project.inputs.destination !== 'Pennsylvania advanced-reactor project' || project.inputs.routeProfile !== 'truck_only')) return mismatch('The supplied route record covers only the stated Ohio-to-Pennsylvania highway route. Changed endpoints or maritime scope require different evidence.')
   if (sampleKey === 'supplierSuperseded') return mismatch('Quality program Revision B is superseded. Load Revision C and review it.')
   if (project.id === 'supplier-qualification' && (project.inputs.supplier !== 'ForgeWorks Demo Components' || (requirementId === 'sup-qap-current' && (item.metadata?.documentIdentity !== project.inputs.expectedQualityProgramIdentity || item.metadata?.documentVersion !== project.inputs.expectedQualityProgramVersion)))) return mismatch('Supplier identity or controlled document version differs from the represented sample.')
   if (project.id === 'reactor-app' && ['formationRecord', 'financialPlan'].includes(sampleKey) && project.inputs['legal-name'] !== 'Atlas Demo Energy LLC') return mismatch('The sample names Atlas Demo Energy LLC. Obtain evidence for the entered applicant identity.')
