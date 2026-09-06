@@ -1,10 +1,10 @@
 import './App.css'
+import { validateShipment, evidenceApplicability } from './demoValidation.js'
 import ReadinessReviewForm from './ReadinessReviewForm.jsx'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import HistoricalAtlasNuclearEye from './components/HistoricalAtlasNuclearEye.jsx'
 
-const STORE_KEY = 'atlas.publicDemoWorkspace.v2'
-const SCHEMA_VERSION = 2
+import { STORE_KEY, mergeProject, migrateWorkspace, workspaceTransaction } from './workspacePersistence.js'
 const MAX_FILE_SIZE = 512 * 1024
 const supportedTypes = new Map([
   ['text/plain', 'Text'],
@@ -83,6 +83,10 @@ Current status: site characterization attachments and alternatives analysis rema
     scope: 'Fuel transportation',
     text: JSON.stringify({
       label: 'Sample transport package compatibility record',
+      documentType: 'atlas-demo-package-compatibility',
+      documentIdentity: 'ATLAS-SAMPLE-PACKAGE-001',
+      scope: 'Fuel transportation',
+      form: 'UF6',
       material: 'HALEU UF6',
       enrichmentWtPercent: 19.75,
       quantity: '12 kgU',
@@ -448,54 +452,67 @@ function Cover() {
 }
 
 function useWorkspace() {
-  const [workspace, setWorkspace] = useState(() => ({ schemaVersion: SCHEMA_VERSION, projects: initialProjects(), lastSavedAt: '', saveStatus: 'idle', storageError: '', recovery: '' }))
-  const first = useRef(true)
-
-  useEffect(() => {
+  const [workspace, setWorkspace] = useState(() => {
     try {
       const raw = localStorage.getItem(STORE_KEY)
-      if (!raw) return
-      const parsed = JSON.parse(raw)
-      if (parsed?.schemaVersion !== SCHEMA_VERSION || !parsed.projects) {
-        setWorkspace((current) => ({ ...current, recovery: 'Saved demo data uses an older schema. You can reset it, or continue with the current sample workspace.' }))
-        return
-      }
-      setWorkspace({ ...parsed, projects: invalidateCachedTransportEvaluations(parsed.projects), saveStatus: 'saved', storageError: '', recovery: '' })
-    } catch {
-      setWorkspace((current) => ({ ...current, recovery: 'Saved demo data could not be read. Current samples remain available; reset only if you want to discard the unreadable browser record.' }))
+      const saved = migrateWorkspace(raw ? JSON.parse(raw) : null, initialProjects())
+      return { ...saved, projects: invalidateCachedTransportEvaluations(saved.projects), saveStatus: raw ? 'saved' : 'idle', storageError: '' }
+    } catch (error) {
+      return { ...migrateWorkspace(null, initialProjects()), saveStatus: 'error', storageError: error.message, recovery: 'Saved data could not be read. It has not been overwritten.' }
     }
-  }, [])
-
-  useEffect(() => {
-    if (first.current) {
-      first.current = false
-      return
-    }
-    const payload = { schemaVersion: SCHEMA_VERSION, projects: workspace.projects, lastSavedAt: nowIso() }
-    setWorkspace((current) => ({ ...current, saveStatus: 'saving', storageError: '' }))
-    window.setTimeout(() => {
-      try {
-        if (window.__ATLAS_DEMO_FORCE_STORAGE_FAILURE__) throw new Error('Forced storage failure')
-        localStorage.setItem(STORE_KEY, JSON.stringify(payload))
-        setWorkspace((current) => ({ ...current, lastSavedAt: payload.lastSavedAt, saveStatus: 'saved', storageError: '' }))
-      } catch (error) {
-        setWorkspace((current) => ({ ...current, saveStatus: 'error', storageError: error instanceof Error ? error.message : 'Browser storage failed.' }))
-      }
-    }, 80)
-  }, [workspace.projects])
+  })
+  const current = useRef(workspace)
+  const queue = useRef(Promise.resolve())
+  const failed = useRef(Boolean(workspace.storageError))
+  const publish = useCallback((next) => { current.current = next; setWorkspace(next) }, [])
 
   const updateProject = useCallback((projectId, updater) => {
-    setWorkspace((current) => {
-      const nextProject = updater(current.projects[projectId])
-      return { ...current, projects: { ...current.projects, [projectId]: nextProject }, saveStatus: 'saving' }
+    const before = current.current
+    const base = before.projects[projectId]
+    const proposed = updater(base)
+    if (proposed === base) return
+    const optimistic = { ...before, projects: { ...before.projects, [projectId]: proposed }, saveStatus: failed.current ? 'error' : 'saving' }
+    publish(optimistic)
+    queue.current = queue.current.then(async () => {
+      if (failed.current) return
+      try {
+        const stored = await workspaceTransaction(raw => {
+          const latest = migrateWorkspace(raw, structuredClone(before.projects))
+          if (latest.epoch !== before.epoch) throw new Error('This workspace was reset in another tab. Your old changes are retained here for download; load the saved workspace to continue.')
+          const remote = latest.projects[projectId]
+          const evaluationOnly = JSON.stringify(base.inputs) === JSON.stringify(proposed.inputs) && JSON.stringify(base.evidence) === JSON.stringify(proposed.evidence) && JSON.stringify(base.review) === JSON.stringify(proposed.review) && JSON.stringify(base.history) === JSON.stringify(proposed.history)
+          if (remote.revision !== base.revision && evaluationOnly) return null
+          if (remote.revision !== base.revision && JSON.stringify(base.review) !== JSON.stringify(proposed.review) && proposed.review?.simulatedAcceptance) throw new Error('Review conflict: the saved project changed in another tab. Download your changes and load the saved workspace before reviewing again.')
+          const merged = structuredClone(mergeProject(base, proposed, remote))
+          if (projectId === 'fuel-transport' && (JSON.stringify(merged.inputs) !== JSON.stringify(proposed.inputs) || JSON.stringify(merged.evidence) !== JSON.stringify(proposed.evidence))) markTransportationDirty(merged, 'concurrent project changes merged')
+          merged.revision = remote.revision + 1
+          latest.projects[projectId] = merged
+          latest.lastSavedAt = nowIso()
+          return latest
+        })
+        if (current.current === optimistic) {
+          if (stored) publish({ ...stored, saveStatus: 'saved', storageError: '' })
+          else {
+            const raw = localStorage.getItem(STORE_KEY)
+            publish({ ...migrateWorkspace(raw ? JSON.parse(raw) : null, initialProjects()), saveStatus: 'saved', storageError: '' })
+          }
+        }
+      } catch (error) {
+        failed.current = true
+        publish({ ...current.current, saveStatus: 'error', storageError: error.message })
+      }
     })
-  }, [])
+  }, [publish])
 
-  const reset = useCallback(() => {
+  const reset = useCallback(async () => {
     if (!window.confirm('Reset this browser demo workspace? This removes saved sample progress on this device.')) return
-    localStorage.removeItem(STORE_KEY)
-    setWorkspace({ schemaVersion: SCHEMA_VERSION, projects: initialProjects(), lastSavedAt: '', saveStatus: 'saved', storageError: '', recovery: '' })
-  }, [])
+    try {
+      await queue.current
+      const stored = await workspaceTransaction(() => ({ ...migrateWorkspace(null, initialProjects()), epoch: crypto.randomUUID(), lastSavedAt: nowIso() }))
+      failed.current = false
+      publish({ ...stored, saveStatus: 'saved', storageError: '' })
+    } catch (error) { publish({ ...current.current, saveStatus: 'error', storageError: error.message }) }
+  }, [publish])
 
   return { workspace, updateProject, reset }
 }
@@ -528,6 +545,11 @@ function evaluateProject(project) {
         status = transportFinding.status
         reason = transportFinding.reason
       }
+    }
+    const applicability = linked.map(id => evidenceApplicability(project, req.id, project.evidence[id], sampleDocuments))
+    if (applicability.some(item => item.status !== 'established')) {
+      status = applicability.some(item => item.status === 'mismatched') ? 'conflict' : 'gap'
+      reason = applicability.filter(item => item.status !== 'established').map(item => item.reason).join(' ')
     }
     return {
       id: `finding-${req.id}`,
@@ -650,17 +672,19 @@ function evaluateTransportationProject(project) {
   const inputs = project.inputs
   const evidence = Object.values(project.evidence || {})
   const linked = (requirementId) => evidence.filter((item) => item.status !== 'failed' && item.linkedRequirements.includes(requirementId))
+  const validation = validateShipment(inputs)
+  const applicable = id => linked(id).length > 0 && linked(id).every(item => evidenceApplicability(project, id, item, sampleDocuments).status === 'established')
   const hrcqValid = inputs.hrcqStatus === 'resolved_sample_basis' && /49 CFR 173\.403/i.test(inputs.hrcqBasis || '')
   const routeProfile = inputs.routeProfile || 'truck_only'
   const maritime = routeProfile === 'truck_port_vessel'
   const nodes = {
-    material: hrcqValid ? supported('Material facts and HRCQ sample basis are explicitly recorded for review.') : blocked('HRCQ threshold status is unresolved. Select the sample basis; blank, arbitrary, or incomplete text is not accepted.'),
-    package: linked('trn-package').length ? review('Package compatibility evidence is linked; reviewer must confirm applicability to the material facts.') : blocked('Package compatibility evidence is missing.'),
+    material: !validation.valid ? blocked(Object.values(validation.errors).join(' ')) : hrcqValid ? supported('Material facts and HRCQ sample basis are explicitly recorded for review.') : blocked('HRCQ threshold status is unresolved. Select the sample basis; blank, arbitrary, or incomplete text is not accepted.'),
+    package: applicable('trn-package') ? review('Package compatibility evidence is linked; reviewer must confirm applicability to the material facts.') : blocked(linked('trn-package').length ? linked('trn-package').map(item => evidenceApplicability(project, 'trn-package', item, sampleDocuments).reason).join(' ') : 'Package compatibility evidence is missing.'),
     carrier: inputs.carrierEvidence === 'truck_supported' || inputs.carrierEvidence === 'multimodal_supported' ? supported('Carrier evidence is represented for the selected route profile.') : blocked('Shipper/carrier authority evidence is missing or only claimed.'),
     route: hrcqValid && ((!maritime && inputs.routeEvidence === 'truck_supported') || (maritime && inputs.routeEvidence === 'multimodal_supported')) ? supported('Route and mode evidence covers the represented scope.') : blocked(maritime ? 'Maritime route, port, vessel, flag-state, and destination overlays are unresolved.' : 'Highway route evidence or HRCQ basis is unresolved.'),
     security: ((!maritime && inputs.securityEvidence === 'domestic_supported') || (maritime && inputs.securityEvidence === 'multimodal_supported')) ? supported('Security readiness is represented without tactical details.') : blocked(maritime ? 'Port, vessel, or flag-state security evidence is unresolved.' : 'Security plan adequacy or support is unresolved.'),
     execution: ((!maritime && inputs.executionEvidence === 'domestic_supported') || (maritime && inputs.executionEvidence === 'multimodal_supported')) ? supported('Shipment execution evidence is represented for the selected path.') : blocked(maritime ? 'Port handoff or vessel cargo acceptance is unresolved.' : 'Pre-departure inspection, measurement, or shipping-paper evidence is unresolved.'),
-    emergency: linked('trn-response').length && ((!maritime && inputs.emergencyEvidence === 'domestic_supported') || (maritime && inputs.emergencyEvidence === 'multimodal_supported')) ? review('Emergency response evidence is linked and ready for qualified review.') : blocked(maritime ? 'Port/COTP, vessel, flag-state, or destination response evidence is unresolved.' : 'Emergency response information evidence is missing or incomplete.'),
+    emergency: applicable('trn-response') && ((!maritime && inputs.emergencyEvidence === 'domestic_supported') || (maritime && inputs.emergencyEvidence === 'multimodal_supported')) ? review('Emergency response evidence is linked and ready for qualified review.') : blocked(maritime ? 'Port/COTP, vessel, flag-state, or destination response evidence is unresolved.' : 'Emergency response information evidence is missing or incomplete.'),
     reviewer: inputs.reviewer === 'valid' ? supported('Demo authorized reviewer is assigned.') : blocked(inputs.reviewer === 'missing_authority' ? 'Reviewer authority basis is missing.' : 'Demo authorized reviewer is not assigned.'),
   }
   const blockers = Object.entries(nodes).filter(([, node]) => node.status === 'BLOCKED').map(([key, node]) => `${labelize(key)}: ${node.reason}`)
@@ -712,19 +736,19 @@ function mapTransportationInputs(project) {
     material: inputs.material,
     chemical_form: inputs.form,
     u235_enrichment_wt_percent: inputs.enrichment,
-    quantity: String(inputs.quantity || '').split(' ')[0],
-    quantity_unit: String(inputs.quantity || '').split(' ').slice(1).join(' ') || 'kgU',
+    quantity: validateShipment(inputs).quantity,
+    quantity_unit: validateShipment(inputs).unit,
     hrcq_status: inputs.hrcqStatus === 'resolved_sample_basis' && /49 CFR 173\.403/i.test(inputs.hrcqBasis || '') ? 'HRCQ' : 'INSUFFICIENT_INFORMATION',
     origin_state: inputs.origin,
     destination_state: inputs.destination,
     proposed_mode: inputs.routeProfile === 'truck_port_vessel' ? 'Highway to vessel' : 'Highway',
     route_profile: inputs.routeProfile || 'truck_only',
-    package_evidence_mode: project.requirements.find((req) => req.id === 'trn-package')?.linkedEvidence?.some((id) => project.evidence[id]?.status !== 'failed') ? 'compatible' : inputs.packageEvidence || 'none',
+    package_evidence_mode: project.requirements.find((req) => req.id === 'trn-package')?.linkedEvidence?.length > 0 && project.requirements.find((req) => req.id === 'trn-package').linkedEvidence.every((id) => evidenceApplicability(project, 'trn-package', project.evidence[id], sampleDocuments).status === 'established') ? 'compatible' : 'none',
     carrier_evidence_mode: inputs.carrierEvidence || 'none',
     route_evidence_mode: inputs.routeEvidence || 'none',
     security_evidence_mode: inputs.securityEvidence || 'none',
     shipment_execution_evidence_mode: inputs.executionEvidence || 'none',
-    emergency_response_evidence_mode: project.requirements.find((req) => req.id === 'trn-response')?.linkedEvidence?.some((id) => project.evidence[id]?.status !== 'failed') ? inputs.emergencyEvidence || 'none' : 'none',
+    emergency_response_evidence_mode: project.requirements.find((req) => req.id === 'trn-response')?.linkedEvidence?.some((id) => evidenceApplicability(project, 'trn-response', project.evidence[id], sampleDocuments).status === 'established') ? inputs.emergencyEvidence || 'none' : 'none',
     incident_scenario: 'vehicle_accident_no_release',
     governed_reviewer_mode: inputs.reviewer || 'none',
     governed_decision_mode: 'pending',
@@ -762,8 +786,8 @@ function normalizeTransportationEngineResult(project, engine) {
     reviewer: engine.governed_readiness_decision?.reviewer_defects?.join('; ') || fallback.nodes.reviewer.reason,
   }
   const nodes = Object.fromEntries(Object.entries(fallback.nodes).map(([key, local]) => {
-    const status = nodeStatus[key] === 'SUPPORTED' ? (local.status === 'REVIEW' ? 'REVIEW' : 'SUPPORTED') : 'BLOCKED'
-    return [key, { status, reason: status === 'BLOCKED' ? reason[key] || local.reason : local.reason }]
+    const status = nodeStatus[key] === 'SUPPORTED' && local.status !== 'BLOCKED' ? (local.status === 'REVIEW' ? 'REVIEW' : 'SUPPORTED') : 'BLOCKED'
+    return [key, { status, reason: status === 'BLOCKED' ? (local.status === 'BLOCKED' ? local.reason + ' ' + (reason[key] || '') : reason[key] || local.reason) : local.reason }]
   }))
   const blockers = Object.entries(nodes).filter(([, node]) => node.status === 'BLOCKED').map(([key, node]) => `${labelize(key)}: ${node.reason}`)
   return {
@@ -836,6 +860,7 @@ function DemoNotice({ workspace, reset }) {
     <strong>Demo workspace</strong>
     <span>Saved in this browser. Other devices will not see this demo workspace. Use sample or non-sensitive material.</span>
     <span>{workspace.saveStatus === 'saving' ? 'Saving...' : workspace.saveStatus === 'error' ? `Save failed: ${workspace.storageError}` : `Last saved: ${niceTime(workspace.lastSavedAt)}`}</span>
+    {workspace.saveStatus === 'error' ? <><button className="button secondary compact" onClick={() => download('atlas-recoverable-workspace.json', JSON.stringify(workspace, null, 2), 'application/json')}>Download recoverable changes</button><button className="button secondary compact" onClick={() => { if (window.confirm('Load the saved version? Download your recoverable changes first.')) window.location.reload() }}>Load saved workspace</button></> : null}
     {workspace.recovery ? <span className="warning">{workspace.recovery}</span> : null}
     <button type="button" className="button secondary compact" onClick={reset}>Reset saved demo</button>
   </div>
@@ -954,6 +979,7 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
         return
       }
       next.inputs[key] = value
+      if (key === 'quantityValue' || key === 'quantityUnit') next.inputs.quantity = `${next.inputs.quantityValue} ${next.inputs.quantityUnit}`
       next.history.unshift(history(`Updated ${key}. Affected findings were reevaluated.`, 'Visitor'))
       if (next.id === 'fuel-transport') markTransportationDirty(next, 'material scope or input changed')
     })
@@ -972,7 +998,8 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
   }
 
   async function attachFile(file, requirementId, replaceId = '', metadataOverride = null) {
-    const processed = await processEvidenceFile(file, project.scope)
+    let processed
+    try { processed = await processEvidenceFile(file, project.scope) } catch (error) { processed = { filename: file.name, status: 'failed', hash: 'not-computed', failureReason: `File processing failed: ${error.message}`, fullText: '', metadata: {} } }
     if (metadataOverride) processed.metadata = metadataOverride
     patchProject((next) => {
       const id = replaceId || `ev-${Date.now()}`
@@ -1019,7 +1046,7 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
   function acceptTransportationDemo() {
     patchProject((next) => {
       const current = currentTransportationEvaluation(next)
-      const ready = Boolean(current?.readyForReview && current.manifestFingerprint && current.projectRevision === (next.transportRevision || 0))
+      const ready = Boolean(validateShipment(next.inputs).valid && evaluateTransportationProject(next).readyForReview && current?.readyForReview && current.manifestFingerprint && current.projectRevision === (next.transportRevision || 0))
       if (!ready) {
         next.acceptanceError = next.evaluationStatus === 'error' ? 'Acceptance blocked because detailed transportation evaluation is unavailable.' : 'Acceptance blocked until the current project revision finishes detailed evaluation and hashing.'
         next.history.unshift(history(next.acceptanceError, 'Atlas'))
@@ -1170,7 +1197,8 @@ function TransportationPath({ project, findings, setInput, loadSampleEvidence, a
   const governed = findings.find((finding) => finding.id === 'finding-trn-governed-review')
   const current = currentTransportationEvaluation(project)
   const result = current || evaluateTransportationProject(project)
-  const evaluationReady = Boolean(current?.readyForReview && governed?.status === 'review' && governed?.fingerprint)
+  const validation = validateShipment(project.inputs)
+  const evaluationReady = Boolean(validation.valid && current?.readyForReview && governed?.status === 'review' && governed?.fingerprint)
   return <section className="panel wide transportation-path">
     <h2>Your transportation readiness package</h2>
     <div className="sticky-step">
@@ -1184,10 +1212,11 @@ function TransportationPath({ project, findings, setInput, loadSampleEvidence, a
         ['material', 'Material'],
         ['form', 'Physical or chemical form'],
         ['enrichment', 'U-235 enrichment wt%'],
-        ['quantity', 'Quantity'],
+        ['quantityValue', 'Quantity'],
         ['origin', 'Origin'],
         ['destination', 'Destination'],
-      ].map(([key, label]) => <label key={key}>{label}<input value={project.inputs[key] || ''} onChange={(event) => setInput(key, event.target.value)} /></label>)}
+      ].map(([key, label]) => <label key={key}>{label}<input aria-invalid={Boolean(validation.errors[key])} aria-describedby={validation.errors[key] ? `error-${key}` : undefined} value={project.inputs[key] || ''} onChange={(event) => setInput(key, event.target.value)} />{validation.errors[key] ? <span className="field-error" id={`error-${key}`}>{validation.errors[key]}</span> : null}</label>)}
+      <label>Quantity unit<select value={project.inputs.quantityUnit || ''} onChange={event => setInput('quantityUnit', event.target.value)}><option value="">Select unit</option><option value="kgU">kgU — kilograms of uranium</option>{project.inputs.quantityUnit && project.inputs.quantityUnit !== 'kgU' ? <option value={project.inputs.quantityUnit}>{project.inputs.quantityUnit} (unsupported)</option> : null}</select>{validation.errors.quantityUnit ? <span className="field-error">{validation.errors.quantityUnit}</span> : null}</label>
       <label>HRCQ threshold status<select value={project.inputs.hrcqStatus || 'insufficient_information'} onChange={(event) => setInput('hrcqStatus', event.target.value)}>
         <option value="insufficient_information">Insufficient information</option>
         <option value="claimed_only">Claimed only</option>
@@ -1490,7 +1519,7 @@ function chooseSample(projectId, requirementId) {
 
 function readableStatus(status) {
   return ({
-    supported: 'Evidence linked',
+    supported: 'Demo prerequisite represented',
     gap: 'Evidence gap',
     review: 'Review needed',
     conflict: 'Conflict',
