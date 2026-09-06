@@ -564,7 +564,7 @@ function evaluateProject(project) {
       supportingEvidence: evidence.map((item) => item.id),
       missingEvidence: readyForReview ? [] : provisional.blockers,
       applicabilityQuestions: ['Is the package evidence applicable to these material facts?', 'Has the authorized reviewer accepted this manifest?'],
-      nextAction: priorCurrent ? 'Inspect the transportation report and maintain the reviewed shipment information.' : readyForReview ? 'Begin demonstration-only governed review.' : evaluationUnavailable ? 'Retry detailed transportation evaluation.' : !evaluationComplete ? 'Wait for shipment checking to finish before review.' : result.nextAction,
+      nextAction: priorCurrent ? 'Inspect the transportation report and maintain the reviewed shipment information.' : readyForReview ? 'Begin demonstration-only governed review.' : evaluationUnavailable ? 'Retry detailed transportation evaluation.' : !evaluationComplete ? 'Open shipment information to check the current package before review.' : result.nextAction,
       role: 'Governed reviewer',
       fingerprint,
       transportResult: result || provisional,
