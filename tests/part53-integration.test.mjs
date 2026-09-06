@@ -16,6 +16,9 @@ test('Part 53 route remains advertised and opens the saved workspace', () => {
   assert.match(app, /Application Results/)
   assert.match(app, /Finish guided demonstration/)
   assert.match(app, /Download HTML report/)
+  assert.match(app, /const part53Fields = \[/)
+  assert.match(app, /What application history must remain traceable\?/)
+  assert.match(app, /p53-history/)
 })
 
 test('Mission Control routes point to real workspace routes before fallback', () => {
@@ -41,4 +44,8 @@ test('public demo preserves evidence and legal-review boundaries', () => {
   assert.match(app, /does not mean the application is complete or accepted/)
   assert.match(app, /human review remains separate/)
   assert.match(app, /does not upload documents to Atlas/)
+  assert.match(app, /sample-financial-qualification-plan\.txt/)
+  assert.match(app, /sample-environmental-information-outline\.md/)
+  assert.match(app, /sample-emergency-response-information\.txt/)
+  assert.match(app, /sample-calibration-record\.txt/)
 })

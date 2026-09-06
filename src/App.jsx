@@ -52,6 +52,30 @@ Current status: thermal power envelope and site-interface assumptions remain und
 Open issue: the controlled safety analysis has not been approved for application use.
 `,
   },
+  financialPlan: {
+    id: 'sample-financial-plan',
+    name: 'sample-financial-qualification-plan.txt',
+    type: 'text/plain',
+    scope: 'Advanced reactor application',
+    text: `SAMPLE EVIDENCE - FINANCIAL QUALIFICATION PLAN
+Applicant: Atlas Demo Energy LLC
+Scope: estimated construction, fuel-cycle, and first five years of operating cost support.
+Status: prepared for qualified financial review.
+Limit: sample evidence only; does not establish financial qualification.
+`,
+  },
+  environmentalReport: {
+    id: 'sample-environmental-report',
+    name: 'sample-environmental-information-outline.md',
+    type: 'text/markdown',
+    scope: 'Advanced reactor application',
+    text: `# Sample Environmental Information Outline
+
+Scope: bounded environmental information outline for the sample advanced-reactor application.
+
+Current status: site characterization attachments and alternatives analysis remain review items.
+`,
+  },
   transportPackage: {
     id: 'sample-transport-package',
     name: 'sample-transport-package-record.json',
@@ -78,6 +102,53 @@ Represented authority: domestic highway movement support for the sample facts.
 Limit: does not authorize a real shipment.
 `,
   },
+  emergencyResponse: {
+    id: 'sample-emergency-response',
+    name: 'sample-emergency-response-information.txt',
+    type: 'text/plain',
+    scope: 'Fuel transportation',
+    text: `SAMPLE EVIDENCE - EMERGENCY RESPONSE INFORMATION
+Shipment: HALEU UF6 highway movement
+Emergency response contact: Demo response desk
+Exercise status: sample tabletop exercise completed; corrective action review pending.
+Limit: no tactical response instructions and no real shipment authorization.
+`,
+  },
+  routeRecord: {
+    id: 'sample-route-record',
+    name: 'sample-highway-route-record.txt',
+    type: 'text/plain',
+    scope: 'Fuel transportation',
+    text: `SAMPLE EVIDENCE - HIGHWAY ROUTE RECORD
+Route profile: highway only
+Origin: Ohio enrichment facility
+Destination: Pennsylvania advanced-reactor project
+Status: sample route evidence prepared for review.
+`,
+  },
+  securityRecord: {
+    id: 'sample-security-record',
+    name: 'sample-security-readiness-record.txt',
+    type: 'text/plain',
+    scope: 'Fuel transportation',
+    text: `SAMPLE EVIDENCE - SECURITY READINESS RECORD
+Scope: compliance readiness level only.
+Status: domestic highway security evidence represented for public demo review.
+No tactical security instructions are included.
+`,
+  },
+  executionRecord: {
+    id: 'sample-execution-record',
+    name: 'sample-shipment-execution-record.txt',
+    type: 'text/plain',
+    scope: 'Fuel transportation',
+    text: `SAMPLE EVIDENCE - SHIPMENT EXECUTION RECORD
+Package inspection: sample complete
+Measurement record: sample within represented range
+Shipping paper package: sample prepared for review
+Status: no real shipment release.
+`,
+  },
   supplierCurrent: {
     id: 'sample-supplier-current-qap',
     name: 'sample-supplier-quality-program-rev-c.txt',
@@ -90,6 +161,7 @@ Revision: C
 Effective: 2026-07-01
 Status: Current according to supplier transmittal.
 `,
+    metadata: { documentIdentity: 'FW-QAP', documentVersion: 'C', supersedes: 'B', reviewStatus: 'pending_review', requirementRelevance: ['sup-qap-current'] },
   },
   supplierSuperseded: {
     id: 'sample-supplier-superseded-qap',
@@ -103,6 +175,31 @@ Revision: B
 Effective: 2025-03-01
 Status: Superseded by Revision C.
 `,
+    metadata: { documentIdentity: 'FW-QAP', documentVersion: 'B', supersededBy: 'C', reviewStatus: 'superseded', requirementRelevance: ['sup-qap-current'] },
+  },
+  supplierMisleading: {
+    id: 'sample-supplier-misleading',
+    name: 'sample-supplier-quality-program-rev-c-misleading.txt',
+    type: 'text/plain',
+    scope: 'Supplier qualification',
+    text: `SAMPLE EVIDENCE - MISLEADING SUPPLIER FILE
+Filename claims Revision C, but controlled identity is missing.
+This sample must not resolve a superseded-document conflict without explicit metadata.
+`,
+    metadata: { documentIdentity: 'UNKNOWN', documentVersion: 'unverified', reviewStatus: 'pending_review', requirementRelevance: [] },
+  },
+  calibrationRecord: {
+    id: 'sample-calibration-record',
+    name: 'sample-calibration-record.txt',
+    type: 'text/plain',
+    scope: 'Supplier qualification',
+    text: `SAMPLE EVIDENCE - CALIBRATION RECORD
+Supplier: ForgeWorks Demo Components
+Instrument: demo bore gauge BG-17
+Calibration date: 2026-07-15
+Status: sample record prepared for supplier-quality review.
+`,
+    metadata: { documentIdentity: 'FW-CAL-BG-17', documentVersion: '2026-07-15', reviewStatus: 'pending_review', requirementRelevance: ['sup-calibration'] },
   },
 }
 
@@ -138,6 +235,23 @@ const sampleHashes = {
   'sample-supplier-superseded-qap': 'dffbeabd1812eda57d97acecb89d68d1c7337002ae98f58c0b3c039ef0c9d748',
 }
 
+const part53Fields = [
+  ['legal-name', 'Applicant legal name', '10 CFR § 53.1109(a)', 'What is the exact legal name of the organization applying for the license?', 'p53-legal'],
+  ['address', 'Applicant address', '10 CFR § 53.1109(b)', 'What is the applicant’s address?', 'p53-legal'],
+  ['business', 'Business or occupation', '10 CFR § 53.1109(c)', 'What business or occupation does the applicant conduct?', 'p53-legal'],
+  ['organization', 'Organization details', '10 CFR § 53.1109(d)(3)(i)', 'What is the applicant’s organization type, State of organization, and principal place of business?', 'p53-legal'],
+  ['citizenship', 'Directors and principal officers', '10 CFR § 53.1109(d)(3)(ii)', 'Who are the applicant’s directors and principal officers?', 'p53-legal'],
+  ['focd', 'Foreign ownership, control, or domination', '10 CFR § 53.1109(d)(3)(iii)', 'Is the applicant owned, controlled, or dominated by an alien, foreign corporation, or foreign government?', 'p53-legal'],
+  ['license', 'License request', '10 CFR § 53.1109(e)', 'What license, facility use, license period, and related approvals are being requested?', 'p53-legal'],
+  ['financial', 'Financial qualifications', '10 CFR § 53.1413', 'How will the applicant demonstrate financial qualifications?', 'p53-financial'],
+  ['safety', 'Safety analysis', '10 CFR § 53.1416', 'What safety analysis will support the application?', 'p53-safety'],
+  ['environment', 'Environmental information', '10 CFR § 53.1419', 'What environmental information will support the application?', 'p53-environment'],
+  ['eligibility', 'Legal eligibility review', '10 CFR § 53.1118', 'What legal eligibility review is required?', 'p53-eligibility'],
+  ['evidence', 'Controlled records', 'Atlas controlled-record contract', 'Which controlled records support this application?', 'p53-records'],
+  ['reviews', 'Reviews and open items', 'Atlas review-control contract', 'What reviews and open items remain?', 'p53-reviews'],
+  ['history', 'Traceable history', 'Atlas traceability contract', 'What application history must remain traceable?', 'p53-history'],
+].map(([id, label, citation, prompt, requirement]) => ({ id, label, citation, prompt, requirement }))
+
 function initialProjects() {
   return {
     'reactor-app': {
@@ -150,31 +264,35 @@ function initialProjects() {
       nextAction: 'Answer the safety-analysis question and link support.',
       role: 'Application owner',
       inputs: {
-        legalName: 'Atlas Demo Energy LLC',
+        'legal-name': 'Atlas Demo Energy LLC',
         address: '100 Demo Industrial Parkway, Piketon, Ohio',
         business: 'Advanced nuclear energy project developer',
         organization: 'Ohio limited liability company',
-        authorization: 'Combined license for a new advanced reactor demonstration',
-        safetyAnalysis: '',
-        financialQualifications: 'Funding plan outline received; financial capacity review not complete.',
-        environmentalInformation: 'Site environmental report outline started.',
+        citizenship: 'Director roster started; citizenship records not yet complete.',
+        focd: 'Ownership and control analysis incomplete.',
+        license: 'Combined license for a new advanced reactor demonstration',
+        financial: 'Funding plan outline received; financial capacity review not complete.',
+        safety: '',
+        environment: 'Site environmental report outline started.',
+        eligibility: 'Legal eligibility review not started.',
+        evidence: 'Controlled record index started.',
+        reviews: 'Technical, financial, environmental, and legal reviews remain open.',
+        history: 'Initial sample workspace history established.',
       },
       requirements: [
         { id: 'p53-legal', title: 'Applicant identity', source: 'part53', relevance: 'The application scope includes applicant general information.', linkedEvidence: ['ev-formation'], status: 'supported', question: 'Confirm applicant legal name and organization record.' },
         { id: 'p53-financial', title: 'Financial qualifications', source: 'part53', relevance: 'The represented COL preparation includes applicant ability to carry out the proposed activity.', linkedEvidence: [], status: 'gap', question: 'Attach financial qualification support.' },
         { id: 'p53-safety', title: 'Safety analysis content', source: 'part53', relevance: 'The application draft cannot treat safety analysis as complete until a controlled record exists and is reviewed.', linkedEvidence: ['ev-safety'], status: 'review', question: 'What safety analysis supports this application?' },
         { id: 'p53-environment', title: 'Environmental information', source: 'part53', relevance: 'Environmental information is represented as in scope for this sample application.', linkedEvidence: [], status: 'gap', question: 'Attach environmental information support.' },
+        { id: 'p53-eligibility', title: 'Legal eligibility review', source: 'part53', relevance: 'Eligibility remains a qualified legal review work package, not an applicant checkbox.', linkedEvidence: [], status: 'gap', question: 'Create or attach the eligibility review record.' },
+        { id: 'p53-records', title: 'Controlled record inventory', source: 'atlasGovernance', relevance: 'Evidence must remain traceable to application sections and versions.', linkedEvidence: [], status: 'gap', question: 'Complete the controlled record inventory.' },
+        { id: 'p53-reviews', title: 'Review status', source: 'atlasGovernance', relevance: 'Open technical and legal review items must remain visible before any qualified approval.', linkedEvidence: [], status: 'gap', question: 'Assign remaining review actions.' },
+        { id: 'p53-history', title: 'Application history', source: 'atlasGovernance', relevance: 'Application changes and evidence replacements must remain inspectable.', linkedEvidence: [], status: 'review', question: 'Inspect history before report generation.' },
       ],
       guided: {
         current: 0,
         complete: false,
-        questions: [
-          { id: 'legalName', label: 'Applicant legal name', prompt: 'What legal entity is applying?', requirement: 'p53-legal' },
-          { id: 'authorization', label: 'Requested authorization', prompt: 'What authorization is being requested?', requirement: 'p53-legal' },
-          { id: 'safetyAnalysis', label: 'Safety analysis', prompt: 'What safety analysis supports the application?', requirement: 'p53-safety' },
-          { id: 'financialQualifications', label: 'Financial qualifications', prompt: 'What financial information is available?', requirement: 'p53-financial' },
-          { id: 'environmentalInformation', label: 'Environmental information', prompt: 'What environmental information is available?', requirement: 'p53-environment' },
-        ],
+        questions: part53Fields,
       },
       evidence: {
         'ev-formation': seededEvidence('ev-formation', sampleDocuments.formationRecord, ['p53-legal'], 'processed'),
@@ -202,14 +320,16 @@ function initialProjects() {
         quantity: '12 kgU',
         origin: 'Ohio enrichment facility',
         destination: 'Pennsylvania advanced-reactor project',
-        hrcqStatus: 'Unresolved until activity/package threshold facts are recorded',
-        packageEvidence: 'missing',
-        carrierEvidence: 'supported',
-        routeEvidence: 'supported',
-        securityEvidence: 'plan_only',
-        executionEvidence: 'pending',
-        emergencyEvidence: 'pending',
-        reviewer: 'Unassigned',
+        hrcqStatus: 'insufficient_information',
+        hrcqBasis: '',
+        routeProfile: 'truck_only',
+        packageEvidence: 'none',
+        carrierEvidence: 'truck_supported',
+        routeEvidence: 'truck_supported',
+        securityEvidence: 'domestic_supported',
+        executionEvidence: 'domestic_supported',
+        emergencyEvidence: 'none',
+        reviewer: 'none',
         governedDecision: 'pending',
         priorApprovalFingerprint: '',
         priorApprovalStatus: '',
@@ -218,11 +338,16 @@ function initialProjects() {
         { id: 'trn-material', title: 'Material and HRCQ facts', source: 'transportHrcq', relevance: 'The sample movement includes Class 7/fissile-material facts that drive route and package questions.', linkedEvidence: [], status: 'gap', question: 'Record the activity/package threshold facts needed to resolve HRCQ.' },
         { id: 'trn-package', title: 'Package compatibility', source: 'atlasGovernance', relevance: 'Atlas cannot support shipment readiness unless a package compatibility record is linked to these represented contents.', linkedEvidence: [], status: 'gap', question: 'Attach or load package compatibility evidence.' },
         { id: 'trn-carrier', title: 'Carrier authority', source: 'atlasGovernance', relevance: 'The primary path assumes a domestic highway carrier and keeps authority distinct from package evidence.', linkedEvidence: ['ev-carrier'], status: 'supported', question: 'Confirm carrier authority evidence.' },
+        { id: 'trn-route', title: 'Route and mode', source: 'transportHrcq', relevance: 'Route and mode gates depend on HRCQ status and selected highway or maritime scope.', linkedEvidence: [], status: 'gap', question: 'Confirm route and mode evidence.' },
+        { id: 'trn-security', title: 'Security and physical protection', source: 'atlasGovernance', relevance: 'Security readiness is evaluated separately and keeps sensitive details out of the public demo.', linkedEvidence: [], status: 'gap', question: 'Resolve security evidence.' },
+        { id: 'trn-execution', title: 'Shipment execution', source: 'atlasGovernance', relevance: 'Pre-departure inspection, measurement, shipping-paper, and package documents remain separate gates.', linkedEvidence: [], status: 'gap', question: 'Complete shipment execution evidence.' },
         { id: 'trn-response', title: 'Emergency response information', source: 'transportEmergency', relevance: 'Emergency response information is represented as a readiness node for the shipment package.', linkedEvidence: [], status: 'gap', question: 'Attach response organization or exercise evidence.' },
+        { id: 'trn-reviewer', title: 'Governed reviewer', source: 'atlasGovernance', relevance: 'A reviewer with explicit demo authority is required before simulated acceptance is available.', linkedEvidence: [], status: 'gap', question: 'Assign a demo authorized reviewer.' },
       ],
       evidence: {
         'ev-carrier': seededEvidence('ev-carrier', sampleDocuments.carrier, ['trn-carrier'], 'processed'),
       },
+      transportEvaluation: null,
       review: {
         fingerprint: '',
         status: 'not_current',
@@ -248,6 +373,8 @@ function initialProjects() {
         itemScope: 'Safety-related valve body machining and final inspection records',
         reviewScope: 'Quality program and calibration record sample only',
         documentSet: 'Quality Program Manual Rev. B conflicts with supplier transmittal identifying Rev. C as current.',
+        expectedQualityProgramIdentity: 'FW-QAP',
+        expectedQualityProgramVersion: 'C',
       },
       requirements: [
         { id: 'sup-qap-current', title: 'Current quality program document', source: 'atlasGovernance', relevance: 'The bounded supplier review requires a current quality-program basis before review can proceed.', linkedEvidence: ['ev-supplier-old'], status: 'conflict', question: 'Replace the superseded quality program document.' },
@@ -277,6 +404,9 @@ function seededEvidence(id, document, linkedRequirements, status) {
     status,
     linkedRequirements,
     preview: document.text,
+    fullText: document.text,
+    previewTruncated: false,
+    metadata: document.metadata || {},
     source: 'sample',
     replacements: [],
     reviewStatus: status === 'pending_review' ? 'Pending human review' : 'Not reviewed for real-world acceptance',
@@ -382,13 +512,16 @@ function evaluateProject(project) {
       reason = 'No processed evidence is linked to this requirement.'
     }
     if (req.status === 'conflict') {
-      const hasCurrent = evidence.some((item) => item.linkedRequirements.includes(req.id) && /rev-c|current/i.test(`${item.filename} ${item.preview}`))
-      status = hasCurrent ? 'review' : 'conflict'
-      reason = hasCurrent ? 'Replacement evidence is linked; reviewer must confirm supersession is resolved.' : 'The linked record appears superseded or conflicts with the represented current document set.'
+      const accepted = supplierRequirementResolved(project, req.id, evidence)
+      status = accepted ? 'review' : 'conflict'
+      reason = accepted ? 'Explicit replacement identity and supersession metadata are linked; reviewer must confirm acceptance.' : 'The linked record is superseded, unrelated, failed, or lacks explicit replacement identity metadata.'
     }
-    if (project.id === 'fuel-transport' && req.id === 'trn-material' && !/unresolved/i.test(project.inputs.hrcqStatus || '')) {
-      status = 'review'
-      reason = 'Material and HRCQ threshold facts were entered; qualified review must confirm the represented threshold basis.'
+    if (project.id === 'fuel-transport') {
+      const transportFinding = transportRequirementFinding(project, req)
+      if (transportFinding) {
+        status = transportFinding.status
+        reason = transportFinding.reason
+      }
     }
     return {
       id: `finding-${req.id}`,
@@ -407,33 +540,206 @@ function evaluateProject(project) {
   })
 
   if (project.id === 'fuel-transport') {
-    const packageSupported = evidence.some((item) => item.linkedRequirements.includes('trn-package') && item.status !== 'failed')
-    const hrcqResolved = !/unresolved/i.test(project.inputs.hrcqStatus)
-    const nodesSupported = packageSupported && hrcqResolved && project.inputs.carrierEvidence === 'supported'
-    const fingerprint = contentFingerprint({ inputs: project.inputs, evidence: evidence.map(({ hash, linkedRequirements, version }) => ({ hash, linkedRequirements, version })) })
-    const priorCurrent = project.review?.fingerprint === fingerprint && project.review?.simulatedAcceptance
+    const result = project.transportEvaluation || evaluateTransportationProject(project)
+    const fingerprint = result.manifestFingerprint || ''
+    const priorCurrent = Boolean(fingerprint && project.review?.fingerprint === fingerprint && project.review?.simulatedAcceptance)
+    const readyForReview = result.readyForReview
     findings.push({
       id: 'finding-trn-governed-review',
       requirementId: 'trn-governed-review',
       title: 'Governed transportation review',
-      status: priorCurrent ? 'demo_accepted' : nodesSupported ? 'review' : 'gap',
-      reason: priorCurrent ? 'A demonstration-only acceptance is current for this exact manifest fingerprint.' : nodesSupported ? 'Primary evidence nodes are ready for governed demo review.' : 'The exact unresolved prerequisite is package compatibility evidence plus HRCQ threshold facts.',
+      status: priorCurrent ? 'demo_accepted' : readyForReview ? 'review' : 'gap',
+      reason: priorCurrent ? 'A demonstration-only acceptance is current for this exact completed evaluation fingerprint.' : readyForReview ? 'All applicable transportation gates are ready for governed demo review.' : `Next blocker: ${result.nextBlocker}`,
       source: sourceRecords.atlasGovernance,
       relevantBecause: 'The public demo preserves the human approval boundary and invalidates prior review when material facts or evidence change.',
       supportingEvidence: evidence.map((item) => item.id),
-      missingEvidence: nodesSupported ? [] : ['Package compatibility evidence', 'Resolved HRCQ threshold facts'],
+      missingEvidence: readyForReview ? [] : result.blockers,
       applicabilityQuestions: ['Is the package evidence applicable to these material facts?', 'Has the authorized reviewer accepted this manifest?'],
-      nextAction: nodesSupported ? 'Begin demonstration-only governed review.' : 'Open material facts and package compatibility inputs.',
+      nextAction: readyForReview ? 'Begin demonstration-only governed review.' : result.nextAction,
       role: 'Governed reviewer',
       fingerprint,
+      transportResult: result,
     })
   }
 
   return findings
 }
 
-function contentFingerprint(value) {
-  return btoa(unescape(encodeURIComponent(JSON.stringify(value)))).slice(0, 24)
+function supplierRequirementResolved(project, requirementId, evidence) {
+  if (requirementId !== 'sup-qap-current') return false
+  const expectedIdentity = project.inputs.expectedQualityProgramIdentity
+  const expectedVersion = project.inputs.expectedQualityProgramVersion
+  return evidence.some((item) => (
+    item.status !== 'failed' &&
+    item.linkedRequirements.includes(requirementId) &&
+    item.metadata?.documentIdentity === expectedIdentity &&
+    item.metadata?.documentVersion === expectedVersion &&
+    item.metadata?.supersedes === 'B' &&
+    item.reviewStatus !== 'Not reviewable'
+  ))
+}
+
+function transportRequirementFinding(project, req) {
+  const result = project.transportEvaluation || evaluateTransportationProject(project)
+  const node = {
+    'trn-material': result.nodes.material,
+    'trn-package': result.nodes.package,
+    'trn-carrier': result.nodes.carrier,
+    'trn-route': result.nodes.route,
+    'trn-security': result.nodes.security,
+    'trn-execution': result.nodes.execution,
+    'trn-response': result.nodes.emergency,
+    'trn-reviewer': result.nodes.reviewer,
+  }[req.id]
+  if (!node) return null
+  return {
+    status: node.status === 'SUPPORTED' ? 'supported' : node.status === 'REVIEW' ? 'review' : 'gap',
+    reason: node.reason,
+  }
+}
+
+function evaluateTransportationProject(project) {
+  const inputs = project.inputs
+  const evidence = Object.values(project.evidence || {})
+  const linked = (requirementId) => evidence.filter((item) => item.status !== 'failed' && item.linkedRequirements.includes(requirementId))
+  const hrcqValid = inputs.hrcqStatus === 'resolved_sample_basis' && /49 CFR 173\.403/i.test(inputs.hrcqBasis || '')
+  const routeProfile = inputs.routeProfile || 'truck_only'
+  const maritime = routeProfile === 'truck_port_vessel'
+  const nodes = {
+    material: hrcqValid ? supported('Material facts and HRCQ sample basis are explicitly recorded for review.') : blocked('HRCQ threshold status is unresolved. Select the sample basis; blank, arbitrary, or incomplete text is not accepted.'),
+    package: linked('trn-package').length ? review('Package compatibility evidence is linked; reviewer must confirm applicability to the material facts.') : blocked('Package compatibility evidence is missing.'),
+    carrier: inputs.carrierEvidence === 'truck_supported' || inputs.carrierEvidence === 'multimodal_supported' ? supported('Carrier evidence is represented for the selected route profile.') : blocked('Shipper/carrier authority evidence is missing or only claimed.'),
+    route: hrcqValid && ((!maritime && inputs.routeEvidence === 'truck_supported') || (maritime && inputs.routeEvidence === 'multimodal_supported')) ? supported('Route and mode evidence covers the represented scope.') : blocked(maritime ? 'Maritime route, port, vessel, flag-state, and destination overlays are unresolved.' : 'Highway route evidence or HRCQ basis is unresolved.'),
+    security: ((!maritime && inputs.securityEvidence === 'domestic_supported') || (maritime && inputs.securityEvidence === 'multimodal_supported')) ? supported('Security readiness is represented without tactical details.') : blocked(maritime ? 'Port, vessel, or flag-state security evidence is unresolved.' : 'Security plan adequacy or support is unresolved.'),
+    execution: ((!maritime && inputs.executionEvidence === 'domestic_supported') || (maritime && inputs.executionEvidence === 'multimodal_supported')) ? supported('Shipment execution evidence is represented for the selected path.') : blocked(maritime ? 'Port handoff or vessel cargo acceptance is unresolved.' : 'Pre-departure inspection, measurement, or shipping-paper evidence is unresolved.'),
+    emergency: linked('trn-response').length && ((!maritime && inputs.emergencyEvidence === 'domestic_supported') || (maritime && inputs.emergencyEvidence === 'multimodal_supported')) ? review('Emergency response evidence is linked and ready for qualified review.') : blocked(maritime ? 'Port/COTP, vessel, flag-state, or destination response evidence is unresolved.' : 'Emergency response information evidence is missing or incomplete.'),
+    reviewer: inputs.reviewer === 'valid' ? supported('Demo authorized reviewer is assigned.') : blocked(inputs.reviewer === 'missing_authority' ? 'Reviewer authority basis is missing.' : 'Demo authorized reviewer is not assigned.'),
+  }
+  const blockers = Object.entries(nodes).filter(([, node]) => node.status === 'BLOCKED').map(([key, node]) => `${labelize(key)}: ${node.reason}`)
+  return {
+    buildMarker: 'TRN-GOVERNED-DECISION-DEMO-0.9.0',
+    routeProfile,
+    maritime,
+    nodes,
+    blockers,
+    readyForReview: blockers.length === 0,
+    nextBlocker: blockers[0] || 'Governed review pending',
+    nextAction: blockers[0] ? `Resolve ${blockers[0]}` : 'Begin demonstration-only governed review.',
+    manifestFingerprint: project.transportEvaluation?.manifestFingerprint || '',
+    manifestFingerprintShort: project.transportEvaluation?.manifestFingerprint?.slice(0, 16) || 'calculating',
+  }
+}
+
+async function evaluateTransportationWithExistingEngine(project) {
+  try {
+    await loadTransportationEngine()
+    if (typeof window.evaluateTransportationDemo !== 'function') return evaluateTransportationProject(project)
+    const engine = await window.evaluateTransportationDemo(mapTransportationInputs(project))
+    return normalizeTransportationEngineResult(project, engine)
+  } catch {
+    return evaluateTransportationProject(project)
+  }
+}
+
+let transportationEnginePromise = null
+function loadTransportationEngine() {
+  if (typeof window === 'undefined') return Promise.resolve()
+  if (typeof window.evaluateTransportationDemo === 'function') return Promise.resolve()
+  if (transportationEnginePromise) return transportationEnginePromise
+  transportationEnginePromise = new Promise((resolve, reject) => {
+    const script = document.createElement('script')
+    script.src = '/transportation/js/transportation-engine.js'
+    script.async = true
+    script.onload = () => resolve()
+    script.onerror = () => reject(new Error('Transportation evaluator could not load.'))
+    document.head.append(script)
+  })
+  return transportationEnginePromise
+}
+
+function mapTransportationInputs(project) {
+  const inputs = project.inputs
+  return {
+    material: inputs.material,
+    chemical_form: inputs.form,
+    u235_enrichment_wt_percent: inputs.enrichment,
+    quantity: String(inputs.quantity || '').split(' ')[0],
+    quantity_unit: String(inputs.quantity || '').split(' ').slice(1).join(' ') || 'kgU',
+    hrcq_status: inputs.hrcqStatus === 'resolved_sample_basis' && /49 CFR 173\.403/i.test(inputs.hrcqBasis || '') ? 'HRCQ' : 'INSUFFICIENT_INFORMATION',
+    origin_state: inputs.origin,
+    destination_state: inputs.destination,
+    proposed_mode: inputs.routeProfile === 'truck_port_vessel' ? 'Highway to vessel' : 'Highway',
+    route_profile: inputs.routeProfile || 'truck_only',
+    package_evidence_mode: project.requirements.find((req) => req.id === 'trn-package')?.linkedEvidence?.some((id) => project.evidence[id]?.status !== 'failed') ? 'compatible' : inputs.packageEvidence || 'none',
+    carrier_evidence_mode: inputs.carrierEvidence || 'none',
+    route_evidence_mode: inputs.routeEvidence || 'none',
+    security_evidence_mode: inputs.securityEvidence || 'none',
+    shipment_execution_evidence_mode: inputs.executionEvidence || 'none',
+    emergency_response_evidence_mode: project.requirements.find((req) => req.id === 'trn-response')?.linkedEvidence?.some((id) => project.evidence[id]?.status !== 'failed') ? inputs.emergencyEvidence || 'none' : 'none',
+    incident_scenario: 'vehicle_accident_no_release',
+    governed_reviewer_mode: inputs.reviewer || 'none',
+    governed_decision_mode: 'pending',
+    prior_governed_manifest_fingerprint: project.review?.fingerprint || '',
+    prior_governed_decision: project.review?.simulatedAcceptance ? 'APPROVED_FOR_RELEASE_BY_AUTHORITY' : '',
+    flag_state: 'United States',
+    destination_country: inputs.routeProfile === 'truck_port_vessel' ? inputs.destination : 'United States',
+  }
+}
+
+function normalizeTransportationEngineResult(project, engine) {
+  const fallback = evaluateTransportationProject(project)
+  const nodeStatus = {
+    material: engine.readiness_items?.find(([label]) => /Material/.test(label))?.[1],
+    package: engine.package_authorization?.decision,
+    carrier: engine.shipper_carrier_authority?.decision,
+    route: engine.route_mode_analysis?.decision,
+    security: engine.security_physical_protection?.decision,
+    execution: engine.shipment_execution?.decision,
+    emergency: engine.emergency_response_readiness?.decision,
+    reviewer: engine.governed_readiness_decision?.reviewer_status === 'AUTHORIZED_DEMO_REVIEWER' ? 'SUPPORTED' : 'BLOCKED',
+  }
+  const reason = {
+    material: engine.route_mode_analysis?.hrcq_determination?.missing_facts?.join('; ') || fallback.nodes.material.reason,
+    package: engine.package_authorization?.finding?.missing_facts_evidence?.join('; ') || fallback.nodes.package.reason,
+    carrier: firstBlockingReason(engine.shipper_carrier_authority?.entity_findings) || fallback.nodes.carrier.reason,
+    route: firstBlockingReason(engine.route_mode_analysis?.segment_findings) || fallback.nodes.route.reason,
+    security: firstBlockingReason(engine.security_physical_protection?.security_findings) || fallback.nodes.security.reason,
+    execution: firstBlockingReason(engine.shipment_execution?.execution_findings) || fallback.nodes.execution.reason,
+    emergency: firstBlockingReason(engine.emergency_response_readiness?.emergency_findings) || fallback.nodes.emergency.reason,
+    reviewer: engine.governed_readiness_decision?.reviewer_defects?.join('; ') || fallback.nodes.reviewer.reason,
+  }
+  const nodes = Object.fromEntries(Object.entries(fallback.nodes).map(([key, local]) => {
+    const status = nodeStatus[key] === 'SUPPORTED' ? (local.status === 'REVIEW' ? 'REVIEW' : 'SUPPORTED') : 'BLOCKED'
+    return [key, { status, reason: status === 'BLOCKED' ? reason[key] || local.reason : local.reason }]
+  }))
+  const blockers = Object.entries(nodes).filter(([, node]) => node.status === 'BLOCKED').map(([key, node]) => `${labelize(key)}: ${node.reason}`)
+  return {
+    ...fallback,
+    buildMarker: engine.build_marker || fallback.buildMarker,
+    engineResult: engine,
+    nodes,
+    blockers,
+    readyForReview: blockers.length === 0,
+    nextBlocker: blockers[0] || 'Governed review pending',
+    nextAction: blockers[0] ? `Resolve ${blockers[0]}` : 'Begin demonstration-only governed review.',
+  }
+}
+
+function firstBlockingReason(findings = []) {
+  const blocked = findings.find((finding) => finding.status === 'BLOCKED' || finding.final_readiness_status === 'BLOCKED')
+  return blocked?.missing_facts_evidence?.join('; ') || blocked?.unresolved_conflicts_assumptions_missing_information?.join('; ') || blocked?.next_action || ''
+}
+
+function supported(reason) {
+  return { status: 'SUPPORTED', reason }
+}
+
+function review(reason) {
+  return { status: 'REVIEW', reason }
+}
+
+function blocked(reason) {
+  return { status: 'BLOCKED', reason }
 }
 
 function Dashboard({ workspace, reset }) {
@@ -506,6 +812,36 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
   const findings = useMemo(() => evaluateProject(project), [project])
   const activeEvidence = selectedEvidence ? project.evidence[selectedEvidence] : null
 
+  useEffect(() => {
+    if (project.id !== 'fuel-transport') return
+    let cancelled = false
+    async function refreshTransportEvaluation() {
+      const base = await evaluateTransportationWithExistingEngine(project)
+      const manifest = {
+        representedScope: project.scope,
+        inputs: project.inputs,
+        requirements: project.requirements.map((req) => ({ id: req.id, linkedEvidence: [...req.linkedEvidence].sort() })),
+        evidence: Object.values(project.evidence).map((item) => ({
+          id: item.id,
+          filename: item.filename,
+          hash: item.hash,
+          version: item.version,
+          status: item.status,
+          linkedRequirements: [...item.linkedRequirements].sort(),
+          metadata: item.metadata || {},
+        })).sort((a, b) => a.id.localeCompare(b.id)),
+        nodeStatuses: Object.fromEntries(Object.entries(base.nodes).map(([key, node]) => [key, node.status])),
+        engineBuild: base.buildMarker,
+      }
+      const manifestFingerprint = await sha256Text(canonicalStringify(manifest))
+      if (cancelled) return
+      if (project.transportEvaluation?.manifestFingerprint === manifestFingerprint && project.transportEvaluation?.readyForReview === base.readyForReview) return
+      updateProject(project.id, (current) => ({ ...current, transportEvaluation: { ...base, manifestFingerprint, manifestFingerprintShort: manifestFingerprint.slice(0, 16) } }))
+    }
+    refreshTransportEvaluation()
+    return () => { cancelled = true }
+  }, [project, updateProject])
+
   function patchProject(mutator) {
     updateProject(project.id, (current) => {
       const next = structuredClone(current)
@@ -534,9 +870,7 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
       next.inputs[key] = value
       next.history.unshift(history(`Updated ${key}. Affected findings were reevaluated.`, 'Visitor'))
       if (next.id === 'fuel-transport' && next.review?.simulatedAcceptance) {
-        next.review.simulatedAcceptance = false
-        next.review.status = 'stale'
-        next.history.unshift(history('Prior transportation review marked stale after material scope or evidence changed.', 'Atlas'))
+        staleTransportationReview(next, 'material scope or input changed')
       }
     })
   }
@@ -548,21 +882,28 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
       if (!evidence || !requirement) return
       evidence.linkedRequirements = Array.from(new Set([...evidence.linkedRequirements, requirementId]))
       requirement.linkedEvidence = Array.from(new Set([...requirement.linkedEvidence, evidenceId]))
+      if (next.id === 'fuel-transport') staleTransportationReview(next, 'evidence link changed')
       next.history.unshift(history(`Linked ${evidence.filename} to ${requirement.title}.`, 'Visitor'))
     })
   }
 
-  async function attachFile(file, requirementId, replaceId = '') {
+  async function attachFile(file, requirementId, replaceId = '', metadataOverride = null) {
     const processed = await processEvidenceFile(file, project.scope)
+    if (metadataOverride) processed.metadata = metadataOverride
     patchProject((next) => {
       const id = replaceId || `ev-${Date.now()}`
       const previous = next.evidence[id]
+      if (replaceId && processed.status === 'failed' && previous) {
+        previous.replacements = [...(previous.replacements || []), { filename: processed.filename, hash: processed.hash, version: previous.version + 1, replacedAt: nowIso(), status: processed.status, failureReason: processed.failureReason, attempted: true, fullText: processed.fullText || '' }]
+        next.history.unshift(history(`Replacement attempt failed for ${previous.filename}: ${processed.failureReason}. Prior usable version retained.`, 'Visitor'))
+        return
+      }
       next.evidence[id] = {
         ...processed,
         id,
         version: previous ? previous.version + 1 : 1,
         linkedRequirements: requirementId ? [requirementId] : [],
-        replacements: previous ? [...(previous.replacements || []), { filename: previous.filename, hash: previous.hash, version: previous.version, replacedAt: nowIso(), status: previous.status }] : [],
+        replacements: previous ? [...(previous.replacements || []), { filename: previous.filename, hash: previous.hash, version: previous.version, replacedAt: nowIso(), status: previous.status, fullText: previous.fullText || previous.preview || '', linkedRequirements: previous.linkedRequirements }] : [],
         reviewStatus: processed.status === 'failed' ? 'Not reviewable' : 'Pending human review',
       }
       if (requirementId) {
@@ -570,8 +911,7 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
         if (req) req.linkedEvidence = Array.from(new Set([...req.linkedEvidence.filter((x) => x !== replaceId), id]))
       }
       if (next.id === 'fuel-transport' && next.review?.simulatedAcceptance) {
-        next.review.simulatedAcceptance = false
-        next.review.status = 'stale'
+        staleTransportationReview(next, 'evidence identity, content, version, or links changed')
       }
       next.history.unshift(history(`${replaceId ? 'Replaced' : 'Attached'} ${processed.filename}: ${processed.status}.`, 'Visitor'))
     })
@@ -581,14 +921,14 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
   async function loadSampleEvidence(requirementId) {
     const sample = chooseSample(project.id, requirementId)
     const file = new File([sample.text], sample.name, { type: sample.type, lastModified: Date.now() })
-    await attachFile(file, requirementId)
+    await attachFile(file, requirementId, '', sample.metadata || null)
   }
 
   function acceptTransportationDemo() {
     const governed = findings.find((finding) => finding.id === 'finding-trn-governed-review')
-    if (!governed || governed.status !== 'review') return
+    if (!governed || governed.status !== 'review' || !governed.fingerprint) return
     patchProject((next) => {
-      next.review = { fingerprint: governed.fingerprint, status: 'accepted_demo_only', simulatedAcceptance: true, acceptedAt: nowIso() }
+      next.review = { fingerprint: governed.fingerprint, status: 'accepted_demo_only', simulatedAcceptance: true, acceptedAt: nowIso(), evaluation: governed.transportResult }
       next.history.unshift(history('Demonstration-only transportation acceptance recorded for the current manifest fingerprint.', 'Demo authorized reviewer'))
     })
   }
@@ -727,11 +1067,12 @@ function ApplicationDraft({ project, editingQuestion, setEditingQuestion, setInp
 
 function TransportationPath({ project, findings, setInput, loadSampleEvidence, acceptTransportationDemo }) {
   const governed = findings.find((finding) => finding.id === 'finding-trn-governed-review')
+  const result = governed?.transportResult || project.transportEvaluation || evaluateTransportationProject(project)
   return <section className="panel wide transportation-path">
     <h2>Your transportation readiness package</h2>
     <div className="sticky-step">
       <strong>Active step: material and shipment facts</strong>
-      <span>{findings.filter((finding) => !['supported', 'demo_accepted'].includes(finding.status)).length} unresolved findings</span>
+      <span>{result.blockers.length} transportation blockers · manifest {result.manifestFingerprintShort}</span>
     </div>
     <div className="form-grid">
       {[
@@ -741,19 +1082,64 @@ function TransportationPath({ project, findings, setInput, loadSampleEvidence, a
         ['quantity', 'Quantity'],
         ['origin', 'Origin'],
         ['destination', 'Destination'],
-        ['hrcqStatus', 'HRCQ threshold status'],
       ].map(([key, label]) => <label key={key}>{label}<input value={project.inputs[key] || ''} onChange={(event) => setInput(key, event.target.value)} /></label>)}
+      <label>HRCQ threshold status<select value={project.inputs.hrcqStatus || 'insufficient_information'} onChange={(event) => setInput('hrcqStatus', event.target.value)}>
+        <option value="insufficient_information">Insufficient information</option>
+        <option value="claimed_only">Claimed only</option>
+        <option value="resolved_sample_basis">Resolved with sample basis</option>
+      </select></label>
+      <label>HRCQ sample basis<input value={project.inputs.hrcqBasis || ''} placeholder="Sample basis cites 49 CFR 173.403 threshold review" onChange={(event) => setInput('hrcqBasis', event.target.value)} /></label>
+      <label>Route profile<select value={project.inputs.routeProfile || 'truck_only'} onChange={(event) => setInput('routeProfile', event.target.value)}>
+        <option value="truck_only">Highway only</option>
+        <option value="truck_port_vessel">Highway to port and vessel</option>
+      </select></label>
+      <label>Carrier evidence<select value={project.inputs.carrierEvidence || 'none'} onChange={(event) => setInput('carrierEvidence', event.target.value)}>
+        <option value="none">Missing</option>
+        <option value="claimed">Claimed only</option>
+        <option value="truck_supported">Highway supported</option>
+        <option value="multimodal_supported">Multimodal supported</option>
+      </select></label>
+      <label>Route evidence<select value={project.inputs.routeEvidence || 'none'} onChange={(event) => setInput('routeEvidence', event.target.value)}>
+        <option value="none">Missing</option>
+        <option value="truck_supported">Highway route supported</option>
+        <option value="multimodal_supported">Multimodal route supported</option>
+      </select></label>
+      <label>Security evidence<select value={project.inputs.securityEvidence || 'none'} onChange={(event) => setInput('securityEvidence', event.target.value)}>
+        <option value="none">Missing</option>
+        <option value="plan_only">Plan only</option>
+        <option value="domestic_supported">Domestic highway supported</option>
+        <option value="multimodal_supported">Multimodal supported</option>
+      </select></label>
+      <label>Execution evidence<select value={project.inputs.executionEvidence || 'none'} onChange={(event) => setInput('executionEvidence', event.target.value)}>
+        <option value="none">Missing</option>
+        <option value="measurement_out_of_range">Measurement out of range</option>
+        <option value="domestic_supported">Domestic highway supported</option>
+        <option value="multimodal_supported">Multimodal supported</option>
+      </select></label>
+      <label>Emergency response evidence<select value={project.inputs.emergencyEvidence || 'none'} onChange={(event) => setInput('emergencyEvidence', event.target.value)}>
+        <option value="none">Missing</option>
+        <option value="exercise_open_action">Exercise action open</option>
+        <option value="domestic_supported">Domestic highway supported</option>
+        <option value="multimodal_supported">Multimodal supported</option>
+      </select></label>
+      <label>Governed reviewer<select value={project.inputs.reviewer || 'none'} onChange={(event) => setInput('reviewer', event.target.value)}>
+        <option value="none">Not assigned</option>
+        <option value="missing_authority">Assigned, authority missing</option>
+        <option value="valid">Demo authorized reviewer</option>
+      </select></label>
     </div>
-    <p className="warning">Exact unresolved prerequisite: package compatibility evidence linked to the represented HALEU UF6 material facts, plus resolved HRCQ threshold facts.</p>
+    <p className="warning">Exact unresolved prerequisite: {result.nextBlocker}</p>
     <div className="button-row">
       <button type="button" className="button primary" onClick={() => loadSampleEvidence('trn-package')}>Load sample package evidence</button>
-      <button type="button" className="button secondary" onClick={() => setInput('hrcqStatus', 'Resolved for this sample package threshold')}>Resolve HRCQ facts</button>
-      <button type="button" className="button secondary" disabled={governed?.status !== 'review'} onClick={acceptTransportationDemo}>Simulate governed acceptance</button>
+      <button type="button" className="button secondary" onClick={() => { setInput('hrcqStatus', 'resolved_sample_basis'); setInput('hrcqBasis', 'Sample basis cites 49 CFR 173.403 threshold review for the represented package.') }}>Resolve HRCQ facts</button>
+      <button type="button" className="button secondary" onClick={() => loadSampleEvidence('trn-response')}>Load sample emergency response evidence</button>
+      <button type="button" className="button secondary" onClick={() => setInput('reviewer', 'valid')}>Assign demo reviewer</button>
+      <button type="button" className="button secondary" disabled={governed?.status !== 'review' || !governed?.fingerprint} onClick={acceptTransportationDemo}>Simulate governed acceptance</button>
     </div>
     {project.review?.status === 'stale' ? <p className="warning">Prior demonstration review is stale. Reevaluation did not silently reapprove the changed manifest.</p> : null}
     {project.review?.simulatedAcceptance ? <p className="demo-acceptance">Demonstration-only acceptance is current for this manifest. This is not a real shipment authorization.</p> : null}
     <details><summary>Detailed authority and evidence sections</summary><Findings project={project} findings={findings} compact /></details>
-    <details><summary>Optional maritime/change scenarios</summary><p>Switching to maritime or changing material facts creates a new scope and invalidates any prior demonstration review until reevaluated.</p><button type="button" className="button secondary compact" onClick={() => setInput('destination', 'Demo marine terminal and overseas receiving site')}>Apply optional maritime destination</button></details>
+    <details><summary>Optional maritime/change scenarios</summary><p>Switching to maritime adds port, vessel, flag-state, destination, security, execution, and emergency-response gates. It invalidates prior demonstration review until all added scope is reevaluated.</p><button type="button" className="button secondary compact" onClick={() => { setInput('routeProfile', 'truck_port_vessel'); setInput('destination', 'Demo marine terminal and overseas receiving site'); setInput('routeEvidence', 'truck_supported'); setInput('securityEvidence', 'plan_only'); setInput('executionEvidence', 'none'); setInput('emergencyEvidence', 'none') }}>Apply optional maritime scope</button><button type="button" className="button secondary compact" onClick={() => { setInput('carrierEvidence', 'multimodal_supported'); setInput('routeEvidence', 'multimodal_supported'); setInput('securityEvidence', 'multimodal_supported'); setInput('executionEvidence', 'multimodal_supported'); setInput('emergencyEvidence', 'multimodal_supported') }}>Resolve maritime sample scope</button></details>
   </section>
 }
 
@@ -794,6 +1180,8 @@ function EvidenceInventory({ project, activeEvidence, setSelectedEvidence, attac
 }
 
 function EvidencePreview({ item, requirements, linkEvidence, attachFile }) {
+  const displayText = item.preview || item.failureReason || 'No supported preview available.'
+  const failedAttempts = (item.replacements || []).filter((entry) => entry.attempted && entry.status === 'failed')
   return <div className="evidence-preview" data-testid="evidence-preview">
     <dl>
       <div><dt>Filename</dt><dd>{item.filename}</dd></div>
@@ -801,14 +1189,20 @@ function EvidencePreview({ item, requirements, linkEvidence, attachFile }) {
       <div><dt>Attached</dt><dd>{niceTime(item.attachedAt)}</dd></div>
       <div><dt>Status</dt><dd>{readableStatus(item.status)}</dd></div>
       <div><dt>Review</dt><dd>{item.reviewStatus}</dd></div>
+      <div><dt>Full retained length</dt><dd>{(item.fullText || '').length} characters</dd></div>
     </dl>
-    <pre>{item.preview || item.failureReason || 'No supported preview available.'}</pre>
+    {item.previewTruncated ? <p className="warning">Preview is limited to the first 5,000 characters. The full supported document is retained in this browser and available below.</p> : null}
+    {failedAttempts.length ? <p className="warning">Prior usable version retained after failed replacement attempt.</p> : null}
+    <pre>{displayText}</pre>
+    {item.fullText ? <details><summary>Full retained document text</summary><pre>{item.fullText}</pre></details> : null}
+    {item.fullText ? <button type="button" className="button secondary compact" onClick={() => download(`${safeName(item.filename)}.txt`, item.fullText, 'text/plain')}>Download retained text</button> : null}
+    {Object.keys(item.metadata || {}).length ? <details><summary>Evidence metadata</summary><pre>{JSON.stringify(item.metadata, null, 2)}</pre></details> : null}
     <label>Link to requirement<select defaultValue="" onChange={(event) => event.target.value && linkEvidence(item.id, event.target.value)}>
       <option value="">Choose requirement</option>
       {requirements.map((req) => <option value={req.id} key={req.id}>{req.title}</option>)}
     </select></label>
     <label className="file-button">Replace evidence<input type="file" onChange={(event) => event.target.files?.[0] && attachFile(event.target.files[0], item.linkedRequirements[0] || '', item.id)} /></label>
-    {item.replacements?.length ? <details open><summary>Replacement history</summary><ul>{item.replacements.map((entry) => <li key={`${entry.hash}-${entry.version}`}>v{entry.version} {entry.filename} replaced {niceTime(entry.replacedAt)} · {entry.hash.slice(0, 16)}</li>)}</ul></details> : null}
+    {item.replacements?.length ? <details open><summary>Replacement history</summary><ul>{item.replacements.map((entry) => <li key={`${entry.hash}-${entry.version}`}>v{entry.version} {entry.filename} {entry.attempted ? 'attempt failed' : 'replaced'} {niceTime(entry.replacedAt)} · {entry.hash.slice(0, 16)}{entry.failureReason ? ` · ${entry.failureReason}` : ''}<details><summary>Prior retained content</summary><pre>{entry.fullText || 'No retained text available.'}</pre></details></li>)}</ul></details> : null}
   </div>
 }
 
@@ -857,22 +1251,35 @@ function Report({ project, findings }) {
 function buildReport(project, findings) {
   const generated = nowIso()
   const evidenceRows = Object.values(project.evidence).map((item) => [item.filename, item.version, item.status, item.hash, item.linkedRequirements.join('; ')])
-  const csv = ['Filename,Version,Status,Hash,Linked requirements', ...evidenceRows.map((row) => row.map((cell) => `"${String(cell).replaceAll('"', '""')}"`).join(','))].join('\n')
+  const actionRows = findings.map((finding) => [finding.requirementId, finding.title, readableStatus(finding.status), finding.nextAction, finding.role, finding.source.citation])
+  const csv = [
+    'Evidence inventory',
+    'Filename,Version,Status,Hash,Linked requirements',
+    ...evidenceRows.map((row) => row.map(csvCell).join(',')),
+    '',
+    'Action register',
+    'Requirement reference,Finding,Status,Action,Responsible role,Basis',
+    ...actionRows.map((row) => row.map(csvCell).join(',')),
+  ].join('\n')
   const body = `<h1>${esc(project.name)}</h1>
     <p><strong>Generated:</strong> ${esc(niceTime(generated))}</p>
     <p><strong>Stage:</strong> ${esc(project.stage)}</p>
     <p><strong>Purpose:</strong> ${esc(project.purpose)}</p>
     <p><strong>Represented scope:</strong> ${esc(project.scope)}</p>
     <h2>Inputs / Application Draft</h2>${Object.entries(project.inputs).map(([key, value]) => `<p><strong>${esc(labelize(key))}:</strong> ${esc(value || 'Missing')}</p>`).join('')}
-    <h2>Evidence Inventory and Versions</h2>${Object.values(project.evidence).map((item) => `<p><strong>${esc(item.filename)}</strong> v${item.version} · ${esc(readableStatus(item.status))} · ${esc(item.hash)} · linked: ${esc(item.linkedRequirements.join(', ') || 'None')}</p>`).join('')}
+    <h2>Evidence Inventory and Versions</h2>${Object.values(project.evidence).map((item) => `<p><strong>${esc(item.filename)}</strong> v${item.version} · ${esc(readableStatus(item.status))} · ${esc(item.hash)} · linked: ${esc(item.linkedRequirements.join(', ') || 'None')} · full retained characters: ${esc((item.fullText || '').length)}</p>`).join('')}
     <h2>Findings and Basis</h2>${findings.map((finding) => `<section><h3>${esc(finding.title)} · ${esc(readableStatus(finding.status))}</h3><p>${esc(finding.reason)}</p><p><strong>Basis:</strong> ${esc(finding.source.citation)} · ${esc(finding.source.version)}</p><p><strong>Unresolved gaps/conflicts:</strong> ${esc([...finding.missingEvidence, ...finding.applicabilityQuestions].join(' ') || 'None represented')}</p><p><strong>Next action:</strong> ${esc(finding.nextAction)} · ${esc(finding.role)}</p></section>`).join('')}
     <h2>History</h2>${project.history.map((entry) => `<p>${esc(niceTime(entry.at))} · ${esc(entry.actor)} · ${esc(entry.action)}</p>`).join('')}
     <h2>Demo Limitations</h2><p>This public demonstration uses browser-local storage, sample evidence, and simulated review. It does not upload documents to Atlas, create a regulatory submission, grant authorization, provide real shipment authorization, authorize a real shipment, or represent NRC, DOT, PHMSA, supplier, carrier, or human acceptance.</p>`
   return { body, html: `<!doctype html><html><head><meta charset="utf-8"><title>${esc(project.name)} report</title><style>body{font-family:Arial,sans-serif;line-height:1.5;max-width:960px;margin:40px auto;color:#111}h1,h2{border-bottom:1px solid #ccc;padding-bottom:6px}</style></head><body>${body}</body></html>`, csv }
 }
 
+function csvCell(value) {
+  return `"${String(value ?? '').replaceAll('"', '""')}"`
+}
+
 async function processEvidenceFile(file, scope) {
-  const base = { filename: file.name, size: file.size, type: file.type || 'application/octet-stream', attachedAt: nowIso(), scope, status: 'processing', linkedRequirements: [], preview: '', replacements: [] }
+  const base = { filename: file.name, size: file.size, type: file.type || 'application/octet-stream', attachedAt: nowIso(), scope, status: 'processing', linkedRequirements: [], preview: '', fullText: '', previewTruncated: false, replacements: [], metadata: {} }
   if (file.size > MAX_FILE_SIZE) return { ...base, status: 'failed', hash: 'not-computed', failureReason: 'File is larger than the 512 KB public-demo limit.' }
   const extension = file.name.split('.').pop()?.toLowerCase()
   const typeSupported = supportedTypes.has(file.type) || ['txt', 'md', 'markdown', 'csv', 'json'].includes(extension)
@@ -880,11 +1287,15 @@ async function processEvidenceFile(file, scope) {
   const hash = await sha256(buffer)
   if (!typeSupported) return { ...base, hash, status: 'failed', failureReason: 'Unsupported file type. This public demo processes TXT, Markdown, CSV, and JSON only.' }
   const text = new TextDecoder('utf-8', { fatal: false }).decode(buffer)
+  let metadata = {}
   if (file.type === 'application/json' || extension === 'json') {
-    try { JSON.parse(text) } catch { return { ...base, hash, status: 'failed', failureReason: 'Malformed JSON. Atlas computed a hash but did not treat the file as extracted evidence.' } }
+    try {
+      const parsed = JSON.parse(text)
+      metadata = parsed?.metadata && typeof parsed.metadata === 'object' ? parsed.metadata : {}
+    } catch { return { ...base, hash, status: 'failed', failureReason: 'Malformed JSON. Atlas computed a hash but did not treat the file as extracted evidence.' } }
   }
   if (text.includes('\u0000')) return { ...base, hash, status: 'failed', failureReason: 'File content does not appear to be a supported text document.' }
-  return { ...base, hash, status: 'processed', preview: text.slice(0, 5000) }
+  return { ...base, hash, status: 'processed', preview: text.slice(0, 5000), fullText: text, previewTruncated: text.length > 5000, metadata }
 }
 
 async function sha256(buffer) {
@@ -892,13 +1303,37 @@ async function sha256(buffer) {
   return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('')
 }
 
+async function sha256Text(value) {
+  return sha256(new TextEncoder().encode(value))
+}
+
+function canonicalStringify(value) {
+  if (Array.isArray(value)) return `[${value.map((item) => canonicalStringify(item)).join(',')}]`
+  if (value && typeof value === 'object') return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${canonicalStringify(value[key])}`).join(',')}}`
+  return JSON.stringify(value)
+}
+
+function staleTransportationReview(project, reason) {
+  if (!project.review?.simulatedAcceptance) return
+  project.review.simulatedAcceptance = false
+  project.review.status = 'stale'
+  project.history.unshift(history(`Prior transportation review marked stale after ${reason}.`, 'Atlas'))
+}
+
 function chooseSample(projectId, requirementId) {
   if (projectId === 'reactor-app' && requirementId === 'p53-legal') return sampleDocuments.formationRecord
+  if (projectId === 'reactor-app' && requirementId === 'p53-financial') return sampleDocuments.financialPlan
+  if (projectId === 'reactor-app' && requirementId === 'p53-environment') return sampleDocuments.environmentalReport
   if (projectId === 'reactor-app') return sampleDocuments.safetySummary
   if (projectId === 'fuel-transport' && requirementId === 'trn-carrier') return sampleDocuments.carrier
+  if (projectId === 'fuel-transport' && requirementId === 'trn-route') return sampleDocuments.routeRecord
+  if (projectId === 'fuel-transport' && requirementId === 'trn-security') return sampleDocuments.securityRecord
+  if (projectId === 'fuel-transport' && requirementId === 'trn-execution') return sampleDocuments.executionRecord
+  if (projectId === 'fuel-transport' && requirementId === 'trn-response') return sampleDocuments.emergencyResponse
   if (projectId === 'fuel-transport') return sampleDocuments.transportPackage
   if (projectId === 'supplier-qualification' && requirementId === 'sup-qap-current') return sampleDocuments.supplierCurrent
-  return sampleDocuments.supplierCurrent
+  if (projectId === 'supplier-qualification' && requirementId === 'sup-calibration') return sampleDocuments.calibrationRecord
+  return sampleDocuments.supplierMisleading
 }
 
 function readableStatus(status) {
