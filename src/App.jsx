@@ -540,7 +540,7 @@ function evaluateProject(project) {
       supportingEvidence: linked,
       missingEvidence: linked.length ? [] : ['Processed evidence linked to this requirement'],
       applicabilityQuestions: status === 'supported' ? [] : ['Does the sample scope fully match this requirement?', 'Has an authorized reviewer accepted the evidence?'],
-      nextAction: req.question,
+      nextAction: findingNextAction(project, req, status, evidence),
       role: project.role,
     }
   })
@@ -564,7 +564,7 @@ function evaluateProject(project) {
       supportingEvidence: evidence.map((item) => item.id),
       missingEvidence: readyForReview ? [] : provisional.blockers,
       applicabilityQuestions: ['Is the package evidence applicable to these material facts?', 'Has the authorized reviewer accepted this manifest?'],
-      nextAction: readyForReview ? 'Begin demonstration-only governed review.' : evaluationUnavailable ? 'Retry detailed transportation evaluation.' : provisional.nextAction,
+      nextAction: priorCurrent ? 'Inspect the transportation report and maintain the reviewed shipment information.' : readyForReview ? 'Begin demonstration-only governed review.' : evaluationUnavailable ? 'Retry detailed transportation evaluation.' : !evaluationComplete ? 'Wait for shipment checking to finish before review.' : result.nextAction,
       role: 'Governed reviewer',
       fingerprint,
       transportResult: result || provisional,
@@ -572,6 +572,37 @@ function evaluateProject(project) {
   }
 
   return findings
+}
+
+function findingNextAction(project, req, status, evidence) {
+  if (project.id === 'supplier-qualification' && req.id === 'sup-qap-current') {
+    if (status === 'review') return 'Review the replacement quality program and confirm its applicability and supersession of Revision B.'
+    const failed = evidence.filter((item) => item.linkedRequirements.includes(req.id)).flatMap((item) => [item, ...(item.replacements || [])]).find((item) => item.status === 'failed')
+    return failed ? `Replacement failed: ${failed.failureReason}. Prior records remain available. Obtain valid replacement evidence.` : 'Obtain valid replacement evidence for the superseded quality program document.'
+  }
+  if (status === 'review') return `Review the linked evidence for ${req.title.toLowerCase()} and confirm applicability.`
+  if (status === 'supported') return `Maintain the supporting record for ${req.title.toLowerCase()}.`
+  return req.question
+}
+
+function primaryNextAction(findings) {
+  const transportation = findings.find((finding) => finding.id === 'finding-trn-governed-review')
+  if (transportation) return transportation.nextAction
+  return findings.find((finding) => !['supported', 'demo_accepted'].includes(finding.status))?.nextAction || 'Inspect the report and maintain the supporting records.'
+}
+
+function transportationStatus(project) {
+  const current = currentTransportationEvaluation(project)
+  if (project.evaluationStatus === 'error') return `Shipment checking failed: ${project.evaluationError} Retry detailed evaluation.`
+  if (!current) return 'Checking the updated shipment information.'
+  if (project.review?.status === 'stale') return `Shipment information changed. The previous review no longer applies.${current.readyForReview ? '' : ` Outstanding requirement: ${current.nextBlocker}`}`
+  if (project.review?.simulatedAcceptance && project.review.fingerprint === current.manifestFingerprint) return 'Demonstration-only acceptance is current for this shipment information.'
+  return current.readyForReview ? 'The sample package is ready for review.' : `Exact unresolved prerequisite: ${current.nextBlocker}`
+}
+
+function ReportAction({ project, setView }) {
+  const label = project.id === 'reactor-app' ? 'View your application draft' : project.id === 'fuel-transport' ? 'View your transportation report' : 'View your supplier review report'
+  return <button type="button" className="button primary" onClick={() => setView('report')}>{label}</button>
 }
 
 function supplierRequirementResolved(project, requirementId, evidence) {
@@ -783,7 +814,7 @@ function Dashboard({ workspace, reset }) {
             <dl>
               <div><dt>Current condition</dt><dd>{unresolved.length} evidence gaps or review findings</dd></div>
               <div><dt>Last saved</dt><dd>{niceTime(workspace.lastSavedAt)}</dd></div>
-              <div><dt>Primary next action</dt><dd>{project.nextAction}</dd></div>
+              <div><dt>Primary next action</dt><dd>{primaryNextAction(findings)}</dd></div>
             </dl>
           </a>
         })}
@@ -1015,7 +1046,7 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
         ].map(([id, label]) => <button className={view === id ? 'active' : ''} type="button" onClick={() => setView(id)} key={id}>{label}</button>)}
       </nav>
       {view === 'overview' ? <Overview project={project} findings={findings} setView={setView} /> : null}
-      {view === 'requirements' ? <Requirements project={project} findings={findings} setInput={setInput} linkEvidence={linkEvidence} loadSampleEvidence={loadSampleEvidence} attachFile={attachFile} acceptTransportationDemo={acceptTransportationDemo} retryTransportationEvaluation={retryTransportationEvaluation} /> : null}
+      {view === 'requirements' ? <Requirements project={project} findings={findings} setView={setView} setInput={setInput} linkEvidence={linkEvidence} loadSampleEvidence={loadSampleEvidence} attachFile={attachFile} acceptTransportationDemo={acceptTransportationDemo} retryTransportationEvaluation={retryTransportationEvaluation} /> : null}
       {view === 'evidence' ? <EvidenceInventory project={project} activeEvidence={activeEvidence} setSelectedEvidence={setSelectedEvidence} attachFile={attachFile} linkEvidence={linkEvidence} /> : null}
       {view === 'findings' ? <Findings project={project} findings={findings} /> : null}
       {view === 'history' ? <History project={project} /> : null}
@@ -1047,7 +1078,7 @@ function Overview({ project, findings, setView }) {
       <div className="summary-grid">
         <article><span>What this project is trying to accomplish</span><strong>{project.purpose}</strong></article>
         <article><span>What Atlas identified</span><strong>{open.length ? `${open.length} unresolved evidence or review findings` : 'No unresolved demo findings'}</strong></article>
-        <article><span>What the visitor should do next</span><strong>{project.nextAction}</strong></article>
+        <article><span>What the visitor should do next</span><strong>{primaryNextAction(findings)}</strong></article>
         <article><span>Deliverable</span><strong>{project.id === 'reactor-app' ? 'Application draft and evidence/action register' : project.id === 'fuel-transport' ? 'Transportation readiness package' : 'Supplier review report'}</strong></article>
       </div>
     </section>
@@ -1055,6 +1086,7 @@ function Overview({ project, findings, setView }) {
       <h2>Next Actions</h2>
       <ul className="action-list">{open.slice(0, 4).map((finding) => <li key={finding.id}><strong>{finding.nextAction}</strong><span>{finding.role}</span></li>)}</ul>
       <button type="button" className="button primary" onClick={() => setView('requirements')}>Continue work</button>
+      <ReportAction project={project} setView={setView} />
     </section>
     <section className="panel">
       <h2>Review Records</h2>
@@ -1063,7 +1095,7 @@ function Overview({ project, findings, setView }) {
   </div>
 }
 
-function Requirements({ project, findings, setInput, linkEvidence, loadSampleEvidence, attachFile, acceptTransportationDemo, retryTransportationEvaluation }) {
+function Requirements({ project, findings, setView, setInput, linkEvidence, loadSampleEvidence, attachFile, acceptTransportationDemo, retryTransportationEvaluation }) {
   const [editingQuestion, setEditingQuestion] = useState(null)
   const guided = project.guided
   const currentQuestion = guided?.questions[guided.current]
@@ -1071,6 +1103,7 @@ function Requirements({ project, findings, setInput, linkEvidence, loadSampleEvi
   return <div className="workspace-grid">
     {project.id === 'reactor-app' ? <section className="panel wide" data-testid="part53-builder">
       <h2>{guided.complete ? 'Application Results' : 'Guided Application'}</h2>
+      {guided.complete ? <><p>Your answers have been assembled into a draft. Review the remaining evidence gaps and open items before downloading.</p><ReportAction project={project} setView={setView} /></> : null}
       {!guided.complete ? <div className="guided-box">
         <p className="citation">{sourceRecords.part53.citation}</p>
         <label>{currentQuestion.prompt}<textarea value={project.inputs[currentQuestion.id] || ''} onChange={(event) => setInput(currentQuestion.id, event.target.value)} /></label>
@@ -1081,6 +1114,7 @@ function Requirements({ project, findings, setInput, linkEvidence, loadSampleEvi
       </div> : <ApplicationDraft project={project} editingQuestion={editingQuestion} setEditingQuestion={setEditingQuestion} setInput={setInput} />}
     </section> : null}
     {project.id === 'fuel-transport' ? <TransportationPath project={project} findings={findings} setInput={setInput} loadSampleEvidence={loadSampleEvidence} acceptTransportationDemo={acceptTransportationDemo} retryTransportationEvaluation={retryTransportationEvaluation} /> : null}
+    {project.id !== 'reactor-app' ? <ReportAction project={project} setView={setView} /> : null}
     <section className="panel wide">
       <h2>Requirements</h2>
       <div className="requirement-list">
@@ -1135,20 +1169,16 @@ function ApplicationDraft({ project, editingQuestion, setEditingQuestion, setInp
 function TransportationPath({ project, findings, setInput, loadSampleEvidence, acceptTransportationDemo, retryTransportationEvaluation }) {
   const governed = findings.find((finding) => finding.id === 'finding-trn-governed-review')
   const current = currentTransportationEvaluation(project)
-  const stale = project.staleTransportEvaluation
   const result = current || evaluateTransportationProject(project)
   const evaluationReady = Boolean(current?.readyForReview && governed?.status === 'review' && governed?.fingerprint)
   return <section className="panel wide transportation-path">
     <h2>Your transportation readiness package</h2>
     <div className="sticky-step">
       <strong>Active step: material and shipment facts</strong>
-      <span>{result.blockers.length} transportation blockers · manifest {result.manifestFingerprintShort}</span>
+      <span>{current ? `${result.blockers.length} transportation blockers` : 'Checking shipment requirements'}</span>
     </div>
-    {project.evaluationStatus === 'evaluating' ? <p className="warning" data-testid="transport-evaluation-state">Detailed transportation evaluation is running for project revision {project.transportRevision}. Acceptance is disabled until evaluation and hashing complete.</p> : null}
-    {project.evaluationStatus === 'error' ? <p className="warning" data-testid="transport-evaluation-state">Detailed transportation evaluation unavailable: {project.evaluationError}</p> : null}
-    {current ? <p data-testid="transport-evaluation-state">Detailed transportation evaluation complete for project revision {current.projectRevision}. {current.readyForReview ? 'All applicable transportation gates are ready for governed demo review.' : 'Unresolved detailed transportation gates remain.'}</p> : null}
-    {!current && project.evaluationStatus !== 'error' ? <p className="warning">Provisional summary shown only for navigation. It is not a completed detailed transportation evaluation.</p> : null}
-    {stale ? <p className="warning">Historical/stale evaluation retained for revision {stale.projectRevision}; current revision is {project.transportRevision}.</p> : null}
+    <p role="status" data-testid="transport-evaluation-state">{transportationStatus(project)}</p>
+    <TransportationDetails project={project} />
     <div className="form-grid">
       {[
         ['material', 'Material'],
@@ -1203,7 +1233,6 @@ function TransportationPath({ project, findings, setInput, loadSampleEvidence, a
         <option value="valid">Demo authorized reviewer</option>
       </select></label>
     </div>
-    <p className="warning">Exact unresolved prerequisite: {result.nextBlocker}</p>
     <div className="button-row">
       <button type="button" className="button primary" onClick={() => loadSampleEvidence('trn-package')}>Load sample package evidence</button>
       <button type="button" className="button secondary" onClick={() => { setInput('hrcqStatus', 'resolved_sample_basis'); setInput('hrcqBasis', 'Sample basis cites 49 CFR 173.403 threshold review for the represented package.') }}>Resolve HRCQ facts</button>
@@ -1213,8 +1242,7 @@ function TransportationPath({ project, findings, setInput, loadSampleEvidence, a
       {project.evaluationStatus === 'error' ? <button type="button" className="button secondary" onClick={retryTransportationEvaluation}>Retry detailed evaluation</button> : null}
     </div>
     {project.acceptanceError ? <p className="warning">{project.acceptanceError}</p> : null}
-    {project.review?.status === 'stale' ? <p className="warning">Prior demonstration review is stale. Reevaluation did not silently reapprove the changed manifest.</p> : null}
-    {project.review?.simulatedAcceptance ? <p className="demo-acceptance">Demonstration-only acceptance is current for this manifest. This is not a real shipment authorization.</p> : null}
+    <p className="demo-acceptance">Demonstration only — not shipment authorization</p>
     <details><summary>Detailed authority and evidence sections</summary><Findings project={project} findings={findings} compact /></details>
     <details><summary>Optional maritime/change scenarios</summary><p>Switching to maritime adds port, vessel, flag-state, destination, security, execution, and emergency-response gates. It invalidates prior demonstration review until all added scope is reevaluated.</p><button type="button" className="button secondary compact" onClick={() => { setInput('routeProfile', 'truck_port_vessel'); setInput('destination', 'Demo marine terminal and overseas receiving site'); setInput('routeEvidence', 'truck_supported'); setInput('securityEvidence', 'plan_only'); setInput('executionEvidence', 'none'); setInput('emergencyEvidence', 'none') }}>Apply optional maritime scope</button><button type="button" className="button secondary compact" onClick={() => { setInput('carrierEvidence', 'multimodal_supported'); setInput('routeEvidence', 'multimodal_supported'); setInput('securityEvidence', 'multimodal_supported'); setInput('executionEvidence', 'multimodal_supported'); setInput('emergencyEvidence', 'multimodal_supported') }}>Resolve maritime sample scope</button></details>
   </section>
@@ -1305,17 +1333,28 @@ function Findings({ project, findings, compact = false }) {
   </section>
 }
 
+function TransportationDetails({ project }) {
+  return <details><summary>Evaluation details and prior records</summary>
+    <p>Current revision: {project.transportRevision}. Evaluation: {project.evaluationStatus}.</p>
+    <p>Fingerprint: {currentTransportationEvaluation(project)?.manifestFingerprint || 'Awaiting completed checking'}</p>
+    {project.staleTransportEvaluation ? <p>Prior evaluation revision: {project.staleTransportEvaluation.projectRevision}. Retained because: {project.staleTransportEvaluation.staleReason}. Fingerprint: {project.staleTransportEvaluation.manifestFingerprint}</p> : null}
+  </details>
+}
+
 function History({ project }) {
   return <section className="panel wide">
     <h2>History</h2>
+    {project.id === 'fuel-transport' ? <TransportationDetails project={project} /> : null}
     <ol className="history-list">{project.history.map((entry) => <li key={entry.id}><strong>{niceTime(entry.at)}</strong><span>{entry.actor}</span><p>{entry.action}</p></li>)}</ol>
   </section>
 }
 
 function Report({ project, findings }) {
+  const heading = useRef(null)
+  useEffect(() => { heading.current?.focus({ preventScroll: true }) }, [])
   const report = buildReport(project, findings)
   return <section className="panel wide report-panel">
-    <h2>Project Report</h2>
+    <h2 ref={heading} tabIndex={-1}>Project Report</h2>
     <div className="button-row">
       <button type="button" className="button primary" onClick={() => download(`${safeName(project.name)}.html`, report.html, 'text/html')}>Download HTML report</button>
       <button type="button" className="button secondary" onClick={() => download(`${safeName(project.name)}-evidence-register.csv`, report.csv, 'text/csv')}>Download evidence/action register</button>
@@ -1330,6 +1369,13 @@ function buildReport(project, findings) {
   const evidenceRows = Object.values(project.evidence).map((item) => [item.filename, item.version, item.status, item.hash, item.linkedRequirements.join('; ')])
   const actionRows = findings.map((finding) => [finding.requirementId, finding.title, readableStatus(finding.status), finding.nextAction, finding.role, finding.source.citation])
   const csv = [
+    ['Project', project.name].map(csvCell).join(','),
+    ['Scope', project.scope].map(csvCell).join(','),
+    ['Generated', generated].map(csvCell).join(','),
+    ['Review state', project.id === 'fuel-transport' ? transportationStatus(project) : 'Qualified human review remains required'].map(csvCell).join(','),
+    'Demo limitations: browser-local sample workspace; simulated review; no regulatory acceptance or shipment authorization.',
+    'Inputs',
+    ...Object.entries(project.inputs).map((row) => row.map(csvCell).join(',')),
     'Evidence inventory',
     'Filename,Version,Status,Hash,Linked requirements',
     ...evidenceRows.map((row) => row.map(csvCell).join(',')),
@@ -1343,12 +1389,14 @@ function buildReport(project, findings) {
     <p><strong>Stage:</strong> ${esc(project.stage)}</p>
     <p><strong>Purpose:</strong> ${esc(project.purpose)}</p>
     <p><strong>Represented scope:</strong> ${esc(project.scope)}</p>
+    <p><strong>Primary next action:</strong> ${esc(primaryNextAction(findings))}</p>
+    <p><strong>Review state:</strong> ${esc(project.id === 'fuel-transport' ? transportationStatus(project) : 'Qualified human review remains required')}</p>
     <h2>Inputs / Application Draft</h2>${Object.entries(project.inputs).map(([key, value]) => `<p><strong>${esc(labelize(key))}:</strong> ${esc(value || 'Missing')}</p>`).join('')}
     <h2>Evidence Inventory and Versions</h2>${Object.values(project.evidence).map((item) => `<p><strong>${esc(item.filename)}</strong> v${item.version} · ${esc(readableStatus(item.status))} · ${esc(item.hash)} · linked: ${esc(item.linkedRequirements.join(', ') || 'None')} · full retained characters: ${esc((item.fullText || '').length)}</p>`).join('')}
     <h2>Findings and Basis</h2>${findings.map((finding) => `<section><h3>${esc(finding.title)} · ${esc(readableStatus(finding.status))}</h3><p>${esc(finding.reason)}</p><p><strong>Basis:</strong> ${esc(finding.source.citation)} · ${esc(finding.source.version)}</p><p><strong>Unresolved gaps/conflicts:</strong> ${esc([...finding.missingEvidence, ...finding.applicabilityQuestions].join(' ') || 'None represented')}</p><p><strong>Next action:</strong> ${esc(finding.nextAction)} · ${esc(finding.role)}</p></section>`).join('')}
     <h2>History</h2>${project.history.map((entry) => `<p>${esc(niceTime(entry.at))} · ${esc(entry.actor)} · ${esc(entry.action)}</p>`).join('')}
     <h2>Demo Limitations</h2><p>This public demonstration uses browser-local storage, sample evidence, and simulated review. It does not upload documents to Atlas, create a regulatory submission, grant authorization, provide real shipment authorization, authorize a real shipment, or represent NRC, DOT, PHMSA, supplier, carrier, or human acceptance.</p>`
-  return { body, html: `<!doctype html><html><head><meta charset="utf-8"><title>${esc(project.name)} report</title><style>body{font-family:Arial,sans-serif;line-height:1.5;max-width:960px;margin:40px auto;color:#111}h1,h2{border-bottom:1px solid #ccc;padding-bottom:6px}</style></head><body>${body}</body></html>`, csv }
+  return { body, html: `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(project.name)} report</title><style>body{font-family:Arial,sans-serif;line-height:1.5;max-width:960px;margin:40px auto;padding:0 20px;color:#111;overflow-wrap:anywhere}h1,h2{border-bottom:1px solid #ccc;padding-bottom:6px;break-after:avoid}@page{margin:18mm}@media print{body{margin:0;padding:0}h3{break-after:avoid}}</style></head><body>${body}</body></html>`, csv }
 }
 
 function csvCell(value) {

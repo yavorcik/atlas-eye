@@ -7,13 +7,14 @@ import test from 'node:test'
 import { chromium } from 'playwright'
 
 async function server() {
+  if (process.env.ATLAS_PREVIEW_URL) return { pid: 0 }
   const child = spawn('./node_modules/.bin/vite', ['preview', '--host', '127.0.0.1', '--port', '4173'], { detached: true, stdio: 'ignore' })
   child.unref()
   for (let i = 0; i < 50; i += 1) {
     try { const r = await fetch('http://127.0.0.1:4173/'); if (r.ok) return child } catch {}
     await new Promise(r => setTimeout(r, 100))
   }
-  try { process.kill(-child.pid, 'SIGTERM') } catch {}
+  try { child.pid && process.kill(-child.pid, 'SIGTERM') } catch {}
   throw new Error('preview did not start')
 }
 
@@ -26,7 +27,7 @@ test('customer-testable Mission Control workspace journeys', async () => {
   const errors = []
   page.on('console', m => { if (m.type() === 'error') errors.push(m.text()) })
   try {
-    await page.goto('http://127.0.0.1:4173/mission-control/', { waitUntil: 'networkidle' })
+    await page.goto(`${process.env.ATLAS_PREVIEW_URL || 'http://127.0.0.1:4173'}/mission-control/`, { waitUntil: 'networkidle' })
     await expectText(page, 'h1', 'Open a sample project.')
     assert.equal(await page.locator('.project-card').count(), 3)
     await assertContains(page, 'body', '7 evidence gaps or review findings')
@@ -40,6 +41,9 @@ test('customer-testable Mission Control workspace journeys', async () => {
       await page.waitForTimeout(140)
     }
     await page.locator('[data-testid="part53-results"]').waitFor({ state: 'visible' })
+    await page.getByRole('button', { name: 'View your application draft' }).click()
+    assert.equal(await page.getByRole('heading', { name: 'Project Report', exact: true }).evaluate(el => el === document.activeElement), true)
+    await page.locator('.project-tabs').getByRole('button', { name: 'Requirements / application' }).click()
     await page.getByRole('button', { name: 'Edit answer' }).first().click()
     await page.locator('textarea').first().fill('Edited applicant identity answer')
     await page.click('text=Save edit')
@@ -95,7 +99,7 @@ test('customer-testable Mission Control workspace journeys', async () => {
     await page.locator('.project-tabs').getByRole('button', { name: 'Requirements / application', exact: true }).click()
     await assertContains(page, 'body', 'Edited applicant identity answer')
 
-    await page.goto('http://127.0.0.1:4173/mission-control/transportation/', { waitUntil: 'networkidle' })
+    await page.goto((process.env.ATLAS_PREVIEW_URL || 'http://127.0.0.1:4173') + '/mission-control/transportation/', { waitUntil: 'networkidle' })
     await assertContains(page, 'body', 'Exact unresolved prerequisite: Package')
     await page.click('text=Load sample package evidence')
     await page.click('text=Resolve HRCQ facts')
@@ -108,14 +112,14 @@ test('customer-testable Mission Control workspace journeys', async () => {
     await assertContains(page, 'body', 'Demonstration-only acceptance is current')
     await page.getByLabel('U-235 enrichment wt%').fill('19.50')
     await page.waitForTimeout(250)
-    await assertContains(page, 'body', 'Prior demonstration review is stale')
+    await assertContains(page, 'body', 'Shipment information changed. The previous review no longer applies.')
     await page.locator('.project-tabs').getByRole('button', { name: 'Report', exact: true }).click()
     const trnDownload = await Promise.all([page.waitForEvent('download'), page.click('text=Download HTML report')]).then(([download]) => download)
     const trnReport = await readFile(await trnDownload.path(), 'utf8')
     assert.match(trnReport, /Prior transportation review marked stale|stale/i)
     assert.match(trnReport, /does not .*real shipment authorization/i)
 
-    await page.goto('http://127.0.0.1:4173/mission-control/evidence/', { waitUntil: 'networkidle' })
+    await page.goto((process.env.ATLAS_PREVIEW_URL || 'http://127.0.0.1:4173') + '/mission-control/evidence/', { waitUntil: 'networkidle' })
     await page.locator('.project-tabs').getByRole('button', { name: 'Requirements', exact: true }).click()
     await assertContains(page, 'body', 'lacks explicit replacement identity metadata')
     const misleading = path.join(fixtureDir, 'supplier-quality-program-rev-c-misleading.txt')
@@ -137,6 +141,19 @@ test('customer-testable Mission Control workspace journeys', async () => {
     await page.waitForTimeout(250)
     await page.locator('.project-tabs').getByRole('button', { name: 'Findings and actions', exact: true }).click()
     await assertContains(page, 'body', 'Explicit replacement identity and supersession metadata are linked')
+    const supplierAction = 'Review the replacement quality program and confirm its applicability and supersession of Revision B.'
+    await assertContains(page, 'body', supplierAction)
+    await page.locator('.project-tabs').getByRole('button', { name: 'Overview', exact: true }).click()
+    await assertContains(page, 'body', supplierAction)
+    await page.getByRole('button', { name: 'View your supplier review report' }).click()
+    await assertContains(page, '.print-report', supplierAction)
+    for (const label of ['Download HTML report', 'Download evidence/action register']) {
+      const [download] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: label, exact: true }).click()])
+      const content = await readFile(await download.path(), 'utf8')
+      assert.ok(content.includes(supplierAction))
+      assert.match(content, /Review needed/)
+      assert.match(content, /sup-qap-current/)
+    }
     await page.locator('.project-tabs').getByRole('button', { name: 'History', exact: true }).click()
     await assertContains(page, 'body', 'sample-supplier-quality-program-rev-c.txt')
 
@@ -156,7 +173,7 @@ test('customer-testable Mission Control workspace journeys', async () => {
     assert.deepEqual(errors, [])
   } finally {
     await browser.close()
-    try { process.kill(-child.pid, 'SIGTERM') } catch {}
+    try { child.pid && process.kill(-child.pid, 'SIGTERM') } catch {}
   }
 })
 
@@ -173,7 +190,7 @@ test('storage failure shows an error instead of a false saved state', async () =
     await assertContains(page, 'body', 'Save failed')
   } finally {
     await browser.close()
-    try { process.kill(-child.pid, 'SIGTERM') } catch {}
+    try { child.pid && process.kill(-child.pid, 'SIGTERM') } catch {}
   }
 })
 
@@ -182,7 +199,7 @@ test('failed supplier replacement keeps prior usable evidence version', async ()
   const browser = await chromium.launch({ headless: true })
   const page = await browser.newPage()
   try {
-    await page.goto('http://127.0.0.1:4173/mission-control/evidence/', { waitUntil: 'networkidle' })
+    await page.goto((process.env.ATLAS_PREVIEW_URL || 'http://127.0.0.1:4173') + '/mission-control/evidence/', { waitUntil: 'networkidle' })
     await page.locator('.project-tabs').getByRole('button', { name: 'Evidence', exact: true }).click()
     await page.getByRole('button', { name: 'sample-supplier-quality-program-rev-b.txt' }).click()
     const fixtureDir = path.join(tmpdir(), 'atlas-demo-fixtures')
@@ -196,7 +213,7 @@ test('failed supplier replacement keeps prior usable evidence version', async ()
     await assertContains(page, '[data-testid="evidence-preview"]', 'Replacement history')
   } finally {
     await browser.close()
-    try { process.kill(-child.pid, 'SIGTERM') } catch {}
+    try { child.pid && process.kill(-child.pid, 'SIGTERM') } catch {}
   }
 })
 

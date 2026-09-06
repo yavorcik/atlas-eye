@@ -145,12 +145,14 @@ label textarea { min-height: 120px; resize: vertical; }
 .history-list { display: grid; gap: .7rem; padding-left: 1.2rem; }
 .history-list li { padding: .6rem; border-left: 2px solid var(--atlas-red); background: #0b0b0c; }
 .history-list span { display: block; color: #ffc7c7; }
-.report-panel .print-report { margin-top: 1rem; padding: 1rem; background: #fff; color: #111; }
+.report-panel .print-report { margin-top: 1rem; padding: 1rem; background: #fff; color: #111; overflow-wrap: anywhere; }
+.project-workspace details { overflow-wrap: anywhere; }
 .report-panel .print-report p, .report-panel .print-report li { color: #111; }
 @media (max-width: 900px) {
   .project-list, .workspace-grid, .summary-grid, .form-grid { grid-template-columns: 1fr; }
   .status-strip { grid-template-columns: 1fr; }
-  .project-tabs { top: 116px; }
+  .workspace-header { position: static; }
+  .project-tabs { top: 0; }
   .transportation-path .sticky-step { position: static; flex-direction: column; }
   .evidence-table article { grid-template-columns: 1fr; }
 }

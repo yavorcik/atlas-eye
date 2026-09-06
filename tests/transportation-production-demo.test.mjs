@@ -45,12 +45,12 @@ test('Transportation workspace enforces each gate, hashes manifest, accepts only
     assert.equal(await page.getByRole('button', { name: 'Simulate governed acceptance' }).isEnabled(), true)
     await page.click('text=Simulate governed acceptance')
     await assertContains(page, 'body', 'Demonstration-only acceptance is current')
-    await assertContains(page, 'body', 'not a real shipment authorization')
+    await assertContains(page, 'body', 'not shipment authorization')
 
     await page.getByLabel('U-235 enrichment wt%').fill('19.50')
     await page.waitForTimeout(250)
     assert.notEqual(await fingerprint(page), firstFingerprint)
-    await assertContains(page, 'body', 'Prior demonstration review is stale')
+    await assertContains(page, 'body', 'Shipment information changed. The previous review no longer applies.')
     assert.equal(await page.getByRole('button', { name: 'Simulate governed acceptance' }).isEnabled(), true)
 
     await page.click('text=Optional maritime/change scenarios')
@@ -118,14 +118,14 @@ test('transportation evaluator failures block acceptance and retry succeeds', as
     try {
       await page.goto('http://127.0.0.1:4173/mission-control/transportation/', { waitUntil: 'networkidle' })
       await completeTransport(page)
-      await assertContains(page, '[data-testid="transport-evaluation-state"]', 'Detailed transportation evaluation unavailable')
+      await assertContains(page, '[data-testid="transport-evaluation-state"]', 'Shipment checking failed')
       await assertContains(page, 'body', message)
       assert.equal(await page.getByRole('button', { name: 'Simulate governed acceptance' }).isDisabled(), true)
       await forceAcceptanceClick(page)
       assert.notEqual((await transportProjectState(page)).review?.simulatedAcceptance, true)
       await page.evaluate(clear)
-      await page.click('text=Retry detailed evaluation')
-      await assertContains(page, 'body', 'All applicable transportation gates are ready for governed demo review.')
+      await page.getByRole('button', { name: 'Retry detailed evaluation', exact: true }).click()
+      await assertContains(page, 'body', 'The sample package is ready for review.')
       assert.equal(await page.getByRole('button', { name: 'Simulate governed acceptance' }).isEnabled(), true)
       await page.click('text=Simulate governed acceptance')
       await assertContains(page, 'body', 'Demonstration-only acceptance is current')
@@ -144,7 +144,7 @@ test('transportation acceptance waits for current revision and discards supersed
   try {
     await page.goto('http://127.0.0.1:4173/mission-control/transportation/', { waitUntil: 'networkidle' })
     await completeTransport(page)
-    await assertContains(page, '[data-testid="transport-evaluation-state"]', 'Detailed transportation evaluation is running')
+    await assertContains(page, '[data-testid="transport-evaluation-state"]', 'Checking the updated shipment information.')
     assert.equal(await page.getByRole('button', { name: 'Simulate governed acceptance' }).isDisabled(), true)
     await forceAcceptanceClick(page)
     assert.notEqual((await transportProjectState(page)).review?.simulatedAcceptance, true)
@@ -152,8 +152,8 @@ test('transportation acceptance waits for current revision and discards supersed
     await page.evaluate(() => { window.__ATLAS_DEMO_TRANSPORT_EVALUATOR_DELAY_MS__ = 0 })
     await page.getByLabel('U-235 enrichment wt%').fill('19.40')
     await page.getByLabel('U-235 enrichment wt%').fill('19.60')
-    await assertContains(page, '[data-testid="transport-evaluation-state"]', 'project revision')
-    await assertContains(page, 'body', 'All applicable transportation gates are ready for governed demo review.')
+    await assertContains(page, '[data-testid="transport-evaluation-state"]', 'The sample package is ready for review.')
+    await assertContains(page, 'body', 'The sample package is ready for review.')
     await page.waitForFunction(() => JSON.parse(localStorage.getItem('atlas.publicDemoWorkspace.v2')).projects['fuel-transport'].inputs.enrichment === '19.60')
     const stored = await transportProjectState(page)
     assert.equal(stored.inputs.enrichment, '19.60')
@@ -175,7 +175,7 @@ test('cached transportation evaluation is recomputed after reload before accepta
   try {
     await page.goto('http://127.0.0.1:4173/mission-control/transportation/', { waitUntil: 'networkidle' })
     await completeTransport(page)
-    await assertContains(page, 'body', 'All applicable transportation gates are ready for governed demo review.')
+    await assertContains(page, 'body', 'The sample package is ready for review.')
     await page.click('text=Simulate governed acceptance')
     await assertContains(page, 'body', 'Demonstration-only acceptance is current')
     await page.waitForFunction(() => JSON.parse(localStorage.getItem('atlas.publicDemoWorkspace.v2')).projects['fuel-transport'].review?.simulatedAcceptance === true)
@@ -183,8 +183,7 @@ test('cached transportation evaluation is recomputed after reload before accepta
     await page.addInitScript(() => { window.__ATLAS_DEMO_TRANSPORT_EVALUATOR_DELAY_MS__ = 600 })
     await page.reload({ waitUntil: 'networkidle' })
     assert.equal(await page.getByRole('button', { name: 'Simulate governed acceptance' }).isDisabled(), true)
-    await assertContains(page, 'body', 'Historical/stale evaluation retained')
-    await assertContains(page, 'body', 'All applicable transportation gates are ready for governed demo review.')
+    await assertContains(page, 'body', 'Checking the updated shipment information.')
     await assertContains(page, 'body', 'Demonstration-only acceptance is current')
   } finally {
     await browser.close()
@@ -213,10 +212,10 @@ test('transportation reload during saved in-flight evaluation restarts evaluatio
 
     await page.evaluate(() => sessionStorage.setItem('atlasTransportDelay', '1500'))
     await page.reload({ waitUntil: 'networkidle' })
-    await assertContains(page, '[data-testid="transport-evaluation-state"]', 'Detailed transportation evaluation is running')
+    await assertContains(page, '[data-testid="transport-evaluation-state"]', 'Checking the updated shipment information.')
     assert.equal(await page.getByRole('button', { name: 'Simulate governed acceptance' }).isDisabled(), true)
-    await assertContains(page, '[data-testid="transport-evaluation-state"]', 'Detailed transportation evaluation complete')
-    await assertContains(page, 'body', 'All applicable transportation gates are ready for governed demo review.')
+    await assertContains(page, '[data-testid="transport-evaluation-state"]', 'The sample package is ready for review.')
+    await assertContains(page, 'body', 'The sample package is ready for review.')
     await page.waitForFunction(() => JSON.parse(localStorage.getItem('atlas.publicDemoWorkspace.v2')).projects['fuel-transport'].evaluationStatus === 'complete')
     const stored = await transportProjectState(page)
     assert.equal(stored.evaluationStatus, 'complete')
@@ -240,8 +239,11 @@ async function completeTransport(page, omit = '') {
 }
 
 async function fingerprint(page) {
-  const text = await page.locator('.sticky-step').innerText()
-  return text.match(/manifest ([a-f0-9]{16})/)?.[1] || ''
+  const details = page.locator('details').filter({ has: page.getByText('Evaluation details and prior records', { exact: true }) })
+  await details.locator('summary').click()
+  const text = await details.innerText()
+  await details.locator('summary').click()
+  return text.match(/Fingerprint: ([a-f0-9]{16})/)?.[1] || ''
 }
 
 async function forceAcceptanceClick(page) {
