@@ -104,6 +104,94 @@ test('each missing transportation gate prevents acceptance', async () => {
   }
 })
 
+test('transportation evaluator failures block acceptance and retry succeeds', async () => {
+  const cases = [
+    ['script unavailable', () => { window.__ATLAS_DEMO_TRANSPORT_SCRIPT_UNAVAILABLE__ = true }, 'script could not be loaded', () => { window.__ATLAS_DEMO_TRANSPORT_SCRIPT_UNAVAILABLE__ = false }],
+    ['evaluator throws', () => { window.__ATLAS_DEMO_TRANSPORT_EVALUATOR_THROWS__ = true }, 'evaluator threw', () => { window.__ATLAS_DEMO_TRANSPORT_EVALUATOR_THROWS__ = false }],
+    ['hashing fails', () => { window.__ATLAS_DEMO_TRANSPORT_HASH_FAIL__ = true }, 'hashing failed', () => { window.__ATLAS_DEMO_TRANSPORT_HASH_FAIL__ = false }],
+  ]
+  for (const [, setup, message, clear] of cases) {
+    const child = await server()
+    const browser = await chromium.launch({ headless: true })
+    const page = await browser.newPage({ viewport: { width: 1366, height: 768 } })
+    await page.addInitScript(setup)
+    try {
+      await page.goto('http://127.0.0.1:4173/mission-control/transportation/', { waitUntil: 'networkidle' })
+      await completeTransport(page)
+      await assertContains(page, '[data-testid="transport-evaluation-state"]', 'Detailed transportation evaluation unavailable')
+      await assertContains(page, 'body', message)
+      assert.equal(await page.getByRole('button', { name: 'Simulate governed acceptance' }).isDisabled(), true)
+      await forceAcceptanceClick(page)
+      assert.notEqual((await transportProjectState(page)).review?.simulatedAcceptance, true)
+      await page.evaluate(clear)
+      await page.click('text=Retry detailed evaluation')
+      await assertContains(page, 'body', 'All applicable transportation gates are ready for governed demo review.')
+      assert.equal(await page.getByRole('button', { name: 'Simulate governed acceptance' }).isEnabled(), true)
+      await page.click('text=Simulate governed acceptance')
+      await assertContains(page, 'body', 'Demonstration-only acceptance is current')
+    } finally {
+      await browser.close()
+      try { process.kill(-child.pid, 'SIGTERM') } catch {}
+    }
+  }
+})
+
+test('transportation acceptance waits for current revision and discards superseded evaluations', async () => {
+  const child = await server()
+  const browser = await chromium.launch({ headless: true })
+  const page = await browser.newPage({ viewport: { width: 1366, height: 768 } })
+  await page.addInitScript(() => { window.__ATLAS_DEMO_TRANSPORT_EVALUATOR_DELAY_MS__ = 5000 })
+  try {
+    await page.goto('http://127.0.0.1:4173/mission-control/transportation/', { waitUntil: 'networkidle' })
+    await completeTransport(page)
+    await assertContains(page, '[data-testid="transport-evaluation-state"]', 'Detailed transportation evaluation is running')
+    assert.equal(await page.getByRole('button', { name: 'Simulate governed acceptance' }).isDisabled(), true)
+    await forceAcceptanceClick(page)
+    assert.notEqual((await transportProjectState(page)).review?.simulatedAcceptance, true)
+
+    await page.evaluate(() => { window.__ATLAS_DEMO_TRANSPORT_EVALUATOR_DELAY_MS__ = 0 })
+    await page.getByLabel('U-235 enrichment wt%').fill('19.40')
+    await page.getByLabel('U-235 enrichment wt%').fill('19.60')
+    await assertContains(page, '[data-testid="transport-evaluation-state"]', 'project revision')
+    await assertContains(page, 'body', 'All applicable transportation gates are ready for governed demo review.')
+    await page.waitForFunction(() => JSON.parse(localStorage.getItem('atlas.publicDemoWorkspace.v2')).projects['fuel-transport'].inputs.enrichment === '19.60')
+    const stored = await transportProjectState(page)
+    assert.equal(stored.inputs.enrichment, '19.60')
+    assert.equal(stored.transportEvaluation.projectRevision, stored.transportRevision)
+    assert.equal(stored.transportEvaluation.lifecycle, 'complete')
+    assert.equal(stored.review?.simulatedAcceptance, false)
+    await page.click('text=Simulate governed acceptance')
+    await assertContains(page, 'body', 'Demonstration-only acceptance is current')
+  } finally {
+    await browser.close()
+    try { process.kill(-child.pid, 'SIGTERM') } catch {}
+  }
+})
+
+test('cached transportation evaluation is recomputed after reload before acceptance is enabled', async () => {
+  const child = await server()
+  const browser = await chromium.launch({ headless: true })
+  const page = await browser.newPage({ viewport: { width: 1366, height: 768 } })
+  try {
+    await page.goto('http://127.0.0.1:4173/mission-control/transportation/', { waitUntil: 'networkidle' })
+    await completeTransport(page)
+    await assertContains(page, 'body', 'All applicable transportation gates are ready for governed demo review.')
+    await page.click('text=Simulate governed acceptance')
+    await assertContains(page, 'body', 'Demonstration-only acceptance is current')
+    await page.waitForFunction(() => JSON.parse(localStorage.getItem('atlas.publicDemoWorkspace.v2')).projects['fuel-transport'].review?.simulatedAcceptance === true)
+
+    await page.addInitScript(() => { window.__ATLAS_DEMO_TRANSPORT_EVALUATOR_DELAY_MS__ = 600 })
+    await page.reload({ waitUntil: 'networkidle' })
+    assert.equal(await page.getByRole('button', { name: 'Simulate governed acceptance' }).isDisabled(), true)
+    await assertContains(page, 'body', 'Historical/stale evaluation retained')
+    await assertContains(page, 'body', 'All applicable transportation gates are ready for governed demo review.')
+    await assertContains(page, 'body', 'Demonstration-only acceptance is current')
+  } finally {
+    await browser.close()
+    try { process.kill(-child.pid, 'SIGTERM') } catch {}
+  }
+})
+
 async function completeTransport(page, omit = '') {
   if (omit !== 'package') await page.click('text=Load sample package evidence')
   await page.click('text=Resolve HRCQ facts')
@@ -118,6 +206,20 @@ async function completeTransport(page, omit = '') {
 async function fingerprint(page) {
   const text = await page.locator('.sticky-step').innerText()
   return text.match(/manifest ([a-f0-9]{16})/)?.[1] || ''
+}
+
+async function forceAcceptanceClick(page) {
+  await page.evaluate(() => {
+    const buttons = [...document.querySelectorAll('button')]
+    const button = buttons.find((item) => item.textContent?.includes('Simulate governed acceptance'))
+    if (button) button.disabled = false
+    button?.removeAttribute('disabled')
+    button?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+  })
+}
+
+async function transportProjectState(page) {
+  return page.evaluate(() => JSON.parse(localStorage.getItem('atlas.publicDemoWorkspace.v2')).projects['fuel-transport'])
 }
 
 async function assertContains(page, selector, text) {

@@ -348,6 +348,12 @@ function initialProjects() {
         'ev-carrier': seededEvidence('ev-carrier', sampleDocuments.carrier, ['trn-carrier'], 'processed'),
       },
       transportEvaluation: null,
+      staleTransportEvaluation: null,
+      transportRevision: 1,
+      evaluationStatus: 'dirty',
+      evaluationError: '',
+      evaluatingRevision: 0,
+      acceptanceError: '',
       review: {
         fingerprint: '',
         status: 'not_current',
@@ -454,7 +460,7 @@ function useWorkspace() {
         setWorkspace((current) => ({ ...current, recovery: 'Saved demo data uses an older schema. You can reset it, or continue with the current sample workspace.' }))
         return
       }
-      setWorkspace({ ...parsed, saveStatus: 'saved', storageError: '', recovery: '' })
+      setWorkspace({ ...parsed, projects: invalidateCachedTransportEvaluations(parsed.projects), saveStatus: 'saved', storageError: '', recovery: '' })
     } catch {
       setWorkspace((current) => ({ ...current, recovery: 'Saved demo data could not be read. Current samples remain available; reset only if you want to discard the unreadable browser record.' }))
     }
@@ -540,25 +546,28 @@ function evaluateProject(project) {
   })
 
   if (project.id === 'fuel-transport') {
-    const result = project.transportEvaluation || evaluateTransportationProject(project)
-    const fingerprint = result.manifestFingerprint || ''
-    const priorCurrent = Boolean(fingerprint && project.review?.fingerprint === fingerprint && project.review?.simulatedAcceptance)
-    const readyForReview = result.readyForReview
+    const result = currentTransportationEvaluation(project)
+    const provisional = result || evaluateTransportationProject(project)
+    const fingerprint = result?.manifestFingerprint || ''
+    const evaluationComplete = Boolean(result)
+    const priorCurrent = Boolean(evaluationComplete && fingerprint && project.review?.fingerprint === fingerprint && project.review?.simulatedAcceptance)
+    const readyForReview = Boolean(evaluationComplete && result.readyForReview)
+    const evaluationUnavailable = project.evaluationStatus === 'error'
     findings.push({
       id: 'finding-trn-governed-review',
       requirementId: 'trn-governed-review',
       title: 'Governed transportation review',
       status: priorCurrent ? 'demo_accepted' : readyForReview ? 'review' : 'gap',
-      reason: priorCurrent ? 'A demonstration-only acceptance is current for this exact completed evaluation fingerprint.' : readyForReview ? 'All applicable transportation gates are ready for governed demo review.' : `Next blocker: ${result.nextBlocker}`,
+      reason: priorCurrent ? 'A demonstration-only acceptance is current for this exact completed evaluation fingerprint.' : readyForReview ? 'All applicable transportation gates are ready for governed demo review.' : evaluationUnavailable ? `Detailed transportation evaluation unavailable: ${project.evaluationError}` : project.evaluationStatus === 'evaluating' ? 'Detailed transportation evaluation is running. Acceptance is disabled until the current revision is evaluated and hashed.' : `Next blocker: ${provisional.nextBlocker}`,
       source: sourceRecords.atlasGovernance,
       relevantBecause: 'The public demo preserves the human approval boundary and invalidates prior review when material facts or evidence change.',
       supportingEvidence: evidence.map((item) => item.id),
-      missingEvidence: readyForReview ? [] : result.blockers,
+      missingEvidence: readyForReview ? [] : provisional.blockers,
       applicabilityQuestions: ['Is the package evidence applicable to these material facts?', 'Has the authorized reviewer accepted this manifest?'],
-      nextAction: readyForReview ? 'Begin demonstration-only governed review.' : result.nextAction,
+      nextAction: readyForReview ? 'Begin demonstration-only governed review.' : evaluationUnavailable ? 'Retry detailed transportation evaluation.' : provisional.nextAction,
       role: 'Governed reviewer',
       fingerprint,
-      transportResult: result,
+      transportResult: result || provisional,
     })
   }
 
@@ -580,7 +589,7 @@ function supplierRequirementResolved(project, requirementId, evidence) {
 }
 
 function transportRequirementFinding(project, req) {
-  const result = project.transportEvaluation || evaluateTransportationProject(project)
+  const result = currentTransportationEvaluation(project) || evaluateTransportationProject(project)
   const node = {
     'trn-material': result.nodes.material,
     'trn-package': result.nodes.package,
@@ -596,6 +605,14 @@ function transportRequirementFinding(project, req) {
     status: node.status === 'SUPPORTED' ? 'supported' : node.status === 'REVIEW' ? 'review' : 'gap',
     reason: node.reason,
   }
+}
+
+function currentTransportationEvaluation(project) {
+  const evaluation = project.transportEvaluation
+  if (!evaluation || evaluation.lifecycle !== 'complete') return null
+  if (!evaluation.manifestFingerprint || evaluation.projectRevision !== (project.transportRevision || 0)) return null
+  if (project.evaluationStatus !== 'complete') return null
+  return evaluation
 }
 
 function evaluateTransportationProject(project) {
@@ -631,19 +648,17 @@ function evaluateTransportationProject(project) {
 }
 
 async function evaluateTransportationWithExistingEngine(project) {
-  try {
-    await loadTransportationEngine()
-    if (typeof window.evaluateTransportationDemo !== 'function') return evaluateTransportationProject(project)
-    const engine = await window.evaluateTransportationDemo(mapTransportationInputs(project))
-    return normalizeTransportationEngineResult(project, engine)
-  } catch {
-    return evaluateTransportationProject(project)
-  }
+  await loadTransportationEngine()
+  if (typeof window.evaluateTransportationDemo !== 'function') throw new Error('Detailed transportation evaluator is unavailable.')
+  if (window.__ATLAS_DEMO_TRANSPORT_EVALUATOR_THROWS__) throw new Error('Detailed transportation evaluator threw during the demo run.')
+  const engine = window.__ATLAS_DEMO_TRANSPORT_EVALUATOR_INVALID__ ? null : await window.evaluateTransportationDemo(mapTransportationInputs(project))
+  return normalizeTransportationEngineResult(project, engine)
 }
 
 let transportationEnginePromise = null
 function loadTransportationEngine() {
   if (typeof window === 'undefined') return Promise.resolve()
+  if (window.__ATLAS_DEMO_TRANSPORT_SCRIPT_UNAVAILABLE__) return Promise.reject(new Error('Detailed transportation evaluator script could not be loaded.'))
   if (typeof window.evaluateTransportationDemo === 'function') return Promise.resolve()
   if (transportationEnginePromise) return transportationEnginePromise
   transportationEnginePromise = new Promise((resolve, reject) => {
@@ -653,6 +668,9 @@ function loadTransportationEngine() {
     script.onload = () => resolve()
     script.onerror = () => reject(new Error('Transportation evaluator could not load.'))
     document.head.append(script)
+  }).catch((error) => {
+    transportationEnginePromise = null
+    throw error
   })
   return transportationEnginePromise
 }
@@ -687,6 +705,10 @@ function mapTransportationInputs(project) {
 }
 
 function normalizeTransportationEngineResult(project, engine) {
+  if (!engine || typeof engine !== 'object') throw new Error('Detailed transportation evaluator returned no usable result.')
+  if (!engine.package_authorization || !engine.shipper_carrier_authority || !engine.route_mode_analysis || !engine.security_physical_protection || !engine.shipment_execution || !engine.emergency_response_readiness || !engine.governed_readiness_decision) {
+    throw new Error('Detailed transportation evaluator returned an incomplete result.')
+  }
   const fallback = evaluateTransportationProject(project)
   const nodeStatus = {
     material: engine.readiness_items?.find(([label]) => /Material/.test(label))?.[1],
@@ -814,32 +836,65 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
 
   useEffect(() => {
     if (project.id !== 'fuel-transport') return
-    let cancelled = false
+    const revision = project.transportRevision || 1
+    if (currentTransportationEvaluation(project)) return
+    if (project.evaluationStatus === 'error') return
+    if (project.evaluationStatus === 'evaluating' && project.evaluatingRevision === revision) return
     async function refreshTransportEvaluation() {
-      const base = await evaluateTransportationWithExistingEngine(project)
-      const manifest = {
-        representedScope: project.scope,
-        inputs: project.inputs,
-        requirements: project.requirements.map((req) => ({ id: req.id, linkedEvidence: [...req.linkedEvidence].sort() })),
-        evidence: Object.values(project.evidence).map((item) => ({
-          id: item.id,
-          filename: item.filename,
-          hash: item.hash,
-          version: item.version,
-          status: item.status,
-          linkedRequirements: [...item.linkedRequirements].sort(),
-          metadata: item.metadata || {},
-        })).sort((a, b) => a.id.localeCompare(b.id)),
-        nodeStatuses: Object.fromEntries(Object.entries(base.nodes).map(([key, node]) => [key, node.status])),
-        engineBuild: base.buildMarker,
+      updateProject(project.id, (current) => current.transportRevision === revision ? { ...current, evaluationStatus: 'evaluating', evaluatingRevision: revision, evaluationError: '', acceptanceError: '' } : current)
+      try {
+        if (window.__ATLAS_DEMO_TRANSPORT_EVALUATOR_DELAY_MS__) await new Promise((resolve) => window.setTimeout(resolve, Number(window.__ATLAS_DEMO_TRANSPORT_EVALUATOR_DELAY_MS__)))
+        const base = await evaluateTransportationWithExistingEngine(project)
+        const manifest = {
+          projectRevision: revision,
+          representedScope: project.scope,
+          inputs: project.inputs,
+          requirements: project.requirements.map((req) => ({ id: req.id, linkedEvidence: [...req.linkedEvidence].sort() })),
+          evidence: Object.values(project.evidence).map((item) => ({
+            id: item.id,
+            filename: item.filename,
+            hash: item.hash,
+            version: item.version,
+            status: item.status,
+            linkedRequirements: [...item.linkedRequirements].sort(),
+            metadata: item.metadata || {},
+          })).sort((a, b) => a.id.localeCompare(b.id)),
+          nodeStatuses: Object.fromEntries(Object.entries(base.nodes).map(([key, node]) => [key, node.status])),
+          engineBuild: base.buildMarker,
+        }
+        const manifestFingerprint = await sha256Text(canonicalStringify(manifest))
+        updateProject(project.id, (current) => {
+          if ((current.transportRevision || 1) !== revision) return current
+          return {
+            ...current,
+            transportEvaluation: {
+              ...base,
+              lifecycle: 'complete',
+              projectRevision: revision,
+              completedAt: nowIso(),
+              manifestFingerprint,
+              manifestFingerprintShort: manifestFingerprint.slice(0, 16),
+            },
+            evaluationStatus: 'complete',
+            evaluatingRevision: 0,
+            evaluationError: '',
+            acceptanceError: '',
+          }
+        })
+      } catch (error) {
+        updateProject(project.id, (current) => {
+          if ((current.transportRevision || 1) !== revision) return current
+          return {
+            ...current,
+            transportEvaluation: null,
+            evaluationStatus: 'error',
+            evaluatingRevision: 0,
+            evaluationError: error instanceof Error ? error.message : 'Detailed transportation evaluation failed.',
+          }
+        })
       }
-      const manifestFingerprint = await sha256Text(canonicalStringify(manifest))
-      if (cancelled) return
-      if (project.transportEvaluation?.manifestFingerprint === manifestFingerprint && project.transportEvaluation?.readyForReview === base.readyForReview) return
-      updateProject(project.id, (current) => ({ ...current, transportEvaluation: { ...base, manifestFingerprint, manifestFingerprintShort: manifestFingerprint.slice(0, 16) } }))
     }
     refreshTransportEvaluation()
-    return () => { cancelled = true }
   }, [project, updateProject])
 
   function patchProject(mutator) {
@@ -869,9 +924,7 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
       }
       next.inputs[key] = value
       next.history.unshift(history(`Updated ${key}. Affected findings were reevaluated.`, 'Visitor'))
-      if (next.id === 'fuel-transport' && next.review?.simulatedAcceptance) {
-        staleTransportationReview(next, 'material scope or input changed')
-      }
+      if (next.id === 'fuel-transport') markTransportationDirty(next, 'material scope or input changed')
     })
   }
 
@@ -882,7 +935,7 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
       if (!evidence || !requirement) return
       evidence.linkedRequirements = Array.from(new Set([...evidence.linkedRequirements, requirementId]))
       requirement.linkedEvidence = Array.from(new Set([...requirement.linkedEvidence, evidenceId]))
-      if (next.id === 'fuel-transport') staleTransportationReview(next, 'evidence link changed')
+      if (next.id === 'fuel-transport') markTransportationDirty(next, 'evidence link changed')
       next.history.unshift(history(`Linked ${evidence.filename} to ${requirement.title}.`, 'Visitor'))
     })
   }
@@ -910,9 +963,7 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
         const req = next.requirements.find((item) => item.id === requirementId)
         if (req) req.linkedEvidence = Array.from(new Set([...req.linkedEvidence.filter((x) => x !== replaceId), id]))
       }
-      if (next.id === 'fuel-transport' && next.review?.simulatedAcceptance) {
-        staleTransportationReview(next, 'evidence identity, content, version, or links changed')
-      }
+      if (next.id === 'fuel-transport') markTransportationDirty(next, 'evidence identity, content, version, or links changed')
       next.history.unshift(history(`${replaceId ? 'Replaced' : 'Attached'} ${processed.filename}: ${processed.status}.`, 'Visitor'))
     })
     setSelectedEvidence(replaceId || '')
@@ -924,11 +975,27 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
     await attachFile(file, requirementId, '', sample.metadata || null)
   }
 
-  function acceptTransportationDemo() {
-    const governed = findings.find((finding) => finding.id === 'finding-trn-governed-review')
-    if (!governed || governed.status !== 'review' || !governed.fingerprint) return
+  function retryTransportationEvaluation() {
     patchProject((next) => {
-      next.review = { fingerprint: governed.fingerprint, status: 'accepted_demo_only', simulatedAcceptance: true, acceptedAt: nowIso(), evaluation: governed.transportResult }
+      if (next.id !== 'fuel-transport') return
+      next.evaluationStatus = 'dirty'
+      next.evaluationError = ''
+      next.acceptanceError = ''
+      next.history.unshift(history('Retry requested for the detailed transportation evaluation.', 'Visitor'))
+    })
+  }
+
+  function acceptTransportationDemo() {
+    patchProject((next) => {
+      const current = currentTransportationEvaluation(next)
+      const ready = Boolean(current?.readyForReview && current.manifestFingerprint && current.projectRevision === (next.transportRevision || 0))
+      if (!ready) {
+        next.acceptanceError = next.evaluationStatus === 'error' ? 'Acceptance blocked because detailed transportation evaluation is unavailable.' : 'Acceptance blocked until the current project revision finishes detailed evaluation and hashing.'
+        next.history.unshift(history(next.acceptanceError, 'Atlas'))
+        return
+      }
+      next.acceptanceError = ''
+      next.review = { fingerprint: current.manifestFingerprint, status: 'accepted_demo_only', simulatedAcceptance: true, acceptedAt: nowIso(), evaluation: current, acceptedRevision: next.transportRevision }
       next.history.unshift(history('Demonstration-only transportation acceptance recorded for the current manifest fingerprint.', 'Demo authorized reviewer'))
     })
   }
@@ -948,7 +1015,7 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
         ].map(([id, label]) => <button className={view === id ? 'active' : ''} type="button" onClick={() => setView(id)} key={id}>{label}</button>)}
       </nav>
       {view === 'overview' ? <Overview project={project} findings={findings} setView={setView} /> : null}
-      {view === 'requirements' ? <Requirements project={project} findings={findings} setInput={setInput} linkEvidence={linkEvidence} loadSampleEvidence={loadSampleEvidence} attachFile={attachFile} acceptTransportationDemo={acceptTransportationDemo} /> : null}
+      {view === 'requirements' ? <Requirements project={project} findings={findings} setInput={setInput} linkEvidence={linkEvidence} loadSampleEvidence={loadSampleEvidence} attachFile={attachFile} acceptTransportationDemo={acceptTransportationDemo} retryTransportationEvaluation={retryTransportationEvaluation} /> : null}
       {view === 'evidence' ? <EvidenceInventory project={project} activeEvidence={activeEvidence} setSelectedEvidence={setSelectedEvidence} attachFile={attachFile} linkEvidence={linkEvidence} /> : null}
       {view === 'findings' ? <Findings project={project} findings={findings} /> : null}
       {view === 'history' ? <History project={project} /> : null}
@@ -996,7 +1063,7 @@ function Overview({ project, findings, setView }) {
   </div>
 }
 
-function Requirements({ project, findings, setInput, linkEvidence, loadSampleEvidence, attachFile, acceptTransportationDemo }) {
+function Requirements({ project, findings, setInput, linkEvidence, loadSampleEvidence, attachFile, acceptTransportationDemo, retryTransportationEvaluation }) {
   const [editingQuestion, setEditingQuestion] = useState(null)
   const guided = project.guided
   const currentQuestion = guided?.questions[guided.current]
@@ -1013,7 +1080,7 @@ function Requirements({ project, findings, setInput, linkEvidence, loadSampleEvi
         </div>
       </div> : <ApplicationDraft project={project} editingQuestion={editingQuestion} setEditingQuestion={setEditingQuestion} setInput={setInput} />}
     </section> : null}
-    {project.id === 'fuel-transport' ? <TransportationPath project={project} findings={findings} setInput={setInput} loadSampleEvidence={loadSampleEvidence} acceptTransportationDemo={acceptTransportationDemo} /> : null}
+    {project.id === 'fuel-transport' ? <TransportationPath project={project} findings={findings} setInput={setInput} loadSampleEvidence={loadSampleEvidence} acceptTransportationDemo={acceptTransportationDemo} retryTransportationEvaluation={retryTransportationEvaluation} /> : null}
     <section className="panel wide">
       <h2>Requirements</h2>
       <div className="requirement-list">
@@ -1065,15 +1132,23 @@ function ApplicationDraft({ project, editingQuestion, setEditingQuestion, setInp
   </div>
 }
 
-function TransportationPath({ project, findings, setInput, loadSampleEvidence, acceptTransportationDemo }) {
+function TransportationPath({ project, findings, setInput, loadSampleEvidence, acceptTransportationDemo, retryTransportationEvaluation }) {
   const governed = findings.find((finding) => finding.id === 'finding-trn-governed-review')
-  const result = governed?.transportResult || project.transportEvaluation || evaluateTransportationProject(project)
+  const current = currentTransportationEvaluation(project)
+  const stale = project.staleTransportEvaluation
+  const result = current || evaluateTransportationProject(project)
+  const evaluationReady = Boolean(current?.readyForReview && governed?.status === 'review' && governed?.fingerprint)
   return <section className="panel wide transportation-path">
     <h2>Your transportation readiness package</h2>
     <div className="sticky-step">
       <strong>Active step: material and shipment facts</strong>
       <span>{result.blockers.length} transportation blockers · manifest {result.manifestFingerprintShort}</span>
     </div>
+    {project.evaluationStatus === 'evaluating' ? <p className="warning" data-testid="transport-evaluation-state">Detailed transportation evaluation is running for project revision {project.transportRevision}. Acceptance is disabled until evaluation and hashing complete.</p> : null}
+    {project.evaluationStatus === 'error' ? <p className="warning" data-testid="transport-evaluation-state">Detailed transportation evaluation unavailable: {project.evaluationError}</p> : null}
+    {current ? <p data-testid="transport-evaluation-state">Detailed transportation evaluation complete for project revision {current.projectRevision}. {current.readyForReview ? 'All applicable transportation gates are ready for governed demo review.' : 'Unresolved detailed transportation gates remain.'}</p> : null}
+    {!current && project.evaluationStatus !== 'error' ? <p className="warning">Provisional summary shown only for navigation. It is not a completed detailed transportation evaluation.</p> : null}
+    {stale ? <p className="warning">Historical/stale evaluation retained for revision {stale.projectRevision}; current revision is {project.transportRevision}.</p> : null}
     <div className="form-grid">
       {[
         ['material', 'Material'],
@@ -1134,8 +1209,10 @@ function TransportationPath({ project, findings, setInput, loadSampleEvidence, a
       <button type="button" className="button secondary" onClick={() => { setInput('hrcqStatus', 'resolved_sample_basis'); setInput('hrcqBasis', 'Sample basis cites 49 CFR 173.403 threshold review for the represented package.') }}>Resolve HRCQ facts</button>
       <button type="button" className="button secondary" onClick={() => loadSampleEvidence('trn-response')}>Load sample emergency response evidence</button>
       <button type="button" className="button secondary" onClick={() => setInput('reviewer', 'valid')}>Assign demo reviewer</button>
-      <button type="button" className="button secondary" disabled={governed?.status !== 'review' || !governed?.fingerprint} onClick={acceptTransportationDemo}>Simulate governed acceptance</button>
+      <button type="button" className="button secondary" disabled={!evaluationReady} onClick={acceptTransportationDemo}>Simulate governed acceptance</button>
+      {project.evaluationStatus === 'error' ? <button type="button" className="button secondary" onClick={retryTransportationEvaluation}>Retry detailed evaluation</button> : null}
     </div>
+    {project.acceptanceError ? <p className="warning">{project.acceptanceError}</p> : null}
     {project.review?.status === 'stale' ? <p className="warning">Prior demonstration review is stale. Reevaluation did not silently reapprove the changed manifest.</p> : null}
     {project.review?.simulatedAcceptance ? <p className="demo-acceptance">Demonstration-only acceptance is current for this manifest. This is not a real shipment authorization.</p> : null}
     <details><summary>Detailed authority and evidence sections</summary><Findings project={project} findings={findings} compact /></details>
@@ -1304,6 +1381,7 @@ async function sha256(buffer) {
 }
 
 async function sha256Text(value) {
+  if (typeof window !== 'undefined' && window.__ATLAS_DEMO_TRANSPORT_HASH_FAIL__) throw new Error('Transportation manifest hashing failed.')
   return sha256(new TextEncoder().encode(value))
 }
 
@@ -1318,6 +1396,32 @@ function staleTransportationReview(project, reason) {
   project.review.simulatedAcceptance = false
   project.review.status = 'stale'
   project.history.unshift(history(`Prior transportation review marked stale after ${reason}.`, 'Atlas'))
+}
+
+function markTransportationDirty(project, reason) {
+  const previous = currentTransportationEvaluation(project) || project.transportEvaluation || project.staleTransportEvaluation || null
+  if (previous) project.staleTransportEvaluation = { ...previous, staleReason: reason, staleAt: nowIso() }
+  project.transportEvaluation = null
+  project.transportRevision = (project.transportRevision || 1) + 1
+  project.evaluationStatus = 'dirty'
+  project.evaluatingRevision = 0
+  project.evaluationError = ''
+  project.acceptanceError = ''
+  staleTransportationReview(project, reason)
+}
+
+function invalidateCachedTransportEvaluations(projects) {
+  const next = structuredClone(projects)
+  const transport = next['fuel-transport']
+  if (transport?.transportEvaluation) {
+    transport.staleTransportEvaluation = { ...transport.transportEvaluation, staleReason: 'browser reload validation pending', staleAt: nowIso() }
+    transport.transportEvaluation = null
+    transport.evaluationStatus = 'dirty'
+    transport.evaluationError = ''
+    transport.evaluatingRevision = 0
+    transport.acceptanceError = ''
+  }
+  return next
 }
 
 function chooseSample(projectId, requirementId) {
