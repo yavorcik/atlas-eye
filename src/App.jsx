@@ -933,7 +933,7 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
         const base = await evaluateTransportationWithExistingEngine(project)
         const manifest = {
           projectRevision: revision,
-          representedScope: project.scope,
+          representedScope: representedScope(project),
           inputs: project.inputs,
           requirements: project.requirements.map((req) => ({ id: req.id, linkedEvidence: [...req.linkedEvidence].sort() })),
           evidence: Object.values(project.evidence).map((item) => ({
@@ -951,8 +951,10 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
         const manifestFingerprint = await sha256Text(canonicalStringify(manifest))
         updateProject(project.id, (current) => {
           if ((current.transportRevision || 1) !== revision || current.evaluationRequestId !== requestId) return current
+          const reviewChanged = current.review?.simulatedAcceptance && current.review.fingerprint !== manifestFingerprint
           return {
             ...current,
+            review: reviewChanged ? { ...current.review, status: 'stale', simulatedAcceptance: false } : current.review,
             transportEvaluation: {
               ...base,
               lifecycle: 'complete',
@@ -1107,7 +1109,7 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
         return
       }
       next.acceptanceError = ''
-      next.review = { fingerprint: current.manifestFingerprint, status: 'accepted_demo_only', simulatedAcceptance: true, acceptedAt: nowIso(), evaluation: current, acceptedRevision: next.transportRevision, scope: next.scope, inputs: structuredClone(next.inputs), evidence: reviewEvidence(next), explanation: 'Bounded sample gates and declared evidence reviewed for demonstration only.' }
+      next.review = { fingerprint: current.manifestFingerprint, status: 'accepted_demo_only', simulatedAcceptance: true, acceptedAt: nowIso(), evaluation: current, acceptedRevision: next.transportRevision, scope: representedScope(next), inputs: structuredClone(next.inputs), evidence: reviewEvidence(next), explanation: 'Bounded sample gates and declared evidence reviewed for demonstration only.' }
       next.decisions = [...(next.decisions || []), structuredClone(next.review)]
       next.history.unshift(history('Demonstration-only transportation acceptance recorded for the current manifest fingerprint.', 'Demo authorized reviewer'))
     })
@@ -1117,7 +1119,7 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
     patchProject(next => {
       if (!explanation.trim()) return
       if (decision === 'accepted_demo_only' && !supplierReady(next)) return
-      next.review = { status: decision, simulatedAcceptance: decision === 'accepted_demo_only', acceptedRevision: (next.revision || 0) + 1, acceptedAt: nowIso(), scope: next.scope, inputs: structuredClone(next.inputs), evidence: reviewEvidence(next), explanation: explanation.trim() }
+      next.review = { status: decision, simulatedAcceptance: decision === 'accepted_demo_only', acceptedRevision: (next.revision || 0) + 1, acceptedAt: nowIso(), scope: representedScope(next), inputs: structuredClone(next.inputs), evidence: reviewEvidence(next), explanation: explanation.trim() }
       next.decisions = [...(next.decisions || []), structuredClone(next.review)]
       next.history.unshift(history(`Supplier demo decision: ${decision === 'accepted_demo_only' ? 'simulated acceptance' : decision === 'rejected' ? 'rejected' : 'changes requested'}. ${explanation.trim()}`, 'Supplier quality reviewer (simulated)'))
     })
@@ -1465,7 +1467,7 @@ function Report({ project, findings }) {
       const element = heading.current
       if (!element) return
       element.focus({ preventScroll: true })
-      const offset = ['.workspace-header', '.project-tabs'].reduce((height, selector) => height + (document.querySelector(selector)?.getBoundingClientRect().height || 0), 24)
+      const offset = ['.workspace-header', '.project-tabs'].reduce((height, selector) => height + (getComputedStyle(document.querySelector(selector)).position === 'sticky' ? document.querySelector(selector).getBoundingClientRect().height : 0), 24)
       window.scrollTo({ top: Math.max(0, window.scrollY + element.getBoundingClientRect().top - offset), behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })
     })
     return () => cancelAnimationFrame(frame)
@@ -1506,6 +1508,11 @@ function SourceLink({ source, label }) {
   const section = label?.match(/53\.\d+/)?.[0]
   if (section) source = { ...source, sourceUrl: `https://www.ecfr.gov/current/title-10/chapter-I/part-53/subpart-H/section-${section}` }
   return source.sourceUrl ? <a href={source.sourceUrl} target="_blank" rel="noreferrer">{label || source.citation}</a> : <span>{label || source.citation} — Atlas demo control, not a regulatory requirement</span>
+}
+function representedScope(project) {
+  if (project.id !== 'fuel-transport') return project.scope
+  const i = project.inputs
+  return `${i.material || 'Missing material'} ${i.form || 'Missing form'}; ${i.enrichment || 'Missing enrichment'} wt%; ${i.quantityValue || 'Missing quantity'} ${i.quantityUnit || 'Missing unit'}; ${i.origin || 'Missing origin'} to ${i.destination || 'Missing destination'}; ${readableValues[i.routeProfile] || 'Missing or unsupported route'}. Bounded simulated shipment review only.`
 }
 function reviewEvidence(project) {
   return project.requirements.flatMap(req => req.linkedEvidence.map(id => project.evidence[id]).filter(Boolean).map(item => ({ id: item.id, requirement: req.title, filename: item.filename, version: item.version, hash: item.hash })))
@@ -1570,7 +1577,7 @@ function customerReportModel(project, findings = evaluateProject(project)) {
   const sections = groups.map(([title, keys]) => ({ title, rows: keys.map(key => ({ label: part53Fields.find(q => q.id === key)?.label || labelize(key), value: project.guided?.skipped?.[key] ? `Unresolved gap — skipped for now. Prior answer: ${project.inputs[key] || 'Missing section'}` : readableValue(project.inputs[key]) })) }))
   const nextAction = accepted ? 'Inspect the reviewed scope and evidence versions. Real-world review remains outside this demonstration.' : project.review?.status === 'rejected' || project.review?.status === 'changes_requested' ? project.review.explanation : primaryNextAction(findings)
   const stage = accepted ? 'Simulated acceptance current' : project.review?.status === 'stale' ? 'Prior review stale after change' : project.review?.status === 'rejected' ? 'Rejected' : project.review?.status === 'changes_requested' ? 'Changes requested' : project.id === 'reactor-app' ? 'Application draft' : project.id === 'fuel-transport' && project.evaluationStatus === 'error' ? 'Evaluation unavailable' : project.id === 'fuel-transport' && !currentTransportationEvaluation(project) ? 'Checking' : (project.id === 'fuel-transport' ? currentTransportationEvaluation(project)?.readyForReview : supplierReady(project)) ? 'Ready for demo review' : 'Blocked'
-  return { status, stage, accepted, sections, nextAction, scope: project.scope, revision: project.revision || 0, findings, records: reviewEvidence(project), decisions: project.decisions || (project.review?.acceptedAt ? [project.review] : []) }
+  return { status, stage, accepted, sections, nextAction, scope: representedScope(project), revision: project.revision || 0, findings, records: reviewEvidence(project), decisions: project.decisions || (project.review?.acceptedAt ? [project.review] : []) }
 }
 
 function buildReport(project, findings) {

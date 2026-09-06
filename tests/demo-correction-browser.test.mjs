@@ -45,6 +45,9 @@ for (const [browserName, engine] of [['chromium', chromium], ['firefox', firefox
     try {
       const page = await browser.newPage({ acceptDownloads: true })
       await page.goto(`${base}/mission-control/transportation/`)
+      await contains(page, '[data-testid="transport-evaluation-state"]', 'Exact unresolved prerequisite')
+      await reports(page, 'blocked', 'Exact unresolved prerequisite', browserName)
+      await tab(page, 'Requirements')
       await ready(page)
       await reports(page, 'ready', 'ready for review', browserName)
       await tab(page, 'Requirements')

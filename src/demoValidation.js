@@ -29,7 +29,7 @@ export function evidenceApplicability(project, requirementId, item, samples) {
   const sampleKey = text === legacyPackage ? 'transportPackage' : Object.keys(samples).find(key => samples[key].text === text)
   let record
   try { record = JSON.parse(text) } catch { /* Arbitrary text remains inspectable. */ }
-  if (record?.documentType === 'atlas-demo-package-compatibility' || (requirementId === 'trn-package' && record)) {
+  if (record?.documentType || record?.documentIdentity === 'ATLAS-SAMPLE-PACKAGE-001' || sampleKey === 'transportPackage') {
     if (requirementId !== 'trn-package') return mismatch('Package compatibility evidence does not support this requirement.')
     const legacySample = sampleKey === 'transportPackage'
     if (!legacySample && (record.documentType !== 'atlas-demo-package-compatibility' || record.documentIdentity !== 'ATLAS-SAMPLE-PACKAGE-001' || record.scope !== 'Fuel transportation')) return mismatch('Declared package identity, document type, or scope does not match the bounded sample.')

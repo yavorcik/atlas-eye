@@ -173,7 +173,6 @@ input[aria-invalid="true"] { border: 2px solid #e84141; }
 @media (max-width: 640px) {
   .workspace-header { grid-template-columns: 1fr auto; }
   .workspace-breadcrumb { display: none; }
-  .project-tabs { top: 69px; }
   .button-row > button { max-width: 100%; }
 }
 @media print {

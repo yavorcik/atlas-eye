@@ -10,6 +10,7 @@ test('valid shipment recovers', () => assert.equal(validateShipment(inputs).vali
 test('processing does not establish applicability; structured mismatch is explicit', () => {
   const project = { inputs }
   assert.equal(evidenceApplicability(project, 'trn-package', { status: 'processed', fullText: 'apples, coffee, bread' }, {}).status, 'unknown')
+  assert.equal(evidenceApplicability(project, 'trn-package', { status: 'processed', fullText: JSON.stringify({ shopping: ['apples', 'coffee', 'bread'] }) }, {}).status, 'unknown')
   const record = { documentType: 'atlas-demo-package-compatibility', documentIdentity: 'ATLAS-SAMPLE-PACKAGE-001', scope: 'Fuel transportation', material: 'HALEU UF6', form: 'UF6', enrichmentWtPercent: 19.75, quantity: '12 kgU' }
   const item = body => ({ status: 'processed', fullText: JSON.stringify(body) })
   assert.equal(evidenceApplicability(project, 'trn-package', item(record), {}).status, 'established')
