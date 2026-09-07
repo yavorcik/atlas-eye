@@ -176,7 +176,7 @@ input[aria-invalid="true"] { border: 2px solid #e84141; }
   .button-row > button { max-width: 100%; }
 }
 @media print {
-  .print-report details::details-content { display: block; }
+  .print-report details::details-content { display: block !important; content-visibility: visible !important; }
   .print-report details > * { display: block !important; }
 }
 #emergency-assessment select { scroll-margin-top: 180px; }

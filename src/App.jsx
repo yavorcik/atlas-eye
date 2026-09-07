@@ -1086,7 +1086,7 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
         return
       }
       next.acceptanceError = ''
-      next.review = { authorityBasis: snapshotBasis(next), fingerprint: current.manifestFingerprint, status: 'accepted_demo_only', simulatedAcceptance: true, acceptedAt: nowIso(), evaluation: current, acceptedRevision: next.transportRevision, scope: representedScope(next), inputs: structuredClone(next.inputs), evidence: reviewEvidence(next), explanation: 'Bounded sample gates and declared evidence reviewed for demonstration only.' }
+      next.review = { authorityBasis: snapshotBasis({ ...next, revision: (next.revision || 0) + 1 }), fingerprint: current.manifestFingerprint, status: 'accepted_demo_only', simulatedAcceptance: true, acceptedAt: nowIso(), evaluation: current, acceptedRevision: next.transportRevision, scope: representedScope(next), inputs: structuredClone(next.inputs), evidence: reviewEvidence(next), explanation: 'Bounded sample gates and declared evidence reviewed for demonstration only.' }
       next.decisions = [...(next.decisions || []), structuredClone(next.review)]
       next.history.unshift(history('Demonstration-only transportation acceptance recorded for the current manifest fingerprint.', 'Demo authorized reviewer'))
     })
@@ -1096,7 +1096,7 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
     patchProject(next => {
       if (!explanation.trim()) return
       if (decision === 'accepted_demo_only' && !supplierReady(next)) return
-      next.review = { authorityBasis: snapshotBasis(next), status: decision, simulatedAcceptance: decision === 'accepted_demo_only', acceptedRevision: (next.revision || 0) + 1, acceptedAt: nowIso(), scope: representedScope(next), inputs: structuredClone(next.inputs), evidence: reviewEvidence(next), explanation: explanation.trim() }
+      next.review = { authorityBasis: snapshotBasis({ ...next, revision: (next.revision || 0) + 1 }), status: decision, simulatedAcceptance: decision === 'accepted_demo_only', acceptedRevision: (next.revision || 0) + 1, acceptedAt: nowIso(), scope: representedScope(next), inputs: structuredClone(next.inputs), evidence: reviewEvidence(next), explanation: explanation.trim() }
       next.decisions = [...(next.decisions || []), structuredClone(next.review)]
       next.history.unshift(history(`Supplier demo decision: ${decision === 'accepted_demo_only' ? 'simulated acceptance' : decision === 'rejected' ? 'rejected' : 'changes requested'}. ${explanation.trim()}`, 'Supplier quality reviewer (simulated)'))
     })
@@ -1595,7 +1595,7 @@ function buildReport(project, findings) {
     <details><summary>Supporting technical records and detailed history</summary><h2>Evidence integrity and replacement history</h2>${evidence.map(item => `<p>${esc(item.filename)} · v${item.version} · SHA-256 ${esc(item.hash)} · full retained characters: ${esc((item.fullText || '').length)}</p>${(item.replacements || []).map(previous => `<p>Historical v${previous.version}: ${esc(previous.filename)} · ${esc(previous.hash)} · ${esc(previous.failureReason || 'Replaced')} · ${esc(previous.status)}</p>`).join('')}`).join('')}<h2>Project history</h2>${project.history.map(entry => `<p>${esc(niceTime(entry.at))} · ${esc(entry.actor)} · ${esc(entry.action)}</p>`).join('')}</details>
     <h2>Earlier applicability bases</h2>${(project.basisHistory || []).map(entry => `<details><summary>Before ${esc(entry.changedKeys.join(", "))} changed at ${esc(entry.at)}</summary>${traceabilityHtml(entry.prior)}</details>`).join('')}
     <h2>Demo Limitations</h2><p>${esc(limitations)}</p><p>Regulatory links identify source requirements, not proof that this entire scenario complies. No automatic authority currency check has occurred.</p>`
-  return { body, html: `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(project.name)} report</title><style>body{font-family:Arial,sans-serif;line-height:1.5;max-width:960px;margin:40px auto;padding:0 20px;color:#111;overflow-wrap:anywhere}h1,h2{border-bottom:1px solid #ccc;padding-bottom:6px;break-after:avoid}@page{margin:18mm}@media print{body{margin:0;padding:0}h3{break-after:avoid}details::details-content{display:block}details>*{display:block!important}}</style></head><body>${body}</body></html>`, csv }
+  return { body, html: `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(project.name)} report</title><style>body{font-family:Arial,sans-serif;line-height:1.5;max-width:960px;margin:40px auto;padding:0 20px;color:#111;overflow-wrap:anywhere}h1,h2{border-bottom:1px solid #ccc;padding-bottom:6px;break-after:avoid}@page{margin:18mm}@media print{body{margin:0;padding:0}h3{break-after:avoid}details::details-content{display:block!important;content-visibility:visible!important}details>*{display:block!important}}</style></head><body>${body}</body></html>`, csv }
 }
 
 function csvCell(value) {

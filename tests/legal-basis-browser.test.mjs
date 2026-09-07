@@ -1,5 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
+import { execFileSync } from 'node:child_process'
 import { chromium } from 'playwright'
 import { mkdir, readFile } from 'node:fs/promises'
 import { presenterSteps } from '../src/presenterWalkthrough.js'
@@ -53,6 +54,8 @@ for (const width of [1366, 390]) test(`presenter story, keyboard basis, mobile a
       for (const expected of ['sup-qap-current', 'Atlas workflow control', 'Applicable within represented scope', decision.authorityBasis.version, 'sample-supplier-quality-program-rev-c', 'Current simulated decision']) assert.ok(text.includes(expected), expected)
     }
     await page.emulateMedia({ media: 'print' }); await page.pdf({ path: `${output}/supplier-${width}.pdf` }); await page.emulateMedia({ media: 'screen' })
+    const pdfText = execFileSync('pdftotext', [`${output}/supplier-${width}.pdf`, '-'], { encoding: 'utf8' })
+    assert.match(pdfText, /Software behavior, not law/)
     await tab(page, 'Requirements')
     await quality.getByRole('button', { name: 'Load sample evidence', exact: true }).click()
     await saved(page)
@@ -67,5 +70,46 @@ for (const width of [1366, 390]) test(`presenter story, keyboard basis, mobile a
     assert.ok((await legal.locator('a').first().getAttribute('href')).startsWith('https://www.ecfr.gov/'))
     await page.screenshot({ path: `${output}/legal-basis-${width}.png`, fullPage: true })
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1))
+  } finally { await browser.close() }
+})
+test('regulatory applicability and original decision basis survive shipment changes and exports', async () => {
+  const browser = await chromium.launch()
+  try {
+    const page = await browser.newPage({ acceptDownloads: true })
+    await page.goto(`${base}/mission-control/transportation/`)
+    for (const name of ['Load sample package evidence', 'Resolve HRCQ facts', 'Load sample emergency response evidence', 'Assign demo reviewer']) await page.getByRole('button', { name, exact: true }).click()
+    await page.getByLabel('Emergency response evidence', { exact: true }).selectOption('domestic_supported')
+    await page.waitForFunction(() => document.querySelector('[data-testid="transport-evaluation-state"]')?.textContent.includes('ready for review'))
+    const material = page.locator('.transportation-path > [data-basis-id="trn-material"]')
+    await material.locator('summary').focus(); await page.keyboard.press('Enter')
+    assert.match(await material.innerText(), /Applicability unresolved/)
+    assert.match(await material.innerText(), /verified provision within stated limits/)
+    await page.getByRole('button', { name: 'Simulate governed acceptance', exact: true }).click()
+    await saved(page)
+    const original = JSON.parse(await workspace(page)).projects['fuel-transport'].decisions.at(-1)
+    assert.ok(original.authorityBasis.requirements.some(r => r.id === 'trn-material' && r.applicability.state === 'Applicability unresolved'))
+    await page.getByLabel('Quantity', { exact: true }).fill('13')
+    await page.waitForFunction(() => document.querySelector('[data-testid="transport-evaluation-state"]')?.textContent.includes('previous review no longer applies'))
+    const pack = page.locator('.transportation-path > [data-basis-id="trn-package"]')
+    await pack.locator('summary').click()
+    assert.match(await pack.innerText(), /Outside the implemented demo scope/)
+    await saved(page)
+    const changed = JSON.parse(await workspace(page)).projects['fuel-transport']
+    assert.deepEqual(changed.decisions.at(-1), original)
+    assert.ok(changed.basisHistory.some(h => h.changedKeys.includes('quantityValue') && h.prior.requirements.some(r => r.id === 'trn-package' && r.applicability.state === 'Applicable within represented scope')))
+    await tab(page, 'Report')
+    for (const [label, ext] of [['Download HTML report', 'html'], ['Download evidence/action register', 'csv']]) {
+      const [download] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: label, exact: true }).click()])
+      await mkdir(output, { recursive: true })
+      const file = `${output}/transport-historical.${ext}`
+      await download.saveAs(file)
+      const content = await readFile(file, 'utf8')
+      for (const value of ['dot-hrcq', '173.403', 'Applicability unresolved', 'Outside the implemented demo scope', 'Historical decision', original.authorityBasis.version, 'https://www.ecfr.gov/']) assert.ok(content.includes(value), value)
+    }
+    await page.emulateMedia({ media: 'print' })
+    await page.pdf({ path: `${output}/transport-historical.pdf` })
+    const pdf = execFileSync('pdftotext', [`${output}/transport-historical.pdf`, '-'], { encoding: 'utf8' })
+    assert.match(pdf, /Authority verification/)
+    assert.match(pdf, /Applicability unresolved/)
   } finally { await browser.close() }
 })

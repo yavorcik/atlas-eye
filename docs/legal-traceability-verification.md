@@ -18,7 +18,7 @@ New browser tests follow all six supplier presenter steps at 1366 and 390 pixels
 
 Actual generated report artifacts are under ignored test-artifacts/legal-local and test-artifacts/correction-local. HTML/CSV include stable IDs, categories, applicability, source versions, evidence versions and decision history. PDF text was extracted and checked for the same mapping. No conclusion is based merely on a download event.
 
-Initial failures found and fixed: the clarified HRCQ sample string omitted the legacy gate's expected citation marker; full expansion made the application report exceed Firefox's full-page screenshot height. The existing gate remains protected, with the sample assumption labeled separately from legal applicability. Detailed report mapping is now expandable and printable. The new test waits for actual persisted invalidation after asynchronous file processing.
+Initial failures found and fixed: the clarified HRCQ sample string omitted the legacy gate's expected citation marker; full expansion made the application report exceed Firefox's full-page screenshot height. The existing gate remains protected, with the sample assumption labeled separately from legal applicability. Detailed report mapping is now expandable and printable. The new test waits for actual persisted invalidation after asynchronous file processing. Extracted PDF text then exposed a closed-details print issue; content-visibility is explicitly enabled for print and the browser suite now asserts text from inside the printed basis panel using pdftotext.
 
 ## Boundaries
 
