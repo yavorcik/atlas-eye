@@ -1,10 +1,10 @@
 import './App.css'
+import { validateShipment, evidenceApplicability } from './demoValidation.js'
 import ReadinessReviewForm from './ReadinessReviewForm.jsx'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import HistoricalAtlasNuclearEye from './components/HistoricalAtlasNuclearEye.jsx'
 
-const STORE_KEY = 'atlas.publicDemoWorkspace.v2'
-const SCHEMA_VERSION = 2
+import { STORE_KEY, mergeProject, migrateWorkspace, workspaceTransaction } from './workspacePersistence.js'
 const MAX_FILE_SIZE = 512 * 1024
 const supportedTypes = new Map([
   ['text/plain', 'Text'],
@@ -83,6 +83,10 @@ Current status: site characterization attachments and alternatives analysis rema
     scope: 'Fuel transportation',
     text: JSON.stringify({
       label: 'Sample transport package compatibility record',
+      documentType: 'atlas-demo-package-compatibility',
+      documentIdentity: 'ATLAS-SAMPLE-PACKAGE-001',
+      scope: 'Fuel transportation',
+      form: 'UF6',
       material: 'HALEU UF6',
       enrichmentWtPercent: 19.75,
       quantity: '12 kgU',
@@ -206,17 +210,17 @@ Status: sample record prepared for supplier-quality review.
 const sourceRecords = {
   part53: {
     citation: '10 CFR Part 53, including §§ 53.1109 and 53.1413',
-    version: 'eCFR Title 10 displayed up to date as of 2026-08-31; Title 10 last amended 2026-08-26',
+    version: 'Public regulatory reference; no automatic currency or legal sufficiency check',
     sourceUrl: 'https://www.ecfr.gov/current/title-10/chapter-I/part-53',
   },
   transportHrcq: {
     citation: '49 CFR § 173.403',
-    version: 'eCFR Title 49 displayed up to date as of 2026-09-03; Title 49 last amended 2026-09-03',
+    version: 'Public regulatory reference; applicability requires qualified review',
     sourceUrl: 'https://www.ecfr.gov/current/title-49/subtitle-B/chapter-I/subchapter-C/part-173/subpart-I/section-173.403',
   },
   transportEmergency: {
     citation: '49 CFR Part 172 Subpart G',
-    version: 'eCFR Title 49 displayed up to date as of 2026-09-03; Title 49 last amended 2026-09-03',
+    version: 'Public regulatory reference; applicability requires qualified review',
     sourceUrl: 'https://www.ecfr.gov/current/title-49/subtitle-B/chapter-I/subchapter-C/part-172/subpart-G',
   },
   atlasGovernance: {
@@ -224,6 +228,10 @@ const sourceRecords = {
     version: 'Public demo model v2',
     sourceUrl: '',
   },
+}
+
+for (const [key, section] of Object.entries({ part53: '53.1109', part53Financial: '53.1413', part53Safety: '53.1416', part53Environment: '53.1419', part53Eligibility: '53.1118' })) {
+  sourceRecords[key] = { citation: `10 CFR § ${section}`, version: 'Public regulatory reference; no automatic currency or legal sufficiency check', sourceUrl: `https://www.ecfr.gov/current/title-10/chapter-I/part-53/subpart-H/section-${section}` }
 }
 
 const sampleHashes = {
@@ -448,54 +456,71 @@ function Cover() {
 }
 
 function useWorkspace() {
-  const [workspace, setWorkspace] = useState(() => ({ schemaVersion: SCHEMA_VERSION, projects: initialProjects(), lastSavedAt: '', saveStatus: 'idle', storageError: '', recovery: '' }))
-  const first = useRef(true)
-
-  useEffect(() => {
+  const [workspace, setWorkspace] = useState(() => {
     try {
       const raw = localStorage.getItem(STORE_KEY)
-      if (!raw) return
-      const parsed = JSON.parse(raw)
-      if (parsed?.schemaVersion !== SCHEMA_VERSION || !parsed.projects) {
-        setWorkspace((current) => ({ ...current, recovery: 'Saved demo data uses an older schema. You can reset it, or continue with the current sample workspace.' }))
-        return
-      }
-      setWorkspace({ ...parsed, projects: invalidateCachedTransportEvaluations(parsed.projects), saveStatus: 'saved', storageError: '', recovery: '' })
-    } catch {
-      setWorkspace((current) => ({ ...current, recovery: 'Saved demo data could not be read. Current samples remain available; reset only if you want to discard the unreadable browser record.' }))
+      const saved = migrateWorkspace(raw ? JSON.parse(raw) : null, initialProjects())
+      return { ...saved, projects: invalidateCachedTransportEvaluations(saved.projects), saveStatus: raw ? 'saved' : 'idle', storageError: '' }
+    } catch (error) {
+      return { ...migrateWorkspace(null, initialProjects()), saveStatus: 'error', storageError: error.message, recovery: 'Saved data could not be read. It has not been overwritten.' }
     }
-  }, [])
-
-  useEffect(() => {
-    if (first.current) {
-      first.current = false
-      return
-    }
-    const payload = { schemaVersion: SCHEMA_VERSION, projects: workspace.projects, lastSavedAt: nowIso() }
-    setWorkspace((current) => ({ ...current, saveStatus: 'saving', storageError: '' }))
-    window.setTimeout(() => {
-      try {
-        if (window.__ATLAS_DEMO_FORCE_STORAGE_FAILURE__) throw new Error('Forced storage failure')
-        localStorage.setItem(STORE_KEY, JSON.stringify(payload))
-        setWorkspace((current) => ({ ...current, lastSavedAt: payload.lastSavedAt, saveStatus: 'saved', storageError: '' }))
-      } catch (error) {
-        setWorkspace((current) => ({ ...current, saveStatus: 'error', storageError: error instanceof Error ? error.message : 'Browser storage failed.' }))
-      }
-    }, 80)
-  }, [workspace.projects])
+  })
+  const current = useRef(workspace)
+  const queue = useRef(Promise.resolve())
+  const failed = useRef(Boolean(workspace.storageError))
+  const publish = useCallback((next) => { current.current = next; setWorkspace(next) }, [])
 
   const updateProject = useCallback((projectId, updater) => {
-    setWorkspace((current) => {
-      const nextProject = updater(current.projects[projectId])
-      return { ...current, projects: { ...current.projects, [projectId]: nextProject }, saveStatus: 'saving' }
+    const before = current.current
+    const base = before.projects[projectId]
+    const proposed = updater(base)
+    if (proposed === base) return
+    const optimistic = { ...before, projects: { ...before.projects, [projectId]: proposed }, saveStatus: failed.current ? 'error' : 'saving' }
+    publish(optimistic)
+    queue.current = queue.current.then(async () => {
+      if (failed.current) return
+      try {
+        const stored = await workspaceTransaction(raw => {
+          const latest = migrateWorkspace(raw, structuredClone(before.projects))
+          if (latest.epoch !== before.epoch) throw new Error('This workspace was reset in another tab. Your old changes are retained here for download; load the saved workspace to continue.')
+          const remote = latest.projects[projectId]
+          const evaluationOnly = JSON.stringify(base.inputs) === JSON.stringify(proposed.inputs) && JSON.stringify(base.evidence) === JSON.stringify(proposed.evidence) && JSON.stringify(base.review) === JSON.stringify(proposed.review) && JSON.stringify(base.history) === JSON.stringify(proposed.history)
+          if (evaluationOnly && (remote.transportRevision !== proposed.transportRevision || JSON.stringify(remote.inputs) !== JSON.stringify(proposed.inputs) || JSON.stringify(remote.evidence) !== JSON.stringify(proposed.evidence) || JSON.stringify(remote.review) !== JSON.stringify(proposed.review))) return null
+          if (evaluationOnly && proposed.evaluationStatus !== 'evaluating' && remote.evaluationRequestId !== proposed.evaluationRequestId) return null
+          if (remote.revision !== base.revision && JSON.stringify(base.review) !== JSON.stringify(proposed.review) && proposed.review?.simulatedAcceptance) throw new Error('Review conflict: the saved project changed in another tab. Download your changes and load the saved workspace before reviewing again.')
+          const merged = structuredClone(evaluationOnly ? { ...remote, transportEvaluation: proposed.transportEvaluation, evaluationStatus: proposed.evaluationStatus, evaluatingRevision: proposed.evaluatingRevision, evaluationError: proposed.evaluationError, acceptanceError: proposed.acceptanceError, evaluationRequestId: proposed.evaluationRequestId } : mergeProject(base, proposed, remote))
+          if (projectId === 'fuel-transport' && (JSON.stringify(merged.inputs) !== JSON.stringify(proposed.inputs) || JSON.stringify(merged.evidence) !== JSON.stringify(proposed.evidence))) markTransportationDirty(merged, 'concurrent project changes merged')
+          const factsChanged = JSON.stringify(base.inputs) !== JSON.stringify(proposed.inputs) || JSON.stringify(base.evidence) !== JSON.stringify(proposed.evidence) || JSON.stringify(base.requirements) !== JSON.stringify(proposed.requirements)
+          if (factsChanged && remote.review?.simulatedAcceptance && projectId === 'fuel-transport') staleTransportationReview(merged, 'changes from another tab')
+          if (factsChanged && remote.review && projectId === 'supplier-qualification') staleSupplierReview(merged, 'changes from another tab')
+          merged.revision = remote.revision + 1
+          latest.projects[projectId] = merged
+          latest.lastSavedAt = nowIso()
+          return latest
+        })
+        if (current.current === optimistic) {
+          if (stored) publish({ ...stored, saveStatus: 'saved', storageError: '' })
+          else {
+            const raw = localStorage.getItem(STORE_KEY)
+            publish({ ...migrateWorkspace(raw ? JSON.parse(raw) : null, initialProjects()), saveStatus: 'saved', storageError: '' })
+          }
+        }
+      } catch (error) {
+        failed.current = true
+        publish({ ...current.current, saveStatus: 'error', storageError: error.message })
+      }
     })
-  }, [])
+  }, [publish])
 
-  const reset = useCallback(() => {
+  const reset = useCallback(async () => {
     if (!window.confirm('Reset this browser demo workspace? This removes saved sample progress on this device.')) return
-    localStorage.removeItem(STORE_KEY)
-    setWorkspace({ schemaVersion: SCHEMA_VERSION, projects: initialProjects(), lastSavedAt: '', saveStatus: 'saved', storageError: '', recovery: '' })
-  }, [])
+    try {
+      await queue.current
+      const stored = await workspaceTransaction(() => ({ ...migrateWorkspace(null, initialProjects()), epoch: crypto.randomUUID(), lastSavedAt: nowIso() }))
+      failed.current = false
+      publish({ ...stored, saveStatus: 'saved', storageError: '' })
+    } catch (error) { publish({ ...current.current, saveStatus: 'error', storageError: error.message }) }
+  }, [publish])
 
   return { workspace, updateProject, reset }
 }
@@ -529,18 +554,28 @@ function evaluateProject(project) {
         reason = transportFinding.reason
       }
     }
+    const applicability = linked.map(id => evidenceApplicability(project, req.id, project.evidence[id], sampleDocuments))
+    if (applicability.some(item => item.status !== 'established')) {
+      status = applicability.some(item => item.status === 'mismatched') ? 'conflict' : 'gap'
+      reason += ' ' + applicability.filter(item => item.status !== 'established').map(item => item.reason).join(' ')
+    }
+    const reviewed = project.review?.simulatedAcceptance && (project.id === 'supplier-qualification' ? supplierReady(project) : project.id === 'fuel-transport' && currentTransportationEvaluation(project)?.readyForReview && project.review.fingerprint === currentTransportationEvaluation(project)?.manifestFingerprint)
+    if (reviewed && ['review', 'supported'].includes(status) && linked.length) {
+      status = 'demo_accepted'
+      reason += ' This evidence version was included in the current simulated review. Real-world acceptance remains outside this demonstration.'
+    }
     return {
       id: `finding-${req.id}`,
       requirementId: req.id,
       title: req.title,
       status,
       reason,
-      source: sourceRecords[req.source],
+      source: requirementSource(req),
       relevantBecause: req.relevance,
       supportingEvidence: linked,
       missingEvidence: linked.length ? [] : ['Processed evidence linked to this requirement'],
-      applicabilityQuestions: status === 'supported' ? [] : ['Does the sample scope fully match this requirement?', 'Has an authorized reviewer accepted the evidence?'],
-      nextAction: findingNextAction(project, req, status, evidence),
+      applicabilityQuestions: status === 'demo_accepted' ? ['Real-world authorization and qualified review remain outside this demo.'] : status === 'supported' ? [] : ['Does the sample scope fully match this requirement?', 'Has an authorized reviewer accepted the evidence?'],
+      nextAction: status === 'demo_accepted' ? 'Maintain this reviewed evidence version. Any change requires a new simulated review.' : findingNextAction(project, req, status, evidence),
       role: project.role,
     }
   })
@@ -571,6 +606,17 @@ function evaluateProject(project) {
     })
   }
 
+  if (project.id === 'supplier-qualification' && project.review) {
+    const decision = project.review
+    const accepted = decision.simulatedAcceptance && supplierReady(project)
+    findings.push({ id: 'supplier-decision', requirementId: 'supplier-decision', title: 'Bounded supplier review decision', status: accepted ? 'demo_accepted' : decision.status, reason: `${decision.status === 'stale' ? 'Historical decision; the supporting evidence changed. ' : ''}${decision.explanation}`, source: sourceRecords.atlasGovernance, relevantBecause: 'Only quality program and calibration sample review is demonstrated.', supportingEvidence: reviewEvidence(project).map(item => item.id), missingEvidence: [], applicabilityQuestions: ['Supplier audits, full qualification, and NQA-1 certification are outside this demo.'], nextAction: accepted ? 'Maintain the reviewed scope and evidence versions.' : decision.status === 'stale' ? 'Review the current supporting evidence again.' : decision.explanation, role: project.role })
+  }
+  if (project.id === 'reactor-app') {
+    for (const q of project.guided.questions) {
+      if (!project.guided.skipped?.[q.id] && String(project.inputs[q.id] || '').trim()) continue
+      findings.push({ id: `answer-${q.id}`, requirementId: q.requirement, title: `${q.label}: unresolved answer`, status: 'gap', reason: project.guided.skipped?.[q.id] ? 'Skipped for now. Any earlier answer is retained but requires confirmation.' : 'This draft section is missing.', source: requirementSource(project.requirements.find(req => req.id === q.requirement)), relevantBecause: 'The bounded draft must identify missing sections.', supportingEvidence: [], missingEvidence: ['Confirmed applicant answer'], applicabilityQuestions: [], nextAction: `Return to ${q.label} and complete or confirm the answer.`, role: project.role })
+    }
+  }
   return findings
 }
 
@@ -593,7 +639,7 @@ function primaryNextAction(findings) {
 
 function transportationStatus(project) {
   const current = currentTransportationEvaluation(project)
-  if (project.evaluationStatus === 'error') return `Shipment checking failed: ${project.evaluationError} Retry detailed evaluation.`
+  if (project.evaluationStatus === 'error') return `Evaluation unavailable. Shipment checking failed: ${project.evaluationError} Retry detailed evaluation.`
   if (!current) return 'Checking the updated shipment information.'
   if (project.review?.status === 'stale') return `Shipment information changed. The previous review no longer applies.${current.readyForReview ? '' : ` Outstanding requirement: ${current.nextBlocker}`}`
   if (project.review?.simulatedAcceptance && project.review.fingerprint === current.manifestFingerprint) return 'Demonstration-only acceptance is current for this shipment information.'
@@ -650,18 +696,24 @@ function evaluateTransportationProject(project) {
   const inputs = project.inputs
   const evidence = Object.values(project.evidence || {})
   const linked = (requirementId) => evidence.filter((item) => item.status !== 'failed' && item.linkedRequirements.includes(requirementId))
+  const validation = validateShipment(inputs)
+  const applicable = id => linked(id).length > 0 && linked(id).every(item => evidenceApplicability(project, id, item, sampleDocuments).status === 'established')
   const hrcqValid = inputs.hrcqStatus === 'resolved_sample_basis' && /49 CFR 173\.403/i.test(inputs.hrcqBasis || '')
-  const routeProfile = inputs.routeProfile || 'truck_only'
+  const routeProfile = inputs.routeProfile
   const maritime = routeProfile === 'truck_port_vessel'
   const nodes = {
-    material: hrcqValid ? supported('Material facts and HRCQ sample basis are explicitly recorded for review.') : blocked('HRCQ threshold status is unresolved. Select the sample basis; blank, arbitrary, or incomplete text is not accepted.'),
-    package: linked('trn-package').length ? review('Package compatibility evidence is linked; reviewer must confirm applicability to the material facts.') : blocked('Package compatibility evidence is missing.'),
+    material: !validation.valid ? blocked(Object.values(validation.errors).join(' ')) : hrcqValid ? supported('Material facts and HRCQ sample basis are explicitly recorded for review.') : blocked('HRCQ threshold status is unresolved. Select the sample basis; blank, arbitrary, or incomplete text is not accepted.'),
+    package: applicable('trn-package') ? review('Package compatibility evidence is linked; reviewer must confirm applicability to the material facts.') : blocked(linked('trn-package').length ? linked('trn-package').map(item => evidenceApplicability(project, 'trn-package', item, sampleDocuments).reason).join(' ') : 'Package compatibility evidence is missing.'),
     carrier: inputs.carrierEvidence === 'truck_supported' || inputs.carrierEvidence === 'multimodal_supported' ? supported('Carrier evidence is represented for the selected route profile.') : blocked('Shipper/carrier authority evidence is missing or only claimed.'),
     route: hrcqValid && ((!maritime && inputs.routeEvidence === 'truck_supported') || (maritime && inputs.routeEvidence === 'multimodal_supported')) ? supported('Route and mode evidence covers the represented scope.') : blocked(maritime ? 'Maritime route, port, vessel, flag-state, and destination overlays are unresolved.' : 'Highway route evidence or HRCQ basis is unresolved.'),
     security: ((!maritime && inputs.securityEvidence === 'domestic_supported') || (maritime && inputs.securityEvidence === 'multimodal_supported')) ? supported('Security readiness is represented without tactical details.') : blocked(maritime ? 'Port, vessel, or flag-state security evidence is unresolved.' : 'Security plan adequacy or support is unresolved.'),
     execution: ((!maritime && inputs.executionEvidence === 'domestic_supported') || (maritime && inputs.executionEvidence === 'multimodal_supported')) ? supported('Shipment execution evidence is represented for the selected path.') : blocked(maritime ? 'Port handoff or vessel cargo acceptance is unresolved.' : 'Pre-departure inspection, measurement, or shipping-paper evidence is unresolved.'),
-    emergency: linked('trn-response').length && ((!maritime && inputs.emergencyEvidence === 'domestic_supported') || (maritime && inputs.emergencyEvidence === 'multimodal_supported')) ? review('Emergency response evidence is linked and ready for qualified review.') : blocked(maritime ? 'Port/COTP, vessel, flag-state, or destination response evidence is unresolved.' : 'Emergency response information evidence is missing or incomplete.'),
+    emergency: applicable('trn-response') && ((!maritime && inputs.emergencyEvidence === 'domestic_supported') || (maritime && inputs.emergencyEvidence === 'multimodal_supported')) ? review('Emergency response evidence is linked and ready for qualified review.') : blocked(maritime ? 'Port/COTP, vessel, flag-state, or destination response evidence is unresolved.' : 'Emergency response information evidence is missing or incomplete.'),
     reviewer: inputs.reviewer === 'valid' ? supported('Demo authorized reviewer is assigned.') : blocked(inputs.reviewer === 'missing_authority' ? 'Reviewer authority basis is missing.' : 'Demo authorized reviewer is not assigned.'),
+  }
+  for (const [requirementId, nodeId] of Object.entries({ 'trn-carrier': 'carrier', 'trn-route': 'route', 'trn-security': 'security', 'trn-execution': 'execution', 'trn-response': 'emergency' })) {
+    const unresolved = linked(requirementId).map(item => evidenceApplicability(project, requirementId, item, sampleDocuments)).filter(item => item.status !== 'established')
+    if (unresolved.length) nodes[nodeId] = blocked(unresolved.map(item => item.reason).join(' '))
   }
   const blockers = Object.entries(nodes).filter(([, node]) => node.status === 'BLOCKED').map(([key, node]) => `${labelize(key)}: ${node.reason}`)
   return {
@@ -712,19 +764,19 @@ function mapTransportationInputs(project) {
     material: inputs.material,
     chemical_form: inputs.form,
     u235_enrichment_wt_percent: inputs.enrichment,
-    quantity: String(inputs.quantity || '').split(' ')[0],
-    quantity_unit: String(inputs.quantity || '').split(' ').slice(1).join(' ') || 'kgU',
+    quantity: validateShipment(inputs).quantity,
+    quantity_unit: validateShipment(inputs).unit,
     hrcq_status: inputs.hrcqStatus === 'resolved_sample_basis' && /49 CFR 173\.403/i.test(inputs.hrcqBasis || '') ? 'HRCQ' : 'INSUFFICIENT_INFORMATION',
     origin_state: inputs.origin,
     destination_state: inputs.destination,
     proposed_mode: inputs.routeProfile === 'truck_port_vessel' ? 'Highway to vessel' : 'Highway',
-    route_profile: inputs.routeProfile || 'truck_only',
-    package_evidence_mode: project.requirements.find((req) => req.id === 'trn-package')?.linkedEvidence?.some((id) => project.evidence[id]?.status !== 'failed') ? 'compatible' : inputs.packageEvidence || 'none',
+    route_profile: inputs.routeProfile,
+    package_evidence_mode: project.requirements.find((req) => req.id === 'trn-package')?.linkedEvidence?.length > 0 && project.requirements.find((req) => req.id === 'trn-package').linkedEvidence.every((id) => evidenceApplicability(project, 'trn-package', project.evidence[id], sampleDocuments).status === 'established') ? 'compatible' : 'none',
     carrier_evidence_mode: inputs.carrierEvidence || 'none',
     route_evidence_mode: inputs.routeEvidence || 'none',
     security_evidence_mode: inputs.securityEvidence || 'none',
     shipment_execution_evidence_mode: inputs.executionEvidence || 'none',
-    emergency_response_evidence_mode: project.requirements.find((req) => req.id === 'trn-response')?.linkedEvidence?.some((id) => project.evidence[id]?.status !== 'failed') ? inputs.emergencyEvidence || 'none' : 'none',
+    emergency_response_evidence_mode: project.requirements.find((req) => req.id === 'trn-response')?.linkedEvidence?.some((id) => evidenceApplicability(project, 'trn-response', project.evidence[id], sampleDocuments).status === 'established') ? inputs.emergencyEvidence || 'none' : 'none',
     incident_scenario: 'vehicle_accident_no_release',
     governed_reviewer_mode: inputs.reviewer || 'none',
     governed_decision_mode: 'pending',
@@ -762,8 +814,8 @@ function normalizeTransportationEngineResult(project, engine) {
     reviewer: engine.governed_readiness_decision?.reviewer_defects?.join('; ') || fallback.nodes.reviewer.reason,
   }
   const nodes = Object.fromEntries(Object.entries(fallback.nodes).map(([key, local]) => {
-    const status = nodeStatus[key] === 'SUPPORTED' ? (local.status === 'REVIEW' ? 'REVIEW' : 'SUPPORTED') : 'BLOCKED'
-    return [key, { status, reason: status === 'BLOCKED' ? reason[key] || local.reason : local.reason }]
+    const status = nodeStatus[key] === 'SUPPORTED' && local.status !== 'BLOCKED' ? (local.status === 'REVIEW' ? 'REVIEW' : 'SUPPORTED') : 'BLOCKED'
+    return [key, { status, reason: status === 'BLOCKED' ? (local.status === 'BLOCKED' ? local.reason + ' ' + (reason[key] || '') : reason[key] || local.reason) : local.reason }]
   }))
   const blockers = Object.entries(nodes).filter(([, node]) => node.status === 'BLOCKED').map(([key, node]) => `${labelize(key)}: ${node.reason}`)
   return {
@@ -808,17 +860,18 @@ function Dashboard({ workspace, reset }) {
           const findings = evaluateProject(project)
           const unresolved = findings.filter((finding) => !['supported', 'demo_accepted'].includes(finding.status))
           return <a className="project-card" href={project.route} key={project.id}>
-            <span className="project-stage">{project.stage}</span>
+            <span className="project-stage">{customerReportModel(project, findings).stage}</span>
             <h2>{project.name}</h2>
             <p>{project.purpose}</p>
             <dl>
               <div><dt>Current condition</dt><dd>{unresolved.length} evidence gaps or review findings</dd></div>
               <div><dt>Last saved</dt><dd>{niceTime(workspace.lastSavedAt)}</dd></div>
-              <div><dt>Primary next action</dt><dd>{primaryNextAction(findings)}</dd></div>
+              <div><dt>Primary next action</dt><dd>{customerReportModel(project, findings).nextAction}</dd></div>
             </dl>
           </a>
         })}
       </div>
+      <p>Capability shortcuts open different views of the same three saved projects.</p>
       <div className="module-grid" aria-label="Capability navigation">
         {modules.map((item) => <a className="module-card compact-card" href={item.href} key={item.href}>
           <span className="module-icon" aria-hidden="true">{item.code}</span>
@@ -834,8 +887,9 @@ function Dashboard({ workspace, reset }) {
 function DemoNotice({ workspace, reset }) {
   return <div className={`demo-notice-panel save-${workspace.saveStatus}`} role="status">
     <strong>Demo workspace</strong>
-    <span>Saved in this browser. Other devices will not see this demo workspace. Use sample or non-sensitive material.</span>
+    <span>{workspace.saveStatus === 'saved' ? 'Saved in this browser.' : 'Browser-local demo.'} Other devices will not see this demo workspace. Use sample or non-sensitive material.</span>
     <span>{workspace.saveStatus === 'saving' ? 'Saving...' : workspace.saveStatus === 'error' ? `Save failed: ${workspace.storageError}` : `Last saved: ${niceTime(workspace.lastSavedAt)}`}</span>
+    {workspace.saveStatus === 'error' ? <><button className="button secondary compact" onClick={() => download('atlas-recoverable-workspace.json', JSON.stringify(workspace, null, 2), 'application/json')}>Download recoverable changes</button><button className="button secondary compact" onClick={() => { if (window.confirm('Load the saved version? Download your recoverable changes first.')) window.location.reload() }}>Load saved workspace</button></> : null}
     {workspace.recovery ? <span className="warning">{workspace.recovery}</span> : null}
     <button type="button" className="button secondary compact" onClick={reset}>Reset saved demo</button>
   </div>
@@ -872,13 +926,14 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
     if (project.evaluationStatus === 'error') return
     if (project.evaluationStatus === 'evaluating' && project.evaluatingRevision === revision) return
     async function refreshTransportEvaluation() {
-      updateProject(project.id, (current) => current.transportRevision === revision ? { ...current, evaluationStatus: 'evaluating', evaluatingRevision: revision, evaluationError: '', acceptanceError: '' } : current)
+      const requestId = crypto.randomUUID()
+      updateProject(project.id, (current) => current.transportRevision === revision ? { ...current, evaluationRequestId: requestId, evaluationStatus: 'evaluating', evaluatingRevision: revision, evaluationError: '', acceptanceError: '' } : current)
       try {
         if (window.__ATLAS_DEMO_TRANSPORT_EVALUATOR_DELAY_MS__) await new Promise((resolve) => window.setTimeout(resolve, Number(window.__ATLAS_DEMO_TRANSPORT_EVALUATOR_DELAY_MS__)))
         const base = await evaluateTransportationWithExistingEngine(project)
         const manifest = {
           projectRevision: revision,
-          representedScope: project.scope,
+          representedScope: representedScope(project),
           inputs: project.inputs,
           requirements: project.requirements.map((req) => ({ id: req.id, linkedEvidence: [...req.linkedEvidence].sort() })),
           evidence: Object.values(project.evidence).map((item) => ({
@@ -895,9 +950,11 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
         }
         const manifestFingerprint = await sha256Text(canonicalStringify(manifest))
         updateProject(project.id, (current) => {
-          if ((current.transportRevision || 1) !== revision) return current
+          if ((current.transportRevision || 1) !== revision || current.evaluationRequestId !== requestId) return current
+          const reviewChanged = current.review?.simulatedAcceptance && current.review.fingerprint !== manifestFingerprint
           return {
             ...current,
+            review: reviewChanged ? { ...current.review, status: 'stale', simulatedAcceptance: false } : current.review,
             transportEvaluation: {
               ...base,
               lifecycle: 'complete',
@@ -914,7 +971,7 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
         })
       } catch (error) {
         updateProject(project.id, (current) => {
-          if ((current.transportRevision || 1) !== revision) return current
+          if ((current.transportRevision || 1) !== revision || current.evaluationRequestId !== requestId) return current
           return {
             ...current,
             transportEvaluation: null,
@@ -949,13 +1006,25 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
         return
       }
       if (key === '__guidedComplete') {
+        if (next.guided.complete) return
         next.guided.complete = true
         next.history.unshift(history('Completed the guided demonstration and opened application results.', 'Visitor'))
         return
       }
+      if (key === '__guidedSkip') {
+        const id = next.guided.questions[next.guided.current].id
+        next.guided.skipped = { ...next.guided.skipped, [id]: true }
+        next.history.unshift(history(`Skipped ${part53Fields.find(q => q.id === id)?.label}; unresolved answer retained for follow-up.`, 'Visitor'))
+        if (next.guided.current === 13) next.guided.complete = true
+        else next.guided.current += 1
+        return
+      }
+      if (next.guided?.skipped) delete next.guided.skipped[key]
       next.inputs[key] = value
-      next.history.unshift(history(`Updated ${key}. Affected findings were reevaluated.`, 'Visitor'))
+      if (key === 'quantityValue' || key === 'quantityUnit') next.inputs.quantity = `${next.inputs.quantityValue} ${next.inputs.quantityUnit}`
+      next.history.unshift(history(`Updated ${part53Fields.find(q => q.id === key)?.label || labelize(key)}. Affected findings were reevaluated.`, 'Visitor'))
       if (next.id === 'fuel-transport') markTransportationDirty(next, 'material scope or input changed')
+      if (next.id === 'supplier-qualification') staleSupplierReview(next, 'project facts changed')
     })
   }
 
@@ -967,12 +1036,14 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
       evidence.linkedRequirements = Array.from(new Set([...evidence.linkedRequirements, requirementId]))
       requirement.linkedEvidence = Array.from(new Set([...requirement.linkedEvidence, evidenceId]))
       if (next.id === 'fuel-transport') markTransportationDirty(next, 'evidence link changed')
+      if (next.id === 'supplier-qualification') staleSupplierReview(next, 'evidence links changed')
       next.history.unshift(history(`Linked ${evidence.filename} to ${requirement.title}.`, 'Visitor'))
     })
   }
 
   async function attachFile(file, requirementId, replaceId = '', metadataOverride = null) {
-    const processed = await processEvidenceFile(file, project.scope)
+    let processed
+    try { processed = await processEvidenceFile(file, project.scope) } catch (error) { processed = { filename: file.name, status: 'failed', hash: 'not-computed', failureReason: `File processing failed: ${error.message}`, fullText: '', metadata: {} } }
     if (metadataOverride) processed.metadata = metadataOverride
     patchProject((next) => {
       const id = replaceId || `ev-${Date.now()}`
@@ -986,15 +1057,26 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
         ...processed,
         id,
         version: previous ? previous.version + 1 : 1,
-        linkedRequirements: requirementId ? [requirementId] : [],
+        linkedRequirements: previous ? [...previous.linkedRequirements] : requirementId ? [requirementId] : [],
         replacements: previous ? [...(previous.replacements || []), { filename: previous.filename, hash: previous.hash, version: previous.version, replacedAt: nowIso(), status: previous.status, fullText: previous.fullText || previous.preview || '', linkedRequirements: previous.linkedRequirements }] : [],
         reviewStatus: processed.status === 'failed' ? 'Not reviewable' : 'Pending human review',
+      }
+      if (next.id === 'supplier-qualification' && processed.status !== 'failed' && requirementId) {
+        for (const record of Object.values(next.evidence)) {
+          if (record.id !== id && record.linkedRequirements.includes(requirementId)) {
+            record.linkedRequirements = record.linkedRequirements.filter(reqId => reqId !== requirementId)
+            record.reviewStatus = 'Historical — replaced in this requirement'
+          }
+        }
+        const requirement = next.requirements.find(req => req.id === requirementId)
+        if (requirement) requirement.linkedEvidence = []
       }
       if (requirementId) {
         const req = next.requirements.find((item) => item.id === requirementId)
         if (req) req.linkedEvidence = Array.from(new Set([...req.linkedEvidence.filter((x) => x !== replaceId), id]))
       }
       if (next.id === 'fuel-transport') markTransportationDirty(next, 'evidence identity, content, version, or links changed')
+      if (next.id === 'supplier-qualification') staleSupplierReview(next, 'supporting evidence changed')
       next.history.unshift(history(`${replaceId ? 'Replaced' : 'Attached'} ${processed.filename}: ${processed.status}.`, 'Visitor'))
     })
     setSelectedEvidence(replaceId || '')
@@ -1002,6 +1084,7 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
 
   async function loadSampleEvidence(requirementId) {
     const sample = chooseSample(project.id, requirementId)
+    if (!sample) return
     const file = new File([sample.text], sample.name, { type: sample.type, lastModified: Date.now() })
     await attachFile(file, requirementId, '', sample.metadata || null)
   }
@@ -1019,15 +1102,26 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
   function acceptTransportationDemo() {
     patchProject((next) => {
       const current = currentTransportationEvaluation(next)
-      const ready = Boolean(current?.readyForReview && current.manifestFingerprint && current.projectRevision === (next.transportRevision || 0))
+      const ready = Boolean(validateShipment(next.inputs).valid && evaluateTransportationProject(next).readyForReview && current?.readyForReview && current.manifestFingerprint && current.projectRevision === (next.transportRevision || 0))
       if (!ready) {
         next.acceptanceError = next.evaluationStatus === 'error' ? 'Acceptance blocked because detailed transportation evaluation is unavailable.' : 'Acceptance blocked until the current project revision finishes detailed evaluation and hashing.'
         next.history.unshift(history(next.acceptanceError, 'Atlas'))
         return
       }
       next.acceptanceError = ''
-      next.review = { fingerprint: current.manifestFingerprint, status: 'accepted_demo_only', simulatedAcceptance: true, acceptedAt: nowIso(), evaluation: current, acceptedRevision: next.transportRevision }
+      next.review = { fingerprint: current.manifestFingerprint, status: 'accepted_demo_only', simulatedAcceptance: true, acceptedAt: nowIso(), evaluation: current, acceptedRevision: next.transportRevision, scope: representedScope(next), inputs: structuredClone(next.inputs), evidence: reviewEvidence(next), explanation: 'Bounded sample gates and declared evidence reviewed for demonstration only.' }
+      next.decisions = [...(next.decisions || []), structuredClone(next.review)]
       next.history.unshift(history('Demonstration-only transportation acceptance recorded for the current manifest fingerprint.', 'Demo authorized reviewer'))
+    })
+  }
+
+  function decideSupplier(decision, explanation) {
+    patchProject(next => {
+      if (!explanation.trim()) return
+      if (decision === 'accepted_demo_only' && !supplierReady(next)) return
+      next.review = { status: decision, simulatedAcceptance: decision === 'accepted_demo_only', acceptedRevision: (next.revision || 0) + 1, acceptedAt: nowIso(), scope: representedScope(next), inputs: structuredClone(next.inputs), evidence: reviewEvidence(next), explanation: explanation.trim() }
+      next.decisions = [...(next.decisions || []), structuredClone(next.review)]
+      next.history.unshift(history(`Supplier demo decision: ${decision === 'accepted_demo_only' ? 'simulated acceptance' : decision === 'rejected' ? 'rejected' : 'changes requested'}. ${explanation.trim()}`, 'Supplier quality reviewer (simulated)'))
     })
   }
 
@@ -1047,6 +1141,7 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
       </nav>
       {view === 'overview' ? <Overview project={project} findings={findings} setView={setView} /> : null}
       {view === 'requirements' ? <Requirements project={project} findings={findings} setView={setView} setInput={setInput} linkEvidence={linkEvidence} loadSampleEvidence={loadSampleEvidence} attachFile={attachFile} acceptTransportationDemo={acceptTransportationDemo} retryTransportationEvaluation={retryTransportationEvaluation} /> : null}
+      {project.id === 'supplier-qualification' && (view === 'requirements' || view === 'evidence') ? <SupplierReview project={project} decide={decideSupplier} /> : null}
       {view === 'evidence' ? <EvidenceInventory project={project} activeEvidence={activeEvidence} setSelectedEvidence={setSelectedEvidence} attachFile={attachFile} linkEvidence={linkEvidence} /> : null}
       {view === 'findings' ? <Findings project={project} findings={findings} /> : null}
       {view === 'history' ? <History project={project} /> : null}
@@ -1058,7 +1153,7 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
 function ProjectHeader({ project, findings }) {
   const unresolved = findings.filter((finding) => !['supported', 'demo_accepted'].includes(finding.status))
   return <header className="project-hero">
-    <p className="eyebrow">{project.stage}</p>
+    <p className="eyebrow">{customerReportModel(project, findings).stage}</p>
     <h1>{project.name}</h1>
     <div className="status-strip">
       <span>{unresolved.length} unresolved findings</span>
@@ -1066,6 +1161,7 @@ function ProjectHeader({ project, findings }) {
       <span>{project.role}</span>
     </div>
     <p>{project.purpose}</p>
+    <p><strong>Atlas identified:</strong> {customerReportModel(project, findings).stage} <strong>Next:</strong> {customerReportModel(project, findings).nextAction} <strong>Produce:</strong> a bounded draft and evidence/action register.</p>
   </header>
 }
 
@@ -1074,11 +1170,12 @@ function Overview({ project, findings, setView }) {
   return <div className="workspace-grid">
     <section className="panel wide">
       <h2>Current Condition</h2>
+      <p><strong>{customerReportModel(project, findings).status}</strong></p>
       <p>{project.scope}</p>
       <div className="summary-grid">
         <article><span>What this project is trying to accomplish</span><strong>{project.purpose}</strong></article>
         <article><span>What Atlas identified</span><strong>{open.length ? `${open.length} unresolved evidence or review findings` : 'No unresolved demo findings'}</strong></article>
-        <article><span>What the visitor should do next</span><strong>{primaryNextAction(findings)}</strong></article>
+        <article><span>What the visitor should do next</span><strong>{customerReportModel(project, findings).nextAction}</strong></article>
         <article><span>Deliverable</span><strong>{project.id === 'reactor-app' ? 'Application draft and evidence/action register' : project.id === 'fuel-transport' ? 'Transportation readiness package' : 'Supplier review report'}</strong></article>
       </div>
     </section>
@@ -1105,17 +1202,25 @@ function Requirements({ project, findings, setView, setInput, linkEvidence, load
       <h2>{guided.complete ? 'Application Results' : 'Guided Application'}</h2>
       {guided.complete ? <><p>Your answers have been assembled into a draft. Review the remaining evidence gaps and open items before downloading.</p><ReportAction project={project} setView={setView} /></> : null}
       {!guided.complete ? <div className="guided-box">
-        <p className="citation">{sourceRecords.part53.citation}</p>
+        <p className="eyebrow">Question {guided.current + 1} of 14</p>
+        <p>{questionGuidance[currentQuestion.id][0]}</p>
+        <p><strong>Example:</strong> {questionGuidance[currentQuestion.id][1]}</p>
+        <p className="citation"><SourceLink source={sourceRecords[currentQuestion.citation.startsWith('Atlas') ? 'atlasGovernance' : 'part53']} label={currentQuestion.citation} /></p>
+        <p><strong>Evidence prompt:</strong> {project.requirements.find(req => req.id === currentQuestion.requirement)?.question}</p>
+        {chooseSample(project.id, currentQuestion.requirement) ? <button className="button secondary compact" onClick={() => loadSampleEvidence(currentQuestion.requirement)}>Load relevant sample for this question</button> : <p>No supplied sample establishes this section. Use the requirements register to attach relevant supporting records; qualified assessment remains required.</p>}
+        <p><strong>Draft preview — {currentQuestion.label}:</strong> {project.inputs[currentQuestion.id] || 'Missing section; your answer will appear here.'}</p>
         <label>{currentQuestion.prompt}<textarea value={project.inputs[currentQuestion.id] || ''} onChange={(event) => setInput(currentQuestion.id, event.target.value)} /></label>
         <div className="button-row">
           <button type="button" className="button secondary" disabled={guided.current === 0} onClick={() => setInput('__guidedBack', '') || null}>Back</button>
+          <button type="button" className="button secondary" onClick={() => setInput('__guidedSkip', '')}>Skip for now — record unresolved gap</button>
           <button type="button" className="button primary" onClick={() => setGuidedStep(project, setInput, completeGuided ? 'complete' : 'next')}>{completeGuided ? 'Finish guided demonstration' : 'Save and continue'}</button>
         </div>
       </div> : <ApplicationDraft project={project} editingQuestion={editingQuestion} setEditingQuestion={setEditingQuestion} setInput={setInput} />}
     </section> : null}
     {project.id === 'fuel-transport' ? <TransportationPath project={project} findings={findings} setInput={setInput} loadSampleEvidence={loadSampleEvidence} acceptTransportationDemo={acceptTransportationDemo} retryTransportationEvaluation={retryTransportationEvaluation} /> : null}
     {project.id !== 'reactor-app' ? <ReportAction project={project} setView={setView} /> : null}
-    <section className="panel wide">
+    <details className="panel wide" open={project.id !== 'reactor-app'}>
+      <summary>Complete requirements register</summary>
       <h2>Requirements</h2>
       <div className="requirement-list">
         {project.requirements.map((req) => {
@@ -1125,18 +1230,18 @@ function Requirements({ project, findings, setView, setInput, linkEvidence, load
               <span className={`status-pill ${finding?.status}`}>{readableStatus(finding?.status)}</span>
               <h3>{req.title}</h3>
               <p>{req.relevance}</p>
-              <p className="citation">{sourceRecords[req.source].citation} · {sourceRecords[req.source].version}</p>
+              <p className="citation"><SourceLink source={requirementSource(req)} /> · {requirementSource(req).version}</p>
             </div>
             <EvidenceLinks req={req} evidence={project.evidence} linkEvidence={linkEvidence} />
             <div className="button-row">
-              <button type="button" className="button secondary compact" onClick={() => loadSampleEvidence(req.id)}>Load sample evidence</button>
+              <button type="button" className="button secondary compact" disabled={!chooseSample(project.id, req.id)} onClick={() => loadSampleEvidence(req.id)}>Load sample evidence</button>
               <label className="file-button">Attach evidence<input type="file" onChange={(event) => event.target.files?.[0] && attachFile(event.target.files[0], req.id)} /></label>
             </div>
             <p className="finding-reason">{finding?.reason}</p>
           </article>
         })}
       </div>
-    </section>
+    </details>
   </div>
 }
 
@@ -1151,13 +1256,13 @@ function setGuidedStep(project, setInput, action) {
 }
 
 function ApplicationDraft({ project, editingQuestion, setEditingQuestion, setInput }) {
-  const missing = project.guided.questions.filter((q) => !String(project.inputs[q.id] || '').trim())
+  const missing = project.guided.questions.filter((q) => project.guided.skipped?.[q.id] || !String(project.inputs[q.id] || '').trim())
   return <div className="application-draft" data-testid="part53-results">
     <p>Completion of this guided demonstration means the visitor reached the results view. It does not mean the application is complete or accepted.</p>
     {project.guided.questions.map((q) => <article key={q.id}>
       <h3>{q.label}</h3>
       {editingQuestion === q.id ? <label>Edit answer<textarea value={project.inputs[q.id] || ''} onChange={(event) => setInput(q.id, event.target.value)} /><button type="button" className="button primary compact" onClick={() => setEditingQuestion(null)}>Save edit</button></label> : <>
-        <p>{project.inputs[q.id] || 'Missing section'}</p>
+        <p>{project.guided.skipped?.[q.id] ? 'Skipped for now — unresolved gap. Retained prior answer: ' : ''}{project.inputs[q.id] || 'Missing section'}</p>
         <button type="button" className="button secondary compact" onClick={() => setEditingQuestion(q.id)}>Edit answer</button>
       </>}
     </article>)}
@@ -1170,24 +1275,28 @@ function TransportationPath({ project, findings, setInput, loadSampleEvidence, a
   const governed = findings.find((finding) => finding.id === 'finding-trn-governed-review')
   const current = currentTransportationEvaluation(project)
   const result = current || evaluateTransportationProject(project)
-  const evaluationReady = Boolean(current?.readyForReview && governed?.status === 'review' && governed?.fingerprint)
+  const validation = validateShipment(project.inputs)
+  const evaluationReady = Boolean(validation.valid && current?.readyForReview && governed?.status === 'review' && governed?.fingerprint)
   return <section className="panel wide transportation-path">
     <h2>Your transportation readiness package</h2>
     <div className="sticky-step">
-      <strong>Active step: material and shipment facts</strong>
+      <strong>Shipment readiness</strong>
       <span>{current ? `${result.blockers.length} transportation blockers` : 'Checking shipment requirements'}</span>
     </div>
     <p role="status" data-testid="transport-evaluation-state">{transportationStatus(project)}</p>
     <TransportationDetails project={project} />
+    <p>The bounded sample represents HALEU UF6 at 19.75 wt% and 12 kgU. Route, carrier, security, and execution selections are scenario assumptions, not attached documents.</p>
+    {project.requirements.find(req => req.id === 'trn-response')?.linkedEvidence.length ? <p className="warning">Emergency response file attached. Next: assess the represented response scope using the <button className="button secondary compact" onClick={() => document.getElementById('emergency-assessment')?.querySelector('select')?.focus()}>Emergency response evidence control</button> below. Attachment alone does not establish applicability.</p> : null}
     <div className="form-grid">
       {[
         ['material', 'Material'],
         ['form', 'Physical or chemical form'],
         ['enrichment', 'U-235 enrichment wt%'],
-        ['quantity', 'Quantity'],
+        ['quantityValue', 'Quantity'],
         ['origin', 'Origin'],
         ['destination', 'Destination'],
-      ].map(([key, label]) => <label key={key}>{label}<input value={project.inputs[key] || ''} onChange={(event) => setInput(key, event.target.value)} /></label>)}
+      ].map(([key, label]) => <label key={key}>{label}<input aria-label={label} aria-invalid={Boolean(validation.errors[key])} aria-describedby={validation.errors[key] ? `error-${key}` : undefined} value={project.inputs[key] || ''} onChange={(event) => setInput(key, event.target.value)} />{validation.errors[key] ? <span className="field-error" id={`error-${key}`}>{validation.errors[key]}</span> : null}</label>)}
+      <label>Quantity unit<select value={project.inputs.quantityUnit || ''} onChange={event => setInput('quantityUnit', event.target.value)}><option value="">Select unit</option><option value="kgU">kgU — kilograms of uranium</option>{project.inputs.quantityUnit && project.inputs.quantityUnit !== 'kgU' ? <option value={project.inputs.quantityUnit}>{project.inputs.quantityUnit} (unsupported)</option> : null}</select>{validation.errors.quantityUnit ? <span className="field-error">{validation.errors.quantityUnit}</span> : null}</label>
       <label>HRCQ threshold status<select value={project.inputs.hrcqStatus || 'insufficient_information'} onChange={(event) => setInput('hrcqStatus', event.target.value)}>
         <option value="insufficient_information">Insufficient information</option>
         <option value="claimed_only">Claimed only</option>
@@ -1221,7 +1330,7 @@ function TransportationPath({ project, findings, setInput, loadSampleEvidence, a
         <option value="domestic_supported">Domestic highway supported</option>
         <option value="multimodal_supported">Multimodal supported</option>
       </select></label>
-      <label>Emergency response evidence<select value={project.inputs.emergencyEvidence || 'none'} onChange={(event) => setInput('emergencyEvidence', event.target.value)}>
+      <label id="emergency-assessment">Emergency response evidence<select value={project.inputs.emergencyEvidence || 'none'} onChange={(event) => setInput('emergencyEvidence', event.target.value)}>
         <option value="none">Missing</option>
         <option value="exercise_open_action">Exercise action open</option>
         <option value="domestic_supported">Domestic highway supported</option>
@@ -1233,6 +1342,7 @@ function TransportationPath({ project, findings, setInput, loadSampleEvidence, a
         <option value="valid">Demo authorized reviewer</option>
       </select></label>
     </div>
+    <p>Evidence dropdowns above represent simulated scope assessments. Inspect actual attachments in Evidence; real carrier, route, security, and execution approval remains outside this demo.</p>
     <div className="button-row">
       <button type="button" className="button primary" onClick={() => loadSampleEvidence('trn-package')}>Load sample package evidence</button>
       <button type="button" className="button secondary" onClick={() => { setInput('hrcqStatus', 'resolved_sample_basis'); setInput('hrcqBasis', 'Sample basis cites 49 CFR 173.403 threshold review for the represented package.') }}>Resolve HRCQ facts</button>
@@ -1320,7 +1430,7 @@ function Findings({ project, findings, compact = false }) {
         <h3>{finding.title}</h3>
         <p>{finding.reason}</p>
         <dl>
-          <div><dt>Source</dt><dd>{finding.source.citation}</dd></div>
+          <div><dt>Source</dt><dd><SourceLink source={finding.source} /></dd></div>
           <div><dt>Source/version</dt><dd>{finding.source.version}</dd></div>
           <div><dt>Relevant because</dt><dd>{finding.relevantBecause}</dd></div>
           <div><dt>Supporting evidence</dt><dd>{finding.supportingEvidence.map((id) => project.evidence[id]?.filename || id).join(', ') || 'None'}</dd></div>
@@ -1351,7 +1461,17 @@ function History({ project }) {
 
 function Report({ project, findings }) {
   const heading = useRef(null)
-  useEffect(() => { heading.current?.focus({ preventScroll: true }) }, [])
+  useEffect(() => {
+    heading.current?.focus({ preventScroll: true })
+    const frame = requestAnimationFrame(() => {
+      const element = heading.current
+      if (!element) return
+      element.focus({ preventScroll: true })
+      const offset = ['.workspace-header', '.project-tabs'].reduce((height, selector) => height + (getComputedStyle(document.querySelector(selector)).position === 'sticky' ? document.querySelector(selector).getBoundingClientRect().height : 0), 24)
+      window.scrollTo({ top: Math.max(0, window.scrollY + element.getBoundingClientRect().top - offset), behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [])
   const report = buildReport(project, findings)
   return <section className="panel wide report-panel">
     <h2 ref={heading} tabIndex={-1}>Project Report</h2>
@@ -1364,39 +1484,133 @@ function Report({ project, findings }) {
   </section>
 }
 
+const questionGuidance = {
+  'legal-name': ['Use the full registered applicant name, including the legal suffix.', 'Atlas Demo Energy LLC.'],
+  address: ['Give the applicant mailing address and identify any separate principal office.', '100 Demo Industrial Parkway, Piketon, Ohio; postal code to be confirmed.'],
+  business: ['Describe the activities the applicant conducts and its role in the proposed project.', 'Advanced reactor project development; operating organization still to be identified.'],
+  organization: ['State the organization type, jurisdiction of formation, and principal place of business.', 'Ohio limited liability company with its principal office in Piketon.'],
+  citizenship: ['List directors and principal officers, their roles, and the status of supporting identity information.', 'Director roster is being assembled; citizenship records need legal review.'],
+  focd: ['Describe known ownership and control arrangements, including foreign interests and unresolved questions.', 'Ownership chart attached; indirect control assessment remains open.'],
+  license: ['Describe the requested license, intended facility use, period, and related approvals. Mark undecided items.', 'Combined license for a demonstration reactor; proposed term to be confirmed.'],
+  financial: ['Identify funding sources, cost estimates, financial records, and who will review them.', 'Construction funding plan outline available; operating cost support needs financial review.'],
+  safety: ['Identify the safety analysis documents and their actual maturity. Do not imply unfinished analyses are complete.', 'Preliminary safety analysis outline; controlled analysis and technical review outstanding.'],
+  environment: ['Describe environmental information available and missing site or alternatives studies.', 'Site information outline available; alternatives analysis not completed.'],
+  eligibility: ['Identify the legal eligibility questions, supporting records, and responsible legal reviewer.', 'Legal counsel to assess ownership and statutory eligibility; review not started.'],
+  evidence: ['List controlled supporting records with identity, version, and their intended draft section.', 'Organization record dated 2026-08-15 supports applicant identity.'],
+  reviews: ['List open decisions, responsible roles, and the next action for each.', 'Technical reviewer: assess preliminary safety analysis before application use.'],
+  history: ['Describe revisions, source changes, and decisions that must remain traceable.', 'Retain prior document versions and the reason for each replacement.'],
+}
+
+function requirementSource(req) {
+  return sourceRecords[({ 'p53-financial': 'part53Financial', 'p53-safety': 'part53Safety', 'p53-environment': 'part53Environment', 'p53-eligibility': 'part53Eligibility' })[req.id] || req.source]
+}
+function SourceLink({ source, label }) {
+  const section = label?.match(/53\.\d+/)?.[0]
+  if (section) source = { ...source, sourceUrl: `https://www.ecfr.gov/current/title-10/chapter-I/part-53/subpart-H/section-${section}` }
+  return source.sourceUrl ? <a href={source.sourceUrl} target="_blank" rel="noreferrer">{label || source.citation}</a> : <span>{label || source.citation} — Atlas demo control, not a regulatory requirement</span>
+}
+function representedScope(project) {
+  if (project.id !== 'fuel-transport') return project.scope
+  const i = project.inputs
+  return `${i.material || 'Missing material'} ${i.form || 'Missing form'}; ${i.enrichment || 'Missing enrichment'} wt%; ${i.quantityValue || 'Missing quantity'} ${i.quantityUnit || 'Missing unit'}; ${i.origin || 'Missing origin'} to ${i.destination || 'Missing destination'}; ${readableValues[i.routeProfile] || 'Missing or unsupported route'}. Bounded simulated shipment review only.`
+}
+function reviewEvidence(project) {
+  return project.requirements.flatMap(req => req.linkedEvidence.map(id => project.evidence[id]).filter(Boolean).map(item => ({ id: item.id, requirement: req.title, filename: item.filename, version: item.version, hash: item.hash })))
+}
+function supplierReady(project) {
+  return project.requirements.every(req => req.linkedEvidence.length > 0 && req.linkedEvidence.every(id => evidenceApplicability(project, req.id, project.evidence[id], sampleDocuments).status === 'established'))
+}
+function staleSupplierReview(project, reason) {
+  if (!project.review) return
+  project.review = { ...project.review, simulatedAcceptance: false, status: 'stale' }
+  project.history.unshift(history(`Prior supplier decision marked historical after ${reason}.`, 'Atlas'))
+}
+function SupplierReview({ project, decide }) {
+  const [explanation, setExplanation] = useState('')
+  const ready = supplierReady(project)
+  return <section className="panel wide supplier-review">
+    <h2>Simulated supplier review</h2>
+    <p>{customerReportModel(project).status}</p>
+    <p>Inspect the quality program replacement and calibration sample, then explain your decision. This limited review does not qualify the supplier or establish NQA-1 certification. Audits, implementation effectiveness, procurement requirements, and item acceptance remain outside this demonstration.</p>
+    {project.requirements.map(req => <div key={req.id}><h3>{req.title}</h3>{req.linkedEvidence.length ? req.linkedEvidence.map(id => {
+      const item = project.evidence[id]
+      if (!item) return null
+      const applicability = evidenceApplicability(project, req.id, item, sampleDocuments)
+      return <details key={id}><summary>Open {item.filename} · v{item.version} · {labelize(applicability.status)}</summary><p>{applicability.reason}</p><pre>{item.fullText || item.preview}</pre></details>
+    }) : <p>Missing supporting evidence. Load or attach it in the requirements register.</p>}</div>)}
+    <label>Decision explanation<textarea value={explanation} onChange={event => setExplanation(event.target.value)} /></label>
+    <div className="button-row">
+      <button className="button primary" disabled={!ready || !explanation.trim()} onClick={() => decide('accepted_demo_only', explanation)}>Simulate supplier acceptance</button>
+      <button className="button secondary" disabled={!explanation.trim()} onClick={() => decide('changes_requested', explanation)}>Request changes</button>
+      <button className="button secondary" disabled={!explanation.trim()} onClick={() => decide('rejected', explanation)}>Reject demo package</button>
+    </div>
+    {project.review ? <p><strong>Recorded explanation:</strong> {project.review.explanation}</p> : null}
+  </section>
+}
+
+const readableValues = { truck_only: 'Highway only', truck_port_vessel: 'Highway, port, and vessel', domestic_supported: 'Domestic highway scope assumed in demo', truck_supported: 'Highway scope assumed in demo', multimodal_supported: 'Multimodal scope assumed in demo', valid: 'Demo authorized reviewer assigned', none: 'Not represented', insufficient_information: 'Insufficient information', resolved_sample_basis: 'Sample threshold basis selected', claimed_only: 'Claimed only; unresolved', plan_only: 'Plan only; adequacy unresolved', missing_authority: 'Reviewer authority missing', exercise_open_action: 'Exercise corrective action open', measurement_out_of_range: 'Measurement outside represented range' }
+const readableValue = value => readableValues[value] || value || 'Missing section'
+function customerReportModel(project, findings = evaluateProject(project)) {
+  const accepted = project.id === 'fuel-transport'
+    ? Boolean(validateShipment(project.inputs).valid && currentTransportationEvaluation(project)?.readyForReview && project.review?.simulatedAcceptance && project.review.fingerprint === currentTransportationEvaluation(project)?.manifestFingerprint)
+    : project.id === 'supplier-qualification' && supplierReady(project) && project.review?.simulatedAcceptance
+  const status = project.id === 'fuel-transport' ? transportationStatus(project)
+    : project.review?.status === 'stale' ? 'Prior review stale after change — review the current evidence again.'
+      : project.review?.status === 'rejected' ? 'Rejected — obtain corrected evidence and review again.'
+        : project.review?.status === 'changes_requested' ? 'Changes requested — resolve the recorded review explanation.'
+          : accepted ? 'Simulated acceptance current for the bounded supplier review.'
+            : project.id === 'supplier-qualification' ? supplierReady(project) ? 'Ready for demo review.' : 'Blocked — replace the quality program and provide applicable calibration evidence.'
+              : 'Bounded application draft — qualified review and missing sections remain open.'
+  const groups = project.id === 'reactor-app' ? [
+    ['Applicant identity and organization', ['legal-name', 'address', 'business', 'organization', 'citizenship']],
+    ['Requested authorization and represented project scope', ['license']],
+    ['Financial qualifications', ['financial']],
+    ['Safety and environmental information', ['safety', 'environment']],
+    ['Legal eligibility items', ['focd', 'eligibility']],
+    ['Supporting evidence', ['evidence']],
+    ['Outstanding questions and review needs', ['reviews']],
+    ['Revision and history', ['history']],
+  ] : project.id === 'fuel-transport' ? [
+    ['Material and shipment facts', ['material', 'form', 'enrichment', 'quantity', 'origin', 'destination']],
+    ['Represented route and scenario assumptions', ['routeProfile', 'hrcqStatus', 'hrcqBasis', 'carrierEvidence', 'routeEvidence', 'securityEvidence', 'executionEvidence', 'emergencyEvidence', 'reviewer']],
+  ] : [['Supplier identity and represented scope', ['supplier', 'itemScope', 'reviewScope']], ['Controlled document expectations', ['expectedQualityProgramIdentity', 'expectedQualityProgramVersion']]]
+  const sections = groups.map(([title, keys]) => ({ title, rows: keys.map(key => ({ label: part53Fields.find(q => q.id === key)?.label || labelize(key), value: project.guided?.skipped?.[key] ? `Unresolved gap — skipped for now. Prior answer: ${project.inputs[key] || 'Missing section'}` : readableValue(project.inputs[key]) })) }))
+  const nextAction = accepted ? 'Inspect the reviewed scope and evidence versions. Real-world review remains outside this demonstration.' : project.review?.status === 'rejected' || project.review?.status === 'changes_requested' ? project.review.explanation : primaryNextAction(findings)
+  const stage = accepted ? 'Simulated acceptance current' : project.review?.status === 'stale' ? 'Prior review stale after change' : project.review?.status === 'rejected' ? 'Rejected' : project.review?.status === 'changes_requested' ? 'Changes requested' : project.id === 'reactor-app' ? 'Application draft' : project.id === 'fuel-transport' && project.evaluationStatus === 'error' ? 'Evaluation unavailable' : project.id === 'fuel-transport' && !currentTransportationEvaluation(project) ? 'Checking' : (project.id === 'fuel-transport' ? currentTransportationEvaluation(project)?.readyForReview : supplierReady(project)) ? 'Ready for demo review' : 'Blocked'
+  return { status, stage, accepted, sections, nextAction, scope: representedScope(project), revision: project.revision || 0, findings, records: reviewEvidence(project), decisions: project.decisions || (project.review?.acceptedAt ? [project.review] : []) }
+}
+
 function buildReport(project, findings) {
+  const model = customerReportModel(project, findings)
   const generated = nowIso()
-  const evidenceRows = Object.values(project.evidence).map((item) => [item.filename, item.version, item.status, item.hash, item.linkedRequirements.join('; ')])
-  const actionRows = findings.map((finding) => [finding.requirementId, finding.title, readableStatus(finding.status), finding.nextAction, finding.role, finding.source.citation])
+  const evidence = Object.values(project.evidence)
+  const actions = findings.map(finding => [finding.requirementId, finding.title, readableStatus(finding.status), finding.nextAction, finding.role, finding.source.citation])
+  const limitations = 'This public demonstration uses browser-local storage, sample evidence, and simulated review. It does not upload documents to Atlas, create a regulatory submission, grant real shipment authorization, or establish supplier qualification or NQA-1 certification. The application draft covers only the fourteen demonstrated questions; complete analyses, other required sections, legal sufficiency, and qualified review are not established.'
+  const decisions = model.decisions.map(decision => ({ ...decision, label: model.accepted && decision.acceptedAt === project.review?.acceptedAt ? 'Current simulated decision' : `Historical decision — relevant revision ${decision.acceptedRevision ?? 'not recorded'}` }))
   const csv = [
-    ['Project', project.name].map(csvCell).join(','),
-    ['Scope', project.scope].map(csvCell).join(','),
-    ['Generated', generated].map(csvCell).join(','),
-    ['Review state', project.id === 'fuel-transport' ? transportationStatus(project) : 'Qualified human review remains required'].map(csvCell).join(','),
-    'Demo limitations: browser-local sample workspace; simulated review; no regulatory acceptance or shipment authorization.',
-    'Inputs',
-    ...Object.entries(project.inputs).map((row) => row.map(csvCell).join(',')),
-    'Evidence inventory',
-    'Filename,Version,Status,Hash,Linked requirements',
-    ...evidenceRows.map((row) => row.map(csvCell).join(',')),
-    '',
-    'Action register',
-    'Requirement reference,Finding,Status,Action,Responsible role,Basis',
-    ...actionRows.map((row) => row.map(csvCell).join(',')),
-  ].join('\n')
+    ['Project', project.name], ['Scope', model.scope], ['Generated', generated], ['Project revision', model.revision], ['Review state', model.status], ['Primary next action', model.nextAction], ['Demo limitations', limitations],
+    ...model.sections.flatMap(section => [[section.title], ...section.rows.map(row => [row.label, row.value])]),
+    ['Evidence inventory'], ['Filename', 'Version', 'Status', 'Hash', 'Linked requirements', 'Applicability'],
+    ...evidence.map(item => [item.filename, item.version, readableStatus(item.status), item.hash, item.linkedRequirements.join('; '), item.linkedRequirements.map(id => evidenceApplicability(project, id, item, sampleDocuments).reason).join('; ') || 'Unlinked; not assessed']),
+    ['Action register'], ['Requirement reference', 'Finding', 'Status', 'Action', 'Responsible role', 'Basis'], ...actions,
+    ['Revision and review history'], ...decisions.flatMap(decision => [[decision.label, decision.acceptedRevision, labelize(decision.status), decision.scope, decision.explanation], ...(decision.evidence || []).map(item => ['Reviewed record', item.filename, item.version, item.hash, item.requirement])]),
+    ...evidence.flatMap(item => (item.replacements || []).map(previous => ['Evidence history', previous.filename, previous.version, previous.status, previous.failureReason || 'Prior usable version', previous.hash])),
+    ...project.history.map(entry => ['History', entry.at, entry.actor, entry.action]),
+  ].map(row => row.map(csvCell).join(',')).join('\n')
+  const sourceHtml = source => source.sourceUrl ? `<a href="${esc(source.sourceUrl)}">${esc(source.citation)}</a>` : `${esc(source.citation)} — Atlas demo control, not a regulatory requirement`
   const body = `<h1>${esc(project.name)}</h1>
-    <p><strong>Generated:</strong> ${esc(niceTime(generated))}</p>
-    <p><strong>Stage:</strong> ${esc(project.stage)}</p>
-    <p><strong>Purpose:</strong> ${esc(project.purpose)}</p>
-    <p><strong>Represented scope:</strong> ${esc(project.scope)}</p>
-    <p><strong>Primary next action:</strong> ${esc(primaryNextAction(findings))}</p>
-    <p><strong>Review state:</strong> ${esc(project.id === 'fuel-transport' ? transportationStatus(project) : 'Qualified human review remains required')}</p>
-    <h2>Inputs / Application Draft</h2>${Object.entries(project.inputs).map(([key, value]) => `<p><strong>${esc(labelize(key))}:</strong> ${esc(value || 'Missing')}</p>`).join('')}
-    <h2>Evidence Inventory and Versions</h2>${Object.values(project.evidence).map((item) => `<p><strong>${esc(item.filename)}</strong> v${item.version} · ${esc(readableStatus(item.status))} · ${esc(item.hash)} · linked: ${esc(item.linkedRequirements.join(', ') || 'None')} · full retained characters: ${esc((item.fullText || '').length)}</p>`).join('')}
-    <h2>Findings and Basis</h2>${findings.map((finding) => `<section><h3>${esc(finding.title)} · ${esc(readableStatus(finding.status))}</h3><p>${esc(finding.reason)}</p><p><strong>Basis:</strong> ${esc(finding.source.citation)} · ${esc(finding.source.version)}</p><p><strong>Unresolved gaps/conflicts:</strong> ${esc([...finding.missingEvidence, ...finding.applicabilityQuestions].join(' ') || 'None represented')}</p><p><strong>Next action:</strong> ${esc(finding.nextAction)} · ${esc(finding.role)}</p></section>`).join('')}
-    <h2>History</h2>${project.history.map((entry) => `<p>${esc(niceTime(entry.at))} · ${esc(entry.actor)} · ${esc(entry.action)}</p>`).join('')}
-    <h2>Demo Limitations</h2><p>This public demonstration uses browser-local storage, sample evidence, and simulated review. It does not upload documents to Atlas, create a regulatory submission, grant authorization, provide real shipment authorization, authorize a real shipment, or represent NRC, DOT, PHMSA, supplier, carrier, or human acceptance.</p>`
-  return { body, html: `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(project.name)} report</title><style>body{font-family:Arial,sans-serif;line-height:1.5;max-width:960px;margin:40px auto;padding:0 20px;color:#111;overflow-wrap:anywhere}h1,h2{border-bottom:1px solid #ccc;padding-bottom:6px;break-after:avoid}@page{margin:18mm}@media print{body{margin:0;padding:0}h3{break-after:avoid}}</style></head><body>${body}</body></html>`, csv }
+    <h2>Executive summary</h2><p><strong>${esc(model.status)}</strong></p>
+    <p>${esc(project.purpose)} This is a bounded demonstration draft. Missing facts, evidence gaps, and open review items remain listed below.</p>
+    <p><strong>Represented scope:</strong> ${esc(model.scope)}</p>
+    <p><strong>Primary next action:</strong> ${esc(model.nextAction)}</p>
+    <p><strong>Project revision:</strong> ${model.revision} · <strong>Generated:</strong> ${esc(niceTime(generated))}</p>
+    ${model.sections.map(section => `<h2>${esc(section.title)}</h2>${section.rows.map(row => `<p><strong>${esc(row.label)}:</strong> ${esc(row.value)}</p>`).join('')}`).join('')}
+    <h2>Supporting evidence and applicability</h2>${evidence.map(item => `<section><h3>${esc(item.filename)} · v${item.version}</h3><p>Processing: ${esc(readableStatus(item.status))}. Links: ${esc(item.linkedRequirements.map(id => project.requirements.find(req => req.id === id)?.title || id).join(', ') || 'No linked evidence requirement')}.</p><p>${esc(item.linkedRequirements.map(id => evidenceApplicability(project, id, item, sampleDocuments).reason).join(' ') || 'Applicability not assessed for this unlinked record.')}</p></section>`).join('')}
+    <h2>Outstanding questions, findings, and next actions</h2>${findings.map(finding => `<section><h3>${esc(finding.title)} · ${esc(readableStatus(finding.status))}</h3><p>${esc(finding.reason)}</p><p><strong>Basis:</strong> ${sourceHtml(finding.source)} · ${esc(finding.source.version)}</p><p><strong>Requirement reference:</strong> ${esc(finding.requirementId)}</p><p><strong>Open review questions:</strong> ${esc([...finding.missingEvidence, ...finding.applicabilityQuestions].join(' ') || 'None represented within this bounded check')}</p><p><strong>Next action:</strong> ${esc(finding.nextAction)} · <strong>Responsible role:</strong> ${esc(finding.role)}</p></section>`).join('')}
+    <h2>Review scope and decisions</h2>${decisions.length ? decisions.map(decision => `<section><h3>${esc(decision.label)}</h3><p>Revision ${esc(decision.acceptedRevision ?? 'not recorded')} · ${esc(labelize(decision.status))} · ${esc(niceTime(decision.acceptedAt))}</p><p>${esc(decision.scope || 'Historical scope not recorded')} — ${esc(decision.explanation || 'Explanation not recorded')}</p><ul>${(decision.evidence || []).map(item => `<li>${esc(item.filename)} · v${item.version} · ${esc(item.requirement)}</li>`).join('')}</ul></section>`).join('') : '<p>No simulated decision recorded. Qualified human review remains required.</p>'}
+    <details><summary>Supporting technical records and detailed history</summary><h2>Evidence integrity and replacement history</h2>${evidence.map(item => `<p>${esc(item.filename)} · v${item.version} · SHA-256 ${esc(item.hash)} · full retained characters: ${esc((item.fullText || '').length)}</p>${(item.replacements || []).map(previous => `<p>Historical v${previous.version}: ${esc(previous.filename)} · ${esc(previous.hash)} · ${esc(previous.failureReason || 'Replaced')} · ${esc(previous.status)}</p>`).join('')}`).join('')}<h2>Project history</h2>${project.history.map(entry => `<p>${esc(niceTime(entry.at))} · ${esc(entry.actor)} · ${esc(entry.action)}</p>`).join('')}</details>
+    <h2>Demo Limitations</h2><p>${esc(limitations)}</p><p>Regulatory links identify source requirements, not proof that this entire scenario complies. No automatic authority currency check has occurred.</p>`
+  return { body, html: `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(project.name)} report</title><style>body{font-family:Arial,sans-serif;line-height:1.5;max-width:960px;margin:40px auto;padding:0 20px;color:#111;overflow-wrap:anywhere}h1,h2{border-bottom:1px solid #ccc;padding-bottom:6px;break-after:avoid}@page{margin:18mm}@media print{body{margin:0;padding:0}h3{break-after:avoid}details::details-content{display:block}details>*{display:block!important}}</style></head><body>${body}</body></html>`, csv }
 }
 
 function csvCell(value) {
@@ -1476,7 +1690,8 @@ function chooseSample(projectId, requirementId) {
   if (projectId === 'reactor-app' && requirementId === 'p53-legal') return sampleDocuments.formationRecord
   if (projectId === 'reactor-app' && requirementId === 'p53-financial') return sampleDocuments.financialPlan
   if (projectId === 'reactor-app' && requirementId === 'p53-environment') return sampleDocuments.environmentalReport
-  if (projectId === 'reactor-app') return sampleDocuments.safetySummary
+  if (projectId === 'reactor-app' && requirementId === 'p53-safety') return sampleDocuments.safetySummary
+  if (projectId === 'reactor-app') return null
   if (projectId === 'fuel-transport' && requirementId === 'trn-carrier') return sampleDocuments.carrier
   if (projectId === 'fuel-transport' && requirementId === 'trn-route') return sampleDocuments.routeRecord
   if (projectId === 'fuel-transport' && requirementId === 'trn-security') return sampleDocuments.securityRecord
@@ -1490,7 +1705,7 @@ function chooseSample(projectId, requirementId) {
 
 function readableStatus(status) {
   return ({
-    supported: 'Evidence linked',
+    supported: 'Demo prerequisite represented',
     gap: 'Evidence gap',
     review: 'Review needed',
     conflict: 'Conflict',

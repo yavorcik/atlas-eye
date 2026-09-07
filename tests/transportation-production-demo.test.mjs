@@ -24,7 +24,7 @@ test('Transportation workspace enforces each gate, hashes manifest, accepts only
     await page.goto('http://127.0.0.1:4173/transportation/', { waitUntil: 'networkidle' })
     await page.waitForURL('**/mission-control/transportation/')
     await assertContains(page, 'body', 'Your transportation readiness package')
-    await assertContains(page, 'body', 'Exact unresolved prerequisite: Package')
+    await assertContains(page, 'body', 'Exact unresolved prerequisite: Material')
     await assertContains(page, 'body', 'transportation blockers')
     assert.equal(await page.getByRole('button', { name: 'Simulate governed acceptance' }).isDisabled(), true)
 
@@ -51,6 +51,9 @@ test('Transportation workspace enforces each gate, hashes manifest, accepts only
     await page.waitForTimeout(250)
     assert.notEqual(await fingerprint(page), firstFingerprint)
     await assertContains(page, 'body', 'Shipment information changed. The previous review no longer applies.')
+    assert.equal(await page.getByRole('button', { name: 'Simulate governed acceptance' }).isDisabled(), true)
+    await page.getByLabel('U-235 enrichment wt%').fill('19.75')
+    await page.waitForTimeout(250)
     assert.equal(await page.getByRole('button', { name: 'Simulate governed acceptance' }).isEnabled(), true)
 
     await page.click('text=Optional maritime/change scenarios')
@@ -151,12 +154,13 @@ test('transportation acceptance waits for current revision and discards supersed
 
     await page.evaluate(() => { window.__ATLAS_DEMO_TRANSPORT_EVALUATOR_DELAY_MS__ = 0 })
     await page.getByLabel('U-235 enrichment wt%').fill('19.40')
-    await page.getByLabel('U-235 enrichment wt%').fill('19.60')
+    await page.getByLabel('U-235 enrichment wt%').fill('19.75')
     await assertContains(page, '[data-testid="transport-evaluation-state"]', 'The sample package is ready for review.')
     await assertContains(page, 'body', 'The sample package is ready for review.')
-    await page.waitForFunction(() => JSON.parse(localStorage.getItem('atlas.publicDemoWorkspace.v2')).projects['fuel-transport'].inputs.enrichment === '19.60')
+    await page.waitForFunction(() => JSON.parse(localStorage.getItem('atlas.publicDemoWorkspace.v2')).projects['fuel-transport'].inputs.enrichment === '19.75')
+    await page.waitForTimeout(5100) // Let the superseded slow request actually finish.
     const stored = await transportProjectState(page)
-    assert.equal(stored.inputs.enrichment, '19.60')
+    assert.equal(stored.inputs.enrichment, '19.75')
     assert.equal(stored.transportEvaluation.projectRevision, stored.transportRevision)
     assert.equal(stored.transportEvaluation.lifecycle, 'complete')
     assert.equal(stored.review?.simulatedAcceptance, false)

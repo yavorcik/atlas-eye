@@ -161,3 +161,22 @@ label textarea { min-height: 120px; resize: vertical; }
   .workspace-header, .demo-notice-panel, .project-hero, .project-tabs, .button-row, .panel:not(.report-panel) { display: none !important; }
   .project-workspace, .report-panel, .report-panel .print-report { width: auto; margin: 0; padding: 0; border: 0; background: #fff; color: #111; }
 }
+
+/* Correction: visible errors, report focus, and bounded document previews. */
+.field-error { color: #ffb5b5; font-size: .9rem; line-height: 1.5; }
+input[aria-invalid="true"] { border: 2px solid #e84141; }
+.project-workspace :focus-visible { outline: 3px solid #ff6969; outline-offset: 4px; }
+.report-panel h2[tabindex] { scroll-margin-top: 180px; }
+.supplier-review pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 24rem; overflow: auto; }
+.project-workspace a { text-underline-offset: .2em; }
+.guided-box p { max-width: 75ch; }
+@media (max-width: 640px) {
+  .workspace-header { grid-template-columns: 1fr auto; }
+  .workspace-breadcrumb { display: none; }
+  .button-row > button { max-width: 100%; }
+}
+@media print {
+  .print-report details::details-content { display: block; }
+  .print-report details > * { display: block !important; }
+}
+#emergency-assessment select { scroll-margin-top: 180px; }

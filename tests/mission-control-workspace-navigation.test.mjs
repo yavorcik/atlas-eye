@@ -30,8 +30,8 @@ test('customer-testable Mission Control workspace journeys', async () => {
     await page.goto(`${process.env.ATLAS_PREVIEW_URL || 'http://127.0.0.1:4173'}/mission-control/`, { waitUntil: 'networkidle' })
     await expectText(page, 'h1', 'Open a sample project.')
     assert.equal(await page.locator('.project-card').count(), 3)
-    await assertContains(page, 'body', '7 evidence gaps or review findings')
-    await assertContains(page, 'body', 'Saved in this browser')
+    await assertContains(page, 'body', '8 evidence gaps or review findings')
+    await assertContains(page, 'body', 'Browser-local demo')
 
     await page.click('text=Piketon Advanced Reactor COL Assembly')
     await page.getByRole('button', { name: 'Requirements / application' }).click()
@@ -92,7 +92,7 @@ test('customer-testable Mission Control workspace journeys', async () => {
     const registerDownload = await Promise.all([page.waitForEvent('download'), page.click('text=Download evidence/action register')]).then(([download]) => download)
     const register = await readFile(await registerDownload.path(), 'utf8')
     assert.match(register, /Action register/)
-    assert.match(register, /Requirement reference,Finding,Status,Action,Responsible role,Basis/)
+    assert.match(register, /"Requirement reference","Finding","Status","Action","Responsible role","Basis"/)
     assert.match(register, /p53-financial/)
 
     await page.reload({ waitUntil: 'networkidle' })
@@ -100,7 +100,7 @@ test('customer-testable Mission Control workspace journeys', async () => {
     await assertContains(page, 'body', 'Edited applicant identity answer')
 
     await page.goto((process.env.ATLAS_PREVIEW_URL || 'http://127.0.0.1:4173') + '/mission-control/transportation/', { waitUntil: 'networkidle' })
-    await assertContains(page, 'body', 'Exact unresolved prerequisite: Package')
+    await assertContains(page, 'body', 'Exact unresolved prerequisite: Material')
     await page.click('text=Load sample package evidence')
     await page.click('text=Resolve HRCQ facts')
     await page.click('text=Load sample emergency response evidence')
