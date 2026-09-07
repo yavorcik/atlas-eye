@@ -1,9 +1,9 @@
 import { useRef, useState } from 'react'
 import { catalog, filterParts, sourcesFor } from './catalog.mjs'
-import { BLOCKS, ROLES, validateSubmission } from '../../supabase/functions/supplier-submission/contract.mjs'
+import { BLOCKS, ROLES, validateSubmission } from '../../services/supplier-intake/contract.mjs'
 
 const initial = { kind: 'new', existing_part_id: '', company: '', email: '', website: '', role: '', product: '', block: '', facility: '', country: '', description: '', document_url: '', certificate: '', consent: false, fax: '' }
-const endpoint = `${import.meta.env.VITE_SUPABASE_URL || 'https://nnudwaqrgtztmcrcwpxn.supabase.co'}/functions/v1/supplier-submission`
+const endpoint = import.meta.env.VITE_SUPPLIER_SUBMISSION_URL || ''
 const external = { target: '_blank', rel: 'noopener noreferrer' }
 
 function ManufacturerForm({ seed }) {
@@ -19,7 +19,7 @@ function ManufacturerForm({ seed }) {
   }
   async function submit(event) {
     event.preventDefault()
-    if (busy.current) return
+    if (busy.current || !endpoint) return
     let payload
     // Keep the same reference for retries of the same content, including uncertain network outcomes.
     const serialized = JSON.stringify(values)
@@ -51,6 +51,7 @@ function ManufacturerForm({ seed }) {
   </section>
   const field = (name, label, props = {}) => <label key={name}>{label}<input name={name} value={values[name]} onChange={update} required {...props} /></label>
   return <form onSubmit={submit} className="sc-form">
+    {!endpoint && <p className="sc-note" role="status">Product submissions are opening soon. You can explore the form now; submission will become available when the service is connected.</p>}
     <fieldset disabled={state === 'sending'}>
       <legend>{values.kind === 'update' ? `Request an update to ${values.existing_part_id}` : 'Submit a product for review'}</legend>
       <p>Basic listings are free. Tell people what you make, where you make it, and which public documents support your capability.</p>
@@ -72,7 +73,7 @@ function ManufacturerForm({ seed }) {
       <label className="sc-consent"><input type="checkbox" name="consent" checked={values.consent} onChange={update} required /><span>I am authorized to represent this company and permit AtlasEye to review and publish the supplied company and product information. AtlasEye may contact me about this submission. *</span></label>
       <p className="sc-small">An update request does not transfer control of a listing. Company authority and supporting evidence require review. Submission does not establish qualification or regulatory approval.</p>
       <div aria-live="assertive">{error && <p className="sc-error" role="alert">{error}</p>}</div>
-      <button className="sc-primary" disabled={state === 'sending'}>{state === 'sending' ? 'Submitting…' : 'Submit for review →'}</button>
+      <button className="sc-primary" disabled={state === 'sending' || !endpoint}>{state === 'sending' ? 'Submitting…' : endpoint ? 'Submit for review →' : 'Submissions opening soon'}</button>
     </fieldset>
   </form>
 }

@@ -9,8 +9,3 @@ entrypoint = "./functions/early-access-signup/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/early-access-signup/*.html" ]
-
-[functions.supplier-submission]
-enabled = true
-verify_jwt = false
-entrypoint = "./functions/supplier-submission/index.ts"

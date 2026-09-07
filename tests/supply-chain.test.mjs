@@ -2,11 +2,11 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import { catalog, filterParts, sourcesFor } from '../src/supply-chain/catalog.mjs'
-import { BLOCKS, validateSubmission } from '../supabase/functions/supplier-submission/contract.mjs'
-import { createHandler } from '../supabase/functions/supplier-submission/handler.mjs'
+import { BLOCKS, validateSubmission } from '../services/supplier-intake/contract.mjs'
+import { createHandler } from '../services/supplier-intake/handler.mjs'
 
 const good = { request_id: '550e8400-e29b-41d4-a716-446655440000', kind: 'new', existing_part_id: '', company: 'Example Manufacturer', email: 'maker@example.com', website: 'https://example.com', role: 'Manufacturer / OEM', product: 'Example instrumentation', block: '08 Controls & electrical', facility: 'Example works', country: 'United States', description: 'Illustrative capability submitted for editorial review.', document_url: 'https://example.com/products', certificate: '', consent: true, fax: '' }
-const request = (body = good, origin = 'https://atlaseye.ai') => new Request('https://example.supabase.co/functions/v1/supplier-submission', { method: 'POST', headers: { Origin: origin, 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+const request = (body = good, origin = 'https://atlaseye.ai') => new Request('https://example.execute-api.us-east-2.amazonaws.com/supplier-submissions', { method: 'POST', headers: { Origin: origin, 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
 
 test('catalog preserves all research groups, source provenance, and unresolved gaps', () => {
   assert.equal(catalog.parts.length, 70); assert.equal(catalog.sources.length, 52)
@@ -79,7 +79,7 @@ test('live preview access requires exact server configuration and preserves orig
   const denied = await handler(request(good, 'https://deploy-preview-23--atlas-eye.netlify.app'))
   assert.equal(denied.status, 403)
   assert.equal(denied.headers.get('Access-Control-Allow-Origin'), 'null')
-  const preflight = await handler(new Request('https://example.supabase.co', { method: 'OPTIONS', headers: { Origin: preview } }))
+  const preflight = await handler(new Request('https://example.execute-api.us-east-2.amazonaws.com', { method: 'OPTIONS', headers: { Origin: preview } }))
   assert.equal(preflight.status, 204)
   assert.equal(preflight.headers.get('Access-Control-Allow-Origin'), preview)
   assert.throws(() => createHandler({ save, previewOrigin: 'https://unrelated.netlify.app' }))

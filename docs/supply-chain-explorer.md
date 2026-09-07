@@ -1,64 +1,73 @@
 # AtlasEye Nuclear Supply Chain Explorer
 
-The public directory helps visitors understand major SMR component families and discover candidate suppliers through traceable public sources. Manufacturers can submit a product or request a correction; submissions are stored privately for editorial review.
+## Backend decision — AWS
 
-## Website entry points
+Manufacturer intake will use **AWS API Gateway → Lambda → a private DynamoDB table**. The public directory stays in AtlasEye's existing website repository and hosting workflow. This resolves the new feature's provider choice; its implementation no longer depends on Supabase.
 
-- `/supply-chain/` is a separate Vite entry with a real static `index.html`, compatible with the repository's GitHub Pages build and Netlify redirects.
-- Mission Control links to the directory. The cover, eye component, existing branding assets, and governed workspaces retain their existing behavior.
-- `?part=P001` links to a component. `?view=submit` opens manufacturer intake.
-- The assembly explainer and dated workbook are available from the directory.
+The new intake service has a public submission endpoint and no public read, administrative, or publication endpoint. It does not require access to the private Atlas pilot, its database, evidence volumes, buckets, or deployment controls. The existing website inquiry form remains untouched; this change does not claim that every legacy Supabase integration has been migrated.
 
-## Research and publication boundaries
+The earlier, undeployed supplier-specific Supabase function and migration have been removed. There is no supplier data migration because that endpoint was never deployed. Do not reconnect Supabase for this feature.
 
-`src/supply-chain/research.json` contains the 7 September 2026 research snapshot: 70 major component/procurement families, 52 official source records, nine groups, and two unresolved supplier allocations. It is not a complete reactor BOM. No prices, capacity, compatibility, qualification or availability were verified. Preserve source-access limitations, including indexed excerpts where a direct page fetch failed. Numeric research confidence scores are intentionally absent from the public UI.
+## Product and research
 
-Research-origin listings are not manufacturer-submitted or manufacturer-approved. Supplier role is explicit: EPCs and services must not be presented as component manufacturers. An SMR relationship is not a delivery commitment. No technical design, construction or operating instructions are supplied.
+`/supply-chain/` is a separate Vite entry, linked from Mission Control, with search, system/evidence filters, source links, conceptual assembly animation and a dated workbook. `?part=P006` selects a component; `?view=submit` opens intake. The cover and eye assets retain their existing behavior.
 
-## Private intake
+The 7 September 2026 snapshot contains 70 major component/procurement families, 52 official source records, nine groups, and two unresolved supplier allocations. It is not a complete reactor BOM. Listings do not establish endorsement, compatibility, qualification, regulatory approval, availability or delivery commitments. Preserve source-access limitations and supplier roles. Research entries are not manufacturer-approved listings.
 
-The existing Supabase project hosts a new `supplier-submission` Edge Function. It validates an exact bounded payload, HTTPS document links, consent, and a honeypot. Only accepted website origins can call the browser endpoint. CORS is not authentication; this is deliberately public intake. The server never fetches submitted URLs or sends messages.
+## AWS service behavior
 
-The service role calls `submit_atlas_supplier`. One atomic transaction handles durable insertion, five submissions per email per hour, an overall ceiling of 100 per hour, idempotency, and body-conflict detection. The global ceiling bounds unauthenticated abuse but can temporarily deny legitimate submissions during an attack; monitor intake before increasing it. Hashed email and request identifiers use a server-held secret. The browser retains a request ID across retries of unchanged content. Receipt is shown only after a successful database response. Errors preserve the form; no browser persistence is used for business contact information.
+- The browser uses only `VITE_SUPPLIER_SUBMISSION_URL`, set to the deployed stack's `SubmissionUrl`. No AWS credentials go into the website. When that value is absent, the form visibly says submissions are opening soon and cannot submit.
+- `services/supplier-intake/contract.mjs` is shared between client and server. The HTTP handler validates exact fields, body size, consent and public HTTPS links. It never fetches submitted URLs, sends email or publishes a record.
+- Lambda uses its AWS execution role and the SDK included in the Node.js 22 runtime. No access keys or manually managed application secret are needed.
+- Three DynamoDB writes execute in one transaction: the pending submission, its email rate counter, and the global rate counter. Limits are five per email and 100 overall in each fixed UTC-hour window. API Gateway also throttles bursts. Adjacent hour windows can each accept their limit; this is not a rolling-hour policy.
+- A cryptographically hashed request UUID locates the idempotency record. Unchanged retries return the original receipt; changed content with that UUID is rejected. A timeout is checked against durable storage before a retry. Submission records have no automatic expiry. Only counters receive a 48-hour TTL.
+- The table has encryption, point-in-time recovery and retention on stack deletion/replacement. The execution role can read/write only that table and write its own logs. No table policy grants public access. The function logs no payload or contact information.
+- Only the existing AtlasEye website origins are accepted. The optional `PreviewOrigin` parameter can allow exactly one `https://deploy-preview-N--atlas-eye.netlify.app` origin for testing. There is no wildcard preview access. CORS is not authentication; this is intentional anonymous intake.
 
-`atlas_supplier_submissions` and `atlas_supplier_review_events` have RLS enabled and no anonymous or authenticated-user privileges. No public read API exists. Business email and the complete intake payload must never be copied into public JSON or build assets. Service credentials remain in Supabase only. The receipt response contains only `ok` and a random reference.
+## Editorial review
 
-## Editorial workflow
+Authorized operators review pending records using AWS IAM-protected access. Confirm company authority, facility, supplier role and product evidence before approving anything. Business email and the private payload must never be copied to the public catalog.
 
-Use the access-controlled Supabase dashboard or an authorized internal database client for review. There is no public admin page and no automatic publication.
+Record each editorial decision as a new item with key `REVIEW#<receipt>#<new UUID>`, reviewer, action, timestamp and notes. Update the submission status separately in the same operator transaction. Do not overwrite prior review events or the original submission payload. The public Lambda exposes no editorial controls.
 
-1. Inspect pending submissions. Confirm the representative's authority independently and inspect the linked public sources. Do not treat an email domain as sufficient verification.
-2. Check the actual facility, supplier role, component/application scope, certificate issuer, identifier, scope and expiry. Record what was reviewed and what remains unverified.
-3. In a transaction, append an `atlas_supplier_review_events` row with reviewer, decision and evidence notes and update the submission status. Retain the submitted record and review history; do not rewrite a prior decision.
-4. Publish accepted information through a reviewed website change. Add explicit manufacturer-submitted provenance, submission reference (not email), source review date and scope, and preserve previous record history in Git. Extend the current research-only presentation for that published contribution; never silently relabel the research snapshot as verified or company-approved. Acceptance in the queue alone does not publish anything.
-5. After the public change is released, record a `published` event referencing the release and update status. Process correction/removal requests through the same recorded review process.
+Publish accepted information through a reviewed website change with manufacturer-submitted provenance, source review date, unresolved limitations and Git history. An accepted queue record alone does not publish a listing. Basic listings are free; any future sponsorship must be separately labeled and cannot change evidence or qualification status.
 
-Basic listings are free. Any future sponsored placement must be visibly labeled and must not change evidence or qualification status. No identity verification, certification or supplier qualification is implied by editorial acceptance.
+## Deployment
 
-## Release sequence — not performed by this change
+This package is executable preparation, not evidence of an active AWS service. Use an authenticated AWS CLI session in the intended account. No new AWS plugin or Supabase connection is required when using that operator session.
 
-The established Atlas workflow requires explicit authorization before a live database migration, Edge Function deployment, merge, or site release. This branch is prepared for review only.
+Build and inspect the CloudFormation template:
 
-1. Apply `202609070001_supplier_submissions.sql` to the intended existing Supabase project through the normal migration workflow.
-2. Configure a strong random `SUPPLIER_RATE_SECRET` in the function's server environment. Preserve `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`; never expose the service key to Vite.
-   For live acceptance tests from PR #22, also set `SUPPLIER_PREVIEW_ORIGIN=https://deploy-preview-22--atlas-eye.netlify.app`. This allows that exact preview only; other previews stay denied. Remove this optional value when preview testing is finished.
-3. Deploy `supplier-submission` using its checked-in `verify_jwt = false` configuration. The function enforces its own public-intake contract; it does not require a user login.
-4. Build with the existing `VITE_SUPABASE_URL`. When absent, the frontend uses the same known public project URL as the existing inquiry form. Deploy backend before enabling the new public page.
-5. Before release, submit a labeled test from an allowed website origin, confirm a private row and receipt, retry the same request, and verify denial of anonymous table reads. Delete test data only under the team's normal retention process.
-6. Merge/release the site through its established hosting workflow. Do not create a replacement Sites project or change its domain. Verify direct `/supply-chain/` loading, Mission Control navigation, workbook download and form receipt on the actual host.
+```bash
+node scripts/build-supplier-intake.mjs /tmp/atlas-supplier-intake.json
+```
 
-## Validation
+The template creates one table, Lambda function, least-privilege execution role, log group, HTTP API and routes. It does not create EC2/RDS infrastructure or change existing buckets, DNS, private-pilot ingress or governed release gates. AWS usage, storage, backup and log charges apply.
 
-Run `npm run build` then `node --test tests/supply-chain.test.mjs`, plus the existing homepage and route regression suites. `npm run lint` uses the current project configuration. Live backend receipt and hosted browser checks remain release gates; local contract tests cannot establish live deployment readiness.
+Prepare a non-executing change set after substituting the intended account ID:
 
-The migration can also be exercised in an isolated PostgreSQL-compatible PGlite runtime without changing the website dependency tree. Set `PGLITE_MODULE` to the file URL of that installation's `dist/index.js`, then run `node tests/supplier-storage-check.mjs`. The check creates Supabase-equivalent roles, applies the actual migration, verifies denied anonymous/authenticated access, pending storage, retry identity, payload conflict and both rate limits.
+```bash
+node scripts/deploy-supplier-intake.mjs --account ACCOUNT_ID --preview https://deploy-preview-22--atlas-eye.netlify.app
+```
 
-Implementation verification on this branch: production build and lint passed; 33 catalog, submission, existing inquiry, and route checks passed. The actual migration passed the PGlite storage checks. Seven existing browser tests could not start because the Chromium executable is absent in this environment; they did not reach application assertions. No hosted form submission, live migration, or production browser verification was performed.
+The command verifies the caller's account, requires committed intake source and validates the template. Review the AWS change set. Run the same command with `--apply` to activate the stack after authorization. The script reports the real `SubmissionUrl` and `RecordsTable`; it does not invent an endpoint. CloudFormation handles failed-update rollback. The retained table preserves submissions if the stack is removed.
 
-### Live preview checks — 7 September 2026
+Before configuring the website, execute the live acceptance script:
 
-After the user authorized backend activation and live testing, the hosted PR #22 preview was exercised with the connected browser. Component search (Velan valves), empty results with hidden stale details, reset, the two unresolved suppliers, assembly navigation to the foundation and final stage, and supplier-update prefill (BWXT / P006) passed. Required-field validation blocks an empty form and does not display a success receipt.
+```bash
+node scripts/test-supplier-intake-live.mjs --stack atlas-eye-supplier-intake --account ACCOUNT_ID --origin https://deploy-preview-22--atlas-eye.netlify.app
+```
 
-The live `supplier-submission` preflight returned HTTP 404 with `Requested function was not found`. The CLI has no authenticated Supabase session. Supabase connection was requested; no database migration or function deployment has been performed yet. Private live receipt, retry, rate-limit and database-access tests are therefore still blocked on deployment access.
+It creates one clearly labeled synthetic private record, verifies the actual stored record and retry receipt, tests conflicting/invalid input, rejects an unrelated origin, and checks that no public read route exists. It sends no messages and leaves the test record for operator review. The script requires operator permission to describe the stack and read its table. Account identity is checked before sending a test.
 
-Added exact, optional `SUPPLIER_PREVIEW_ORIGIN` configuration so acceptance tests can run from the reviewed Netlify preview. There is no wildcard preview access. Local verification now passes 34 checks, including allowed preview, denied neighboring preview, invalid preview configuration and preflight behavior, plus lint.
+Set `VITE_SUPPLIER_SUBMISSION_URL` to the returned endpoint in the website's build environment, rebuild the preview, and submit one labeled browser test. After acceptance, release through the existing website workflow. Remove the optional preview origin when preview testing ends. To stop intake without deleting records, remove the public POST route or disable the endpoint in the website build and redeploy.
+
+## Verification and remaining access requirement
+
+`npm run build`, lint, and the Node tests cover the directory, submission contract, AWS event adapter, retry behavior and existing inquiry/routes. `tests/supplier-dynamodb-local.mjs` exercises the real transaction expressions against the official DynamoDB Local service; it only accepts a loopback endpoint and deletes its disposable test table. It requires an isolated AWS SDK installation supplied by `DYNAMO_SDK_MODULE`.
+
+AWS implementation verification on 7 September 2026: production build and lint passed; all 37 Node checks passed. The generated template passed `cfn-lint`, and its actual bundled Lambda loaded and answered the allowed preflight. Official DynamoDB Local integration passed concurrent retry identity, payload conflict, both rate limits, and exactly 100 pending records; the disposable test table and local server were removed afterward. These are local implementation checks, not proof of AWS deployment or IAM permissions.
+
+The earlier live preview passed search, empty results, unresolved filtering, assembly-stage controls, supplier-update prefill and required-field checks. Those UI checks did not verify AWS storage. Actual AWS IAM evaluation, stack deployment and live receipts must still be checked in the target account.
+
+The current workspace has no AWS CLI session, role credentials or AWS deployment connector. Infrastructure activation and AWS live tests cannot be claimed until authenticated deployment access is available. No AWS resources have been provisioned by this change.
