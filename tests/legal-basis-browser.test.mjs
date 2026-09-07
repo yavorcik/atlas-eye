@@ -78,7 +78,7 @@ test('regulatory applicability and original decision basis survive shipment chan
     const page = await browser.newPage({ acceptDownloads: true })
     await page.goto(`${base}/mission-control/transportation/`)
     for (const name of ['Load sample package evidence', 'Resolve HRCQ facts', 'Load sample emergency response evidence', 'Assign demo reviewer']) await page.getByRole('button', { name, exact: true }).click()
-    await page.getByLabel('Emergency response evidence', { exact: true }).selectOption('domestic_supported')
+    await page.locator('#emergency-assessment select').selectOption('domestic_supported')
     await page.waitForFunction(() => document.querySelector('[data-testid="transport-evaluation-state"]')?.textContent.includes('ready for review'))
     const material = page.locator('.transportation-path > [data-basis-id="trn-material"]')
     await material.locator('summary').focus(); await page.keyboard.press('Enter')
