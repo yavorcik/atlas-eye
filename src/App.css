@@ -176,7 +176,14 @@ input[aria-invalid="true"] { border: 2px solid #e84141; }
   .button-row > button { max-width: 100%; }
 }
 @media print {
-  .print-report details::details-content { display: block; }
+  .print-report details::details-content { display: block !important; content-visibility: visible !important; }
   .print-report details > * { display: block !important; }
 }
 #emergency-assessment select { scroll-margin-top: 180px; }
+
+.basis-panel { margin: .75rem 0; border-left: 3px solid #ae1b25; padding: .5rem .75rem; min-width: 0; overflow-anchor: none; }
+.basis-panel summary { cursor: pointer; font-weight: 600; min-height: 28px; padding: .25rem 0; }
+.basis-panel summary:focus-visible, .basis-panel a:focus-visible { outline: 2px solid #ae1b25; outline-offset: 4px; }
+.basis-content { font-size: .9rem; overflow-wrap: anywhere; color: inherit; }
+.basis-content ul { padding-left: 1.25rem; }
+@media print { .basis-panel { break-inside: auto; } .basis-panel::details-content { display: block; } .basis-content a::after { content: ' (' attr(href) ')'; font-size: .8em; } }
