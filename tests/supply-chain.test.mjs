@@ -68,6 +68,23 @@ test('storage failure never returns success and rate limit is explicit', async (
     assert.equal(result.status, status)
   }
 })
+test('live preview access requires exact server configuration and preserves origin isolation', async () => {
+  const preview = 'https://deploy-preview-22--atlas-eye.netlify.app'
+  const save = async () => ({ outcome: 'created', reference: good.request_id })
+  assert.equal((await createHandler({ save })(request(good, preview))).status, 403)
+  const handler = createHandler({ save, previewOrigin: preview })
+  const accepted = await handler(request(good, preview))
+  assert.equal(accepted.status, 200)
+  assert.equal(accepted.headers.get('Access-Control-Allow-Origin'), preview)
+  const denied = await handler(request(good, 'https://deploy-preview-23--atlas-eye.netlify.app'))
+  assert.equal(denied.status, 403)
+  assert.equal(denied.headers.get('Access-Control-Allow-Origin'), 'null')
+  const preflight = await handler(new Request('https://example.supabase.co', { method: 'OPTIONS', headers: { Origin: preview } }))
+  assert.equal(preflight.status, 204)
+  assert.equal(preflight.headers.get('Access-Control-Allow-Origin'), preview)
+  assert.throws(() => createHandler({ save, previewOrigin: 'https://unrelated.netlify.app' }))
+  assert.throws(() => createHandler({ save, previewOrigin: preview + '.attacker.example' }))
+})
 test('direct route and static artifacts are built for both hosting paths', () => {
   const html = fs.readFileSync('dist/supply-chain/index.html', 'utf8')
   assert.match(html, /Nuclear Supply Chain Explorer/)

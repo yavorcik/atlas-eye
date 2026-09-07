@@ -3,6 +3,7 @@ import { createHandler } from './handler.mjs'
 
 const digest = async (value: string) => Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value)))).map(byte => byte.toString(16).padStart(2, '0')).join('')
 const handler = createHandler({
+  previewOrigin: Deno.env.get('SUPPLIER_PREVIEW_ORIGIN') || '',
   async save(value: Record<string, unknown>) {
     const url = Deno.env.get('SUPABASE_URL')
     const service = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')

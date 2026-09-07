@@ -3,7 +3,7 @@ import { validateSubmission } from './contract.mjs'
 const ORIGINS = new Set(['https://atlaseye.ai', 'https://www.atlaseye.ai', 'https://lab.atlaseye.ai'])
 const response = (status, body, origin) => new Response(JSON.stringify(body), { status, headers: {
   'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store',
-  'Access-Control-Allow-Origin': ORIGINS.has(origin) ? origin : 'null', 'Vary': 'Origin',
+  'Access-Control-Allow-Origin': origin, 'Vary': 'Origin',
   'X-Content-Type-Options': 'nosniff',
 } })
 async function boundedJson(request) {
@@ -21,10 +21,16 @@ async function boundedJson(request) {
   for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.length }
   return JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes))
 }
-export function createHandler({ save }) {
+export function createHandler({ save, previewOrigin = '' }) {
+  const allowedOrigins = new Set(ORIGINS)
+  // Opt in one specific AtlasEye preview for live acceptance tests; never allow a wildcard.
+  if (previewOrigin) {
+    if (!/^https:\/\/deploy-preview-[1-9][0-9]*--atlas-eye\.netlify\.app$/.test(previewOrigin)) throw Error('invalid_preview_origin')
+    allowedOrigins.add(previewOrigin)
+  }
   return async request => {
     const origin = request.headers.get('Origin') || ''
-    if (!ORIGINS.has(origin)) return response(403, { error: 'request_rejected' }, origin)
+    if (!allowedOrigins.has(origin)) return response(403, { error: 'request_rejected' }, 'null')
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: {
       'Access-Control-Allow-Origin': origin, 'Access-Control-Allow-Methods': 'POST, OPTIONS',
       'Access-Control-Allow-Headers': 'content-type', 'Access-Control-Max-Age': '600', 'Vary': 'Origin',

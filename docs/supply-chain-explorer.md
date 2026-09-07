@@ -41,6 +41,7 @@ The established Atlas workflow requires explicit authorization before a live dat
 
 1. Apply `202609070001_supplier_submissions.sql` to the intended existing Supabase project through the normal migration workflow.
 2. Configure a strong random `SUPPLIER_RATE_SECRET` in the function's server environment. Preserve `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`; never expose the service key to Vite.
+   For live acceptance tests from PR #22, also set `SUPPLIER_PREVIEW_ORIGIN=https://deploy-preview-22--atlas-eye.netlify.app`. This allows that exact preview only; other previews stay denied. Remove this optional value when preview testing is finished.
 3. Deploy `supplier-submission` using its checked-in `verify_jwt = false` configuration. The function enforces its own public-intake contract; it does not require a user login.
 4. Build with the existing `VITE_SUPABASE_URL`. When absent, the frontend uses the same known public project URL as the existing inquiry form. Deploy backend before enabling the new public page.
 5. Before release, submit a labeled test from an allowed website origin, confirm a private row and receipt, retry the same request, and verify denial of anonymous table reads. Delete test data only under the team's normal retention process.
@@ -53,3 +54,11 @@ Run `npm run build` then `node --test tests/supply-chain.test.mjs`, plus the exi
 The migration can also be exercised in an isolated PostgreSQL-compatible PGlite runtime without changing the website dependency tree. Set `PGLITE_MODULE` to the file URL of that installation's `dist/index.js`, then run `node tests/supplier-storage-check.mjs`. The check creates Supabase-equivalent roles, applies the actual migration, verifies denied anonymous/authenticated access, pending storage, retry identity, payload conflict and both rate limits.
 
 Implementation verification on this branch: production build and lint passed; 33 catalog, submission, existing inquiry, and route checks passed. The actual migration passed the PGlite storage checks. Seven existing browser tests could not start because the Chromium executable is absent in this environment; they did not reach application assertions. No hosted form submission, live migration, or production browser verification was performed.
+
+### Live preview checks — 7 September 2026
+
+After the user authorized backend activation and live testing, the hosted PR #22 preview was exercised with the connected browser. Component search (Velan valves), empty results with hidden stale details, reset, the two unresolved suppliers, assembly navigation to the foundation and final stage, and supplier-update prefill (BWXT / P006) passed. Required-field validation blocks an empty form and does not display a success receipt.
+
+The live `supplier-submission` preflight returned HTTP 404 with `Requested function was not found`. The CLI has no authenticated Supabase session. Supabase connection was requested; no database migration or function deployment has been performed yet. Private live receipt, retry, rate-limit and database-access tests are therefore still blocked on deployment access.
+
+Added exact, optional `SUPPLIER_PREVIEW_ORIGIN` configuration so acceptance tests can run from the reviewed Netlify preview. There is no wildcard preview access. Local verification now passes 34 checks, including allowed preview, denied neighboring preview, invalid preview configuration and preflight behavior, plus lint.
