@@ -1,0 +1,71 @@
+import test from 'node:test'
+import assert from 'node:assert/strict'
+import { chromium } from 'playwright'
+import { mkdir, readFile } from 'node:fs/promises'
+import { presenterSteps } from '../src/presenterWalkthrough.js'
+const base = process.env.ATLAS_PREVIEW_URL || 'http://127.0.0.1:4173'
+const output = `test-artifacts/legal-${process.env.ATLAS_PREVIEW_URL ? 'preview' : 'local'}`
+const tab = (page, name) => page.locator('.project-tabs').getByRole('button', { name, exact: true }).click()
+const saved = page => page.waitForFunction(() => document.querySelector('.demo-notice-panel')?.classList.contains('save-saved'))
+const workspace = page => page.evaluate(() => localStorage.getItem('atlas.publicDemoWorkspace.v2'))
+for (const width of [1366, 390]) test(`presenter story, keyboard basis, mobile and actual deliverables at ${width}`, async () => {
+  const browser = await chromium.launch()
+  await mkdir(output, { recursive: true })
+  try {
+    const page = await browser.newPage({ viewport: { width, height: 844 }, acceptDownloads: true, reducedMotion: 'reduce' })
+    await page.goto(`${base}/mission-control/`)
+    const before = await workspace(page)
+    await page.getByText('Presenter / advanced controls', { exact: true }).click()
+    await page.getByText('Presenter walkthrough', { exact: true }).click()
+    for (const step of presenterSteps) assert.ok((await page.locator('.presenter-panel').innerText()).includes(step.say))
+    assert.equal(await workspace(page), before, 'help must not mutate workspace')
+    const card = page.locator('.project-card').filter({ hasText: 'ForgeWorks Safety-Related Valve Supplier Review' })
+    await card.click()
+    await tab(page, 'Requirements')
+    const quality = page.locator('.requirement-card').filter({ has: page.getByRole('heading', { name: 'Current quality program document', exact: true }) })
+    assert.match(await quality.innerText(), /conflict/i)
+    const panel = quality.locator('.basis-panel')
+    await panel.locator('summary').focus()
+    await page.keyboard.press('Enter')
+    assert.equal(await panel.getAttribute('open'), '')
+    assert.match(await panel.innerText(), /Atlas workflow control/)
+    assert.match(await panel.innerText(), /No contract, license incorporation or NQA-1/)
+    assert.equal(await panel.locator('summary').evaluate(el => el === document.activeElement), true)
+    await page.screenshot({ path: `${output}/supplier-basis-${width}.png`, fullPage: true })
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1))
+    await tab(page, 'Evidence')
+    await page.getByRole('button', { name: /sample-supplier-quality-program-rev-b/ }).click()
+    assert.match(await page.getByTestId('evidence-preview').innerText(), /Rev\. B|Revision: B/)
+    await tab(page, 'Requirements')
+    for (const name of ['Current quality program document', 'Calibration record sample']) await page.locator('.requirement-card').filter({ has: page.getByRole('heading', { name, exact: true }) }).getByRole('button', { name: 'Load sample evidence', exact: true }).click()
+    await page.getByLabel('Decision explanation').fill('Rev. C matches the expected sample identity and the calibration sample is linked; broader qualification remains open.')
+    await page.getByRole('button', { name: 'Simulate supplier acceptance', exact: true }).click()
+    await saved(page)
+    const decision = JSON.parse(await workspace(page)).projects['supplier-qualification'].decisions.at(-1)
+    assert.ok(decision.authorityBasis)
+    await tab(page, 'Report')
+    assert.match(await page.locator('.print-report').innerText(), /Simulated acceptance current/)
+    for (const [label, ext] of [['Download HTML report', 'html'], ['Download evidence/action register', 'csv']]) {
+      const [download] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: label, exact: true }).click()])
+      const file = `${output}/supplier-${width}.${ext}`
+      await download.saveAs(file)
+      const text = await readFile(file, 'utf8')
+      for (const expected of ['sup-qap-current', 'Atlas workflow control', 'Applicable within represented scope', decision.authorityBasis.version, 'sample-supplier-quality-program-rev-c', 'Current simulated decision']) assert.ok(text.includes(expected), expected)
+    }
+    await page.emulateMedia({ media: 'print' }); await page.pdf({ path: `${output}/supplier-${width}.pdf` }); await page.emulateMedia({ media: 'screen' })
+    await tab(page, 'Requirements')
+    await quality.getByRole('button', { name: 'Load sample evidence', exact: true }).click()
+    await saved(page)
+    await page.waitForFunction(() => JSON.parse(localStorage.getItem('atlas.publicDemoWorkspace.v2')).projects['supplier-qualification'].review.status === 'stale')
+    const changed = JSON.parse(await workspace(page)).projects['supplier-qualification']
+    assert.equal(changed.review.status, 'stale')
+    assert.deepEqual(changed.decisions.at(-1), decision)
+    await page.goto(`${base}/part53-workspace/`)
+    const legal = page.locator('[data-basis-id="q-legal-name"]')
+    await legal.locator('summary').focus(); await page.keyboard.press('Space')
+    assert.match(await legal.innerText(), /53\.1109\(a\)/)
+    assert.ok((await legal.locator('a').first().getAttribute('href')).startsWith('https://www.ecfr.gov/'))
+    await page.screenshot({ path: `${output}/legal-basis-${width}.png`, fullPage: true })
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1))
+  } finally { await browser.close() }
+})

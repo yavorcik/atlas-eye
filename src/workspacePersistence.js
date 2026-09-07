@@ -7,7 +7,7 @@ export function mergeProject(base, proposed, latest, path = '') {
   if (equal(base, proposed)) return latest
   if (equal(base, latest) || equal(proposed, latest)) return proposed
   if (path === 'revision') return latest
-  if (path === 'history') return [...new Map([...proposed, ...latest].map(item => [item.id, item])).values()].sort((a, b) => b.at.localeCompare(a.at))
+  if (path === 'history' || path === 'basisHistory') return [...new Map([...(proposed || []), ...(latest || [])].map(item => [item.id, item])).values()].sort((a, b) => b.at.localeCompare(a.at))
   if (base && proposed && latest && !Array.isArray(base) && typeof base === 'object' && typeof proposed === 'object' && typeof latest === 'object') {
     return Object.fromEntries([...new Set([...Object.keys(base), ...Object.keys(proposed), ...Object.keys(latest)])].map(key => [key, mergeProject(base[key], proposed[key], latest[key], path ? `${path}.${key}` : key)]))
   }
