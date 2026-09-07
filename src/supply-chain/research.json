@@ -1,0 +1,1223 @@
+{
+  "researchedAt": "2026-09-07",
+  "scope": "Conceptual integral water-cooled SMR; major component and procurement families, not a complete bill of materials.",
+  "blocks": [
+    "01 Foundation",
+    "02 Shielding & pool",
+    "03 Reactor module",
+    "04 Turbine & generator",
+    "05 Condenser & feedwater",
+    "06 Heat rejection",
+    "07 Connections & auxiliaries",
+    "08 Controls & electrical",
+    "09 Fuel handling & waste"
+  ],
+  "parts": [
+    {
+      "id": "P001",
+      "block": "01 Foundation",
+      "component": "Civil foundation / basemat",
+      "purpose": "Supports plant loads and interfaces with the ground.",
+      "company": "Bechtel",
+      "role": "EPC / constructor",
+      "evidence": "Construction role",
+      "applicability": "Site-built package",
+      "limitation": "Identify concrete, reinforcement and embed fabricators through the project EPC; Bechtel is not the material manufacturer.",
+      "url": "https://www.bechtel.com/markets/nuclear-power/"
+    },
+    {
+      "id": "P002",
+      "block": "02 Shielding & pool",
+      "component": "Shielding / reactor-pool civil structure",
+      "purpose": "Provides structural support and radiation shielding.",
+      "company": "Bechtel",
+      "role": "EPC / constructor",
+      "evidence": "Construction role",
+      "applicability": "Site-built package",
+      "limitation": "Geotechnical, structural and shielding design must define construction packages.",
+      "url": "https://www.bechtel.com/markets/nuclear-power/"
+    },
+    {
+      "id": "P003",
+      "block": "02 Shielding & pool",
+      "component": "Stainless reactor-pool liner",
+      "purpose": "Provides a leak-tight pool boundary.",
+      "company": "Cegelec CEM",
+      "role": "Designer / fabricator",
+      "evidence": "Nuclear capability",
+      "applicability": "Included in concept",
+      "limitation": "Confirm fabrication location, interfaces, inspection and installation scope.",
+      "url": "https://www.cegelec-cem.fr/en/activities/reactor-pool-liners/"
+    },
+    {
+      "id": "P004",
+      "block": "02 Shielding & pool",
+      "component": "Equipment hatches / personnel airlocks",
+      "purpose": "Provides controlled access through containment or other plant barriers.",
+      "company": "Curtiss-Wright / Trentec",
+      "role": "Designer / manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Design-dependent",
+      "limitation": "Access arrangement differs between a small steel module and a reactor building; select the correct boundary.",
+      "url": "https://nuclear.curtisswright.com/sites/default/files/Download-Library/AP-Services/Containment-Solutions-for-Advanced-Reactors.pdf"
+    },
+    {
+      "id": "P005",
+      "block": "03 Reactor module",
+      "component": "Module major-equipment package",
+      "purpose": "Integrates the factory-manufactured reactor equipment.",
+      "company": "Doosan Enerbility via reactor OEM",
+      "role": "OEM-coordinated supply",
+      "evidence": "SMR relationship",
+      "applicability": "NuScale comparator",
+      "limitation": "Public partnership establishes a supply relationship; obtain the exact work split and a current project offer.",
+      "url": "https://www.doosanenerbility.com/en/business/smr_nuscale"
+    },
+    {
+      "id": "P006",
+      "block": "03 Reactor module",
+      "component": "Reactor pressure vessel",
+      "purpose": "Contains the core and primary coolant pressure boundary.",
+      "company": "BWXT",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Included in concept",
+      "limitation": "Capacity, materials, design interfaces and selected iPWR qualification remain unverified.",
+      "url": "https://www.bwxt.com/sectors/nuclear-energy/components-equipment/"
+    },
+    {
+      "id": "P007",
+      "block": "03 Reactor module",
+      "component": "Vessel forgings / heavy steel components",
+      "purpose": "Provides the starting material for major pressure-boundary parts.",
+      "company": "Sheffield Forgemasters",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Sub-tier component",
+      "limitation": "Confirm whether procurement is through the vessel manufacturer; avoid double-counting the vessel package.",
+      "url": "https://sheffieldforgemasters.com/industry/civil-nuclear/"
+    },
+    {
+      "id": "P008",
+      "block": "03 Reactor module",
+      "component": "Reactor vessel head",
+      "purpose": "Closes the vessel and carries design-specific interfaces.",
+      "company": "ENSA",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Included in concept",
+      "limitation": "Match head arrangement and penetrations to the selected OEM design.",
+      "url": "https://www.ensa.es/products/?lang=en"
+    },
+    {
+      "id": "P009",
+      "block": "03 Reactor module",
+      "component": "Vessel internals / core-support structures",
+      "purpose": "Supports and locates internal reactor assemblies and coolant flow paths.",
+      "company": "ENSA",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Included in concept",
+      "limitation": "Requires proprietary drawings and design-authority approval.",
+      "url": "https://www.ensa.es/products/?lang=en"
+    },
+    {
+      "id": "P010",
+      "block": "03 Reactor module",
+      "component": "Reactor vessel supports",
+      "purpose": "Transfers vessel loads into its support structure.",
+      "company": "ENSA",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Included in concept",
+      "limitation": "Support geometry and structural qualification are design-specific.",
+      "url": "https://www.ensa.es/products/?lang=en"
+    },
+    {
+      "id": "P011",
+      "block": "03 Reactor module",
+      "component": "Integral steam-generator assembly",
+      "purpose": "Transfers primary-loop heat to a separate steam circuit.",
+      "company": "BWXT",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Included in concept",
+      "limitation": "General steam-generator capability is documented; integral/helical configuration is not established by this source.",
+      "url": "https://www.bwxt.com/sectors/nuclear-energy/components-equipment/"
+    },
+    {
+      "id": "P012",
+      "block": "03 Reactor module",
+      "component": "Steam-generator tubing",
+      "purpose": "Provides the heat-transfer surface and separation between fluids.",
+      "company": "Alleima",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Sub-tier component",
+      "limitation": "Confirm alloy, tube configuration, forming scope and interface with the steam-generator manufacturer.",
+      "url": "https://www.alleima.com/en/products/tube-pipe/tubular-products/nuclear-steam-generator-tubing/"
+    },
+    {
+      "id": "P013",
+      "block": "03 Reactor module",
+      "component": "Control-rod drive mechanisms",
+      "purpose": "Moves the neutron-absorbing control assemblies.",
+      "company": "Curtiss-Wright EMD",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Included in concept",
+      "limitation": "Exact in-vessel or external drive architecture and qualification remain open.",
+      "url": "https://electro-mechanicalsystems.curtisswright.com/emd/markets-and-products/power-products-and-services"
+    },
+    {
+      "id": "P014",
+      "block": "03 Reactor module",
+      "component": "Rod-cluster control assemblies",
+      "purpose": "Provides movable neutron absorption.",
+      "company": "Framatome",
+      "role": "Designer / manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Included in concept",
+      "limitation": "Verify exact control-assembly manufacturing scope and compatibility with the fuel and drives.",
+      "url": "https://www.framatome.com/en/expertise/design-and-fuel-manufacturing/"
+    },
+    {
+      "id": "P015",
+      "block": "03 Reactor module",
+      "component": "Fuel assemblies",
+      "purpose": "Holds the nuclear fuel in the selected reactor configuration.",
+      "company": "Framatome",
+      "role": "Fuel manufacturer",
+      "evidence": "SMR relationship",
+      "applicability": "NuScale comparator",
+      "limitation": "Fuel technology is proprietary; a supply relationship is not a reservation for this project.",
+      "url": "https://www.nuscalepower.com/press-releases/2026/framatome-and-nuscale-power-contract-to-support-global-supply-chain-and-accelerate-fuel-delivery"
+    },
+    {
+      "id": "P016",
+      "block": "03 Reactor module",
+      "component": "Fuel pellets",
+      "purpose": "Provides the ceramic fuel inside the rods.",
+      "company": "Framatome / Richland",
+      "role": "Fuel manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Fuel-assembly sub-tier",
+      "limitation": "Procure within the qualified fuel-supply route; raw-material and enrichment services are separate.",
+      "url": "https://www.framatome.com/en/implantations/richland/"
+    },
+    {
+      "id": "P017",
+      "block": "03 Reactor module",
+      "component": "Fuel rods",
+      "purpose": "Encapsulates pellets within the fuel assembly.",
+      "company": "Framatome / Richland",
+      "role": "Fuel manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Fuel-assembly sub-tier",
+      "limitation": "Not an interchangeable catalog item; fuel design governs the product.",
+      "url": "https://www.framatome.com/en/implantations/richland/"
+    },
+    {
+      "id": "P018",
+      "block": "03 Reactor module",
+      "component": "Fuel cladding tubes",
+      "purpose": "Forms the first physical barrier around fuel material.",
+      "company": "Framatome",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Fuel-assembly sub-tier",
+      "limitation": "Historical delivery evidence; exact alloy, facility and present capacity require confirmation.",
+      "url": "https://www.framatome.com/medias/framatome-and-cnnc-first-fuel-cladding-tubes-delivery-for-hualong-1-nuclear-power-plant/"
+    },
+    {
+      "id": "P019",
+      "block": "03 Reactor module",
+      "component": "Fuel spacer grids / assembly structure",
+      "purpose": "Maintains rod positioning and supports coolant flow.",
+      "company": "Framatome",
+      "role": "Fuel manufacturer",
+      "evidence": "SMR relationship",
+      "applicability": "Fuel-assembly sub-tier",
+      "limitation": "NuFUEL-HTP2 uses HTP spacer-grid technology; scope remains within the fuel manufacturer.",
+      "url": "https://www.nuscalepower.com/press-releases/2026/framatome-and-nuscale-power-contract-to-support-global-supply-chain-and-accelerate-fuel-delivery"
+    },
+    {
+      "id": "P020",
+      "block": "03 Reactor module",
+      "component": "Pressurizer equipment",
+      "purpose": "Maintains primary-system pressure.",
+      "company": "ENSA",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Architecture-dependent",
+      "limitation": "An integral SMR may incorporate this function inside the vessel; a separate pressurizer may not be needed.",
+      "url": "https://www.ensa.es/products/?lang=en"
+    },
+    {
+      "id": "P021",
+      "block": "03 Reactor module",
+      "component": "Reactor coolant pumps",
+      "purpose": "Circulates primary coolant in pumped designs.",
+      "company": "Curtiss-Wright EMD",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Pumped designs only",
+      "limitation": "Natural-circulation designs may omit this component entirely.",
+      "url": "https://electro-mechanicalsystems.curtisswright.com/emd/markets-and-products/power-products-and-services"
+    },
+    {
+      "id": "P022",
+      "block": "03 Reactor module",
+      "component": "Steel module containment vessel",
+      "purpose": "Provides an additional containment boundary around the reactor vessel.",
+      "company": "Not established for this concept",
+      "role": "OEM decision required",
+      "evidence": "Unresolved",
+      "applicability": "Included in concept",
+      "limitation": "Doosan documents module-equipment involvement, but this research does not establish the containment-vessel fabrication allocation.",
+      "url": "https://www.doosanenerbility.com/en/business/smr_nuscale"
+    },
+    {
+      "id": "P023",
+      "block": "03 Reactor module",
+      "component": "Integrated passive safety package",
+      "purpose": "Provides design-specific shutdown cooling and safety functions.",
+      "company": "Selected reactor OEM; fabricators unresolved",
+      "role": "OEM design / integration",
+      "evidence": "Unresolved",
+      "applicability": "Included; architecture open",
+      "limitation": "A generic heat exchanger, pool or valve does not establish a qualified integrated passive-safety system.",
+      "url": "https://www.doosanenerbility.com/en/business/smr_nuscale"
+    },
+    {
+      "id": "P024",
+      "block": "03 Reactor module",
+      "component": "Residual-heat-removal heat exchanger",
+      "purpose": "Transfers decay heat through the selected cooling system.",
+      "company": "Holtec International",
+      "role": "Designer / manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "System-dependent",
+      "limitation": "Documented component family; not proof of suitability for this concept's passive cooling arrangement.",
+      "url": "https://holtecinternational.com/products-and-services/heat-transfer-equipment/heat-exchangers-for-nuclear-power-plants/"
+    },
+    {
+      "id": "P025",
+      "block": "04 Turbine & generator",
+      "component": "Steam turbine",
+      "purpose": "Converts steam energy into shaft rotation.",
+      "company": "Arabelle Solutions",
+      "role": "Manufacturer",
+      "evidence": "SMR relationship",
+      "applicability": "Included in concept",
+      "limitation": "Documented SMR portfolio and BWRX-300 project; match this iPWR steam cycle separately.",
+      "url": "https://www.arabellesolutions.com/en/our-technology/pioneering-steam-turbines/steam-turbines-for-smrs"
+    },
+    {
+      "id": "P026",
+      "block": "04 Turbine & generator",
+      "component": "Electrical generator",
+      "purpose": "Converts shaft rotation into electrical power.",
+      "company": "Arabelle Solutions",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Included in concept",
+      "limitation": "Select rating, cooling arrangement and electrical interfaces with the turbine package.",
+      "url": "https://www.arabellesolutions.com/en/our-technology/generators-for-nuclear-power-plants/generators-for-smrs"
+    },
+    {
+      "id": "P027",
+      "block": "04 Turbine & generator",
+      "component": "Moisture-separator reheater",
+      "purpose": "Conditions steam between turbine stages where required.",
+      "company": "Arabelle Solutions",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Steam-cycle dependent",
+      "limitation": "Not universal to every SMR turbine cycle.",
+      "url": "https://www.arabellesolutions.com/en/our-technology/heat-exchangers/moisture-separator-reheaters"
+    },
+    {
+      "id": "P028",
+      "block": "05 Condenser & feedwater",
+      "component": "Main condenser",
+      "purpose": "Condenses turbine exhaust steam back into water.",
+      "company": "Holtec International",
+      "role": "Designer / manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Included in concept",
+      "limitation": "Confirm condenser duty, cooling method and turbine exhaust interface.",
+      "url": "https://holtecinternational.com/products-and-services/heat-transfer-equipment/"
+    },
+    {
+      "id": "P029",
+      "block": "05 Condenser & feedwater",
+      "component": "Feedwater heaters",
+      "purpose": "Recovers heat to preheat water returning to the steam generator.",
+      "company": "Holtec International",
+      "role": "Designer / manufacturer",
+      "evidence": "Industrial capability",
+      "applicability": "Steam-cycle dependent",
+      "limitation": "Number and arrangement depend on the chosen cycle; avoid assuming large-reactor equipment fits.",
+      "url": "https://holtecinternational.com/products-and-services/heat-transfer-equipment/"
+    },
+    {
+      "id": "P030",
+      "block": "05 Condenser & feedwater",
+      "component": "Feedwater pumps",
+      "purpose": "Returns water to the steam generator at the required pressure.",
+      "company": "KSB",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Included in concept",
+      "limitation": "Obtain a pump selection for the actual duty and operating range.",
+      "url": "https://www.ksb.com/en-nl/applications/energy-technology/nuclear-power-plants"
+    },
+    {
+      "id": "P031",
+      "block": "05 Condenser & feedwater",
+      "component": "Condensate polishing vessels / tanks",
+      "purpose": "Supports cleanup of returning condensate.",
+      "company": "Joseph Oat",
+      "role": "Fabricator",
+      "evidence": "Nuclear capability",
+      "applicability": "Water-chemistry dependent",
+      "limitation": "Tank manufacture does not cover resin selection, full process design or packaged-system integration.",
+      "url": "https://www.josephoat.com/industries-served/nuclear-power/"
+    },
+    {
+      "id": "P032",
+      "block": "06 Heat rejection",
+      "component": "Cooling-water pumps",
+      "purpose": "Moves water through the heat-rejection circuit.",
+      "company": "KSB",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Included in concept",
+      "limitation": "Normal-operation heat rejection must be distinguished from safety-related cooling duties.",
+      "url": "https://www.ksb.com/en-nl/applications/energy-technology/nuclear-power-plants"
+    },
+    {
+      "id": "P033",
+      "block": "06 Heat rejection",
+      "component": "Dry-cooling heat-exchanger bank",
+      "purpose": "Rejects heat from the separate cooling-water loop to ambient air.",
+      "company": "SPX Cooling Tech",
+      "role": "Manufacturer",
+      "evidence": "Industrial capability",
+      "applicability": "Illustrated cooling option",
+      "limitation": "General industrial capability only; size and temperature approach require site-specific selection.",
+      "url": "https://spxcooling.com/"
+    },
+    {
+      "id": "P034",
+      "block": "06 Heat rejection",
+      "component": "Evaporative cooling tower",
+      "purpose": "Rejects condenser heat using an evaporative cooling circuit.",
+      "company": "SPX Cooling Tech",
+      "role": "Manufacturer",
+      "evidence": "Industrial capability",
+      "applicability": "Alternative to dry cooling",
+      "limitation": "Water supply and site conditions determine applicability; this is not an additional mandatory component.",
+      "url": "https://spxcooling.com/"
+    },
+    {
+      "id": "P035",
+      "block": "06 Heat rejection",
+      "component": "Direct air-cooled condenser",
+      "purpose": "Condenses turbine exhaust using air-cooled surfaces.",
+      "company": "Holtec International",
+      "role": "Designer / manufacturer",
+      "evidence": "Industrial capability",
+      "applicability": "Alternative plant layout",
+      "limitation": "Replaces the drawing's condenser-plus-water-loop arrangement rather than simply adding to it.",
+      "url": "https://holtecinternational.com/products-and-services/heat-transfer-equipment/air-cooled-condensers/"
+    },
+    {
+      "id": "P036",
+      "block": "07 Connections & auxiliaries",
+      "component": "Nuclear isolation / process valves",
+      "purpose": "Controls and isolates plant fluid paths.",
+      "company": "Velan",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Included in concept",
+      "limitation": "Select each valve by system duty and classification; not all valves share the same requirements.",
+      "url": "https://velan.com/literature/nuclear-valves/"
+    },
+    {
+      "id": "P037",
+      "block": "07 Connections & auxiliaries",
+      "component": "Critical-service / safety valves",
+      "purpose": "Performs assigned pressure-control or protective fluid functions.",
+      "company": "Curtiss-Wright Target Rock",
+      "role": "Designer / manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Duty-dependent",
+      "limitation": "Exact safety/relief/isolation valve model and qualification must be evidenced individually.",
+      "url": "https://electro-mechanicalsystems.curtisswright.com/target-rock"
+    },
+    {
+      "id": "P038",
+      "block": "07 Connections & auxiliaries",
+      "component": "Motor-operated valve actuators",
+      "purpose": "Drives selected valves electrically.",
+      "company": "Flowserve / Limitorque",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Selected valves only",
+      "limitation": "Match valve torque, duty cycle, power source and environmental requirements.",
+      "url": "https://www.flowserve.com/products/products-catalog/actuators-instrumentation/electric-actuators/intrusive-multi-turn-actuators/intrusive-multi-turn-actuators-smb/"
+    },
+    {
+      "id": "P039",
+      "block": "07 Connections & auxiliaries",
+      "component": "Pipe fittings / branch connections",
+      "purpose": "Joins and routes fluid lines.",
+      "company": "M.E.G.A.",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Included in concept",
+      "limitation": "Material and code applicability depend on each line and its service.",
+      "url": "https://www.mega-spa.com/en/sectors/nuclear-fittings/"
+    },
+    {
+      "id": "P040",
+      "block": "07 Connections & auxiliaries",
+      "component": "Fabricated pipe spools",
+      "purpose": "Combines pipe and fittings into installable sections.",
+      "company": "DuBose National Energy Services",
+      "role": "Fabricator / material supplier",
+      "evidence": "Nuclear capability",
+      "applicability": "Included in concept",
+      "limitation": "Identify the original material mill, fabrication scope and documentation chain.",
+      "url": "https://www.dubosenes.com/pipe-and-pipe-fittings/"
+    },
+    {
+      "id": "P041",
+      "block": "07 Connections & auxiliaries",
+      "component": "Pipe supports / hangers",
+      "purpose": "Carries piping loads while accommodating movement.",
+      "company": "LISEGA",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Included in concept",
+      "limitation": "Support loads and movements must come from the piping design.",
+      "url": "https://www.lisega.de/en/industries/nuclear-power-plants/"
+    },
+    {
+      "id": "P042",
+      "block": "07 Connections & auxiliaries",
+      "component": "Snubbers / shock absorbers",
+      "purpose": "Restrains specified dynamic motion of piping or equipment.",
+      "company": "LISEGA",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Design-dependent",
+      "limitation": "Confirm whether the design needs these devices and their approved duty.",
+      "url": "https://www.lisega.de/en/industries/nuclear-power-plants/"
+    },
+    {
+      "id": "P043",
+      "block": "07 Connections & auxiliaries",
+      "component": "Studs / bolts / nuts",
+      "purpose": "Provides mechanical fastening of equipment and structures.",
+      "company": "B&G Manufacturing",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Multiple component families",
+      "limitation": "Each fastener family needs its own material, traceability and procurement requirements.",
+      "url": "https://bgmfg.com/"
+    },
+    {
+      "id": "P044",
+      "block": "07 Connections & auxiliaries",
+      "component": "Gaskets / sealing products",
+      "purpose": "Limits leakage at assigned mechanical interfaces.",
+      "company": "Garlock",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Multiple component families",
+      "limitation": "Select an exact product; a nuclear-sector marketing page is not specific qualification evidence.",
+      "url": "https://www.garlock.com/industries/nuclear"
+    },
+    {
+      "id": "P045",
+      "block": "07 Connections & auxiliaries",
+      "component": "Component-cooling heat exchangers",
+      "purpose": "Transfers heat from auxiliary plant equipment.",
+      "company": "Holtec International",
+      "role": "Designer / manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Included as auxiliary scope",
+      "limitation": "Actual cooling loads and safety classification are not yet specified.",
+      "url": "https://holtecinternational.com/products-and-services/heat-transfer-equipment/heat-exchangers-for-nuclear-power-plants/"
+    },
+    {
+      "id": "P046",
+      "block": "07 Connections & auxiliaries",
+      "component": "Volume-control / auxiliary tanks",
+      "purpose": "Stores or buffers fluids in supporting plant systems.",
+      "company": "Joseph Oat",
+      "role": "Fabricator",
+      "evidence": "Nuclear capability",
+      "applicability": "System-dependent",
+      "limitation": "Tank inventory and process requirements depend on the selected reactor architecture.",
+      "url": "https://www.josephoat.com/industries-served/nuclear-power/"
+    },
+    {
+      "id": "P047",
+      "block": "07 Connections & auxiliaries",
+      "component": "Demineralizer vessels",
+      "purpose": "Houses treatment media for water purification.",
+      "company": "Joseph Oat",
+      "role": "Fabricator",
+      "evidence": "Nuclear capability",
+      "applicability": "System-dependent",
+      "limitation": "This is the vessel supplier, not proof of a complete treatment-package supplier.",
+      "url": "https://www.josephoat.com/industries-served/nuclear-power/"
+    },
+    {
+      "id": "P048",
+      "block": "08 Controls & electrical",
+      "component": "Reactor protection-system platform",
+      "purpose": "Processes assigned protective signals and initiates protective actions.",
+      "company": "Paragon Energy Solutions",
+      "role": "Platform manufacturer / integrator",
+      "evidence": "SMR relationship",
+      "applicability": "Design-dependent",
+      "limitation": "NuScale-related HIPS platform documented; plant implementation and current supply scope remain open.",
+      "url": "https://paragones.com/hips/"
+    },
+    {
+      "id": "P049",
+      "block": "08 Controls & electrical",
+      "component": "Normal plant control system",
+      "purpose": "Coordinates normal plant monitoring and control.",
+      "company": "Westinghouse + Emerson Ovation",
+      "role": "Nuclear integrator + platform OEM",
+      "evidence": "Nuclear capability",
+      "applicability": "Included in concept",
+      "limitation": "Separate normal controls from reactor protection; define each vendor's workshare.",
+      "url": "https://westinghousenuclear.com/operating-plants/instrumentation-controls-systems/control-systems/"
+    },
+    {
+      "id": "P050",
+      "block": "08 Controls & electrical",
+      "component": "Neutron-flux instrumentation",
+      "purpose": "Measures neutron activity for reactor monitoring.",
+      "company": "Mirion Technologies",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Included in concept",
+      "limitation": "Detector selection and its role in protection require the OEM instrumentation specification.",
+      "url": "https://www.mirion.com/solutions/nuclear-power/reactor-construction-control"
+    },
+    {
+      "id": "P051",
+      "block": "08 Controls & electrical",
+      "component": "Area / process radiation monitors",
+      "purpose": "Measures radiation in assigned plant areas and processes.",
+      "company": "Mirion Technologies",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Included in plant scope",
+      "limitation": "Define each monitoring channel, sampling arrangement and qualification.",
+      "url": "https://www.mirion.com/products/technologies/radiation-monitoring-systems"
+    },
+    {
+      "id": "P052",
+      "block": "08 Controls & electrical",
+      "component": "Nuclear pressure transmitters",
+      "purpose": "Measures assigned plant pressures.",
+      "company": "Emerson / Rosemount",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Included in concept",
+      "limitation": "3153N is a capability example, not a selected part number.",
+      "url": "https://www.emerson.com/en/measurement-instrumentation/products/rosemount-3153n-pressure-transmitter"
+    },
+    {
+      "id": "P053",
+      "block": "08 Controls & electrical",
+      "component": "Nuclear temperature sensors",
+      "purpose": "Measures assigned plant temperatures.",
+      "company": "Curtiss-Wright",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Included in concept",
+      "limitation": "Select sensor family and installation-specific qualification.",
+      "url": "https://cwic.curtisswright.com/products/nuclear-qualified-instrumentation/nuclear-qualified-temperature-measurement/"
+    },
+    {
+      "id": "P054",
+      "block": "08 Controls & electrical",
+      "component": "Nuclear power / control cables",
+      "purpose": "Carries electrical power and instrument signals.",
+      "company": "Lynxeo",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Included in concept",
+      "limitation": "Select cable family by location, duty and environmental qualification.",
+      "url": "https://www.lynxeogroup.com/en/business/resources/power-plants-nuclear.html"
+    },
+    {
+      "id": "P055",
+      "block": "08 Controls & electrical",
+      "component": "Electrical containment penetrations",
+      "purpose": "Passes power and signals through a sealed containment boundary.",
+      "company": "Curtiss-Wright",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Boundary-dependent",
+      "limitation": "Confirm the selected containment interface and qualified assembly.",
+      "url": "https://nuclear.curtisswright.com/sites/default/files/Download-Library/AP-Services/EPA-Brochure.pdf"
+    },
+    {
+      "id": "P056",
+      "block": "08 Controls & electrical",
+      "component": "Generator step-up transformer",
+      "purpose": "Connects generator output to the transmission voltage level.",
+      "company": "Hitachi Energy",
+      "role": "Manufacturer",
+      "evidence": "Industrial capability",
+      "applicability": "Included in plant scope",
+      "limitation": "Electrical rating, grid interface, site and supply schedule remain unverified.",
+      "url": "https://www.hitachienergy.com/us/en/products-and-solutions/transformers/power-transformers/generator-step-up-transformers-gsu"
+    },
+    {
+      "id": "P057",
+      "block": "08 Controls & electrical",
+      "component": "Switchgear / circuit breakers / MCCs",
+      "purpose": "Distributes, switches and protects plant electrical power.",
+      "company": "ABB with Paragon",
+      "role": "Equipment OEM + qualification integrator",
+      "evidence": "Nuclear capability",
+      "applicability": "Multiple component families",
+      "limitation": "Announced partnership; verify specific product, manufacturer and qualification workshare.",
+      "url": "https://new.abb.com/news/detail/128596/abb-signs-agreement-with-paragon-energy-solutions-to-develop-integrated-offering-for-the-us-nuclear-power-sector"
+    },
+    {
+      "id": "P058",
+      "block": "08 Controls & electrical",
+      "component": "Station batteries",
+      "purpose": "Supports designated DC loads when normal power is unavailable.",
+      "company": "EnerSys",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Electrical-design dependent",
+      "limitation": "PowerSafe GN documents nuclear capability; battery chemistry and duty are not selected.",
+      "url": "https://www.enersys.com/en/products/batteries/powersafe/powersafe-gn/"
+    },
+    {
+      "id": "P059",
+      "block": "08 Controls & electrical",
+      "component": "Battery chargers",
+      "purpose": "Supplies regulated DC power and maintains battery charge.",
+      "company": "AMETEK Solidstate Controls",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Electrical-design dependent",
+      "limitation": "BCS is a capability example; capacity and classification remain open.",
+      "url": "https://www.solidstatecontrolsinc.com/products/nuclear/class-1e-safety-related/bcs"
+    },
+    {
+      "id": "P060",
+      "block": "08 Controls & electrical",
+      "component": "UPS / inverters",
+      "purpose": "Provides assigned conditioned or uninterrupted electrical supply.",
+      "company": "AMETEK Solidstate Controls",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Electrical-design dependent",
+      "limitation": "Determine actual critical loads and required product configuration.",
+      "url": "https://www.solidstatecontrolsinc.com/-/media/ameteksolidstatecontrols/documentation/brochures/nuclear_web.pdf?la=en&revision=cff3504f-0cc0-41d4-b2a9-84957ba79286"
+    },
+    {
+      "id": "P061",
+      "block": "08 Controls & electrical",
+      "component": "Backup engine-generator package",
+      "purpose": "Supports assigned backup AC power needs.",
+      "company": "Fairbanks Morse Defense",
+      "role": "Engine OEM / package scope to confirm",
+      "evidence": "Nuclear capability",
+      "applicability": "Architecture-dependent",
+      "limitation": "Current source shows nuclear-sector customers; a current new-build emergency-generator package and safety role need confirmation.",
+      "url": "https://www.fairbanksmorsedefense.com/solutions/engines/"
+    },
+    {
+      "id": "P062",
+      "block": "08 Controls & electrical",
+      "component": "HVAC filtration / containment filter housings",
+      "purpose": "Controls airborne particulates in assigned ventilation systems.",
+      "company": "Camfil",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Part of HVAC package",
+      "limitation": "Filters/housings do not constitute a complete HVAC system; fans, dampers, ducts and chillers need separate sourcing.",
+      "url": "https://www.camfil.com/en-gb/products/nuclear-systems"
+    },
+    {
+      "id": "P063",
+      "block": "08 Controls & electrical",
+      "component": "Water-treatment package",
+      "purpose": "Produces and conditions water for assigned plant services.",
+      "company": "Veolia Water Technologies",
+      "role": "Treatment-system supplier / integrator",
+      "evidence": "Industrial capability",
+      "applicability": "Plant-service dependent",
+      "limitation": "Obtain the package bill of materials and identify actual component manufacturers.",
+      "url": "https://www.veoliawatertechnologies.com/en/core-markets/power"
+    },
+    {
+      "id": "P064",
+      "block": "09 Fuel handling & waste",
+      "component": "Fuel-handling machines",
+      "purpose": "Moves fuel using purpose-designed handling equipment.",
+      "company": "PAR Systems",
+      "role": "Designer / manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Required plant support",
+      "limitation": "Design must match fuel and pool interfaces; not interchangeable with generic lifting equipment.",
+      "url": "https://www.par.com/industries/nuclear/large-power-plant-small-modular-reactor/"
+    },
+    {
+      "id": "P065",
+      "block": "09 Fuel handling & waste",
+      "component": "Reactor / outage-critical cranes",
+      "purpose": "Handles heavy plant components during installation and outages.",
+      "company": "PAR Systems",
+      "role": "Designer / manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Plant-layout dependent",
+      "limitation": "Define load paths, handling duties and qualification through the project design.",
+      "url": "https://www.par.com/industries/nuclear/large-power-plant-small-modular-reactor/"
+    },
+    {
+      "id": "P066",
+      "block": "09 Fuel handling & waste",
+      "component": "Spent-fuel storage racks",
+      "purpose": "Supports fuel in the wet-storage configuration.",
+      "company": "ENSA",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Fuel-storage dependent",
+      "limitation": "Rack design must match the chosen fuel and storage authorization.",
+      "url": "https://www.ensa.es/products/?lang=en"
+    },
+    {
+      "id": "P067",
+      "block": "09 Fuel handling & waste",
+      "component": "Spent-fuel-pool cooling heat exchanger",
+      "purpose": "Removes heat from the fuel-storage pool circuit.",
+      "company": "Holtec International",
+      "role": "Designer / manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Fuel-storage dependent",
+      "limitation": "Heat exchanger capability is not a complete pool-cooling design.",
+      "url": "https://holtecinternational.com/products-and-services/heat-transfer-equipment/heat-exchangers-for-nuclear-power-plants/"
+    },
+    {
+      "id": "P068",
+      "block": "09 Fuel handling & waste",
+      "component": "Dry spent-fuel storage system",
+      "purpose": "Provides a later-stage storage route for suitably prepared spent fuel.",
+      "company": "Holtec International",
+      "role": "System designer / manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Later lifecycle; conditional",
+      "limitation": "Do not assume existing casks accept the proposed SMR fuel without design and authorization review.",
+      "url": "https://holtecinternational.com/products-and-services/nuclear-fuel-and-waste-management/"
+    },
+    {
+      "id": "P069",
+      "block": "09 Fuel handling & waste",
+      "component": "Fuel transport / storage casks",
+      "purpose": "Provides engineered packaging for defined fuel-storage or transport uses.",
+      "company": "ENSA",
+      "role": "Manufacturer",
+      "evidence": "Nuclear capability",
+      "applicability": "Logistics-dependent",
+      "limitation": "Storage and transportation authorizations are distinct; verify exact contents and package design.",
+      "url": "https://www.ensa.es/products/?lang=en"
+    },
+    {
+      "id": "P070",
+      "block": "09 Fuel handling & waste",
+      "component": "Radioactive-waste processing equipment",
+      "purpose": "Conditions and handles operational radioactive waste streams.",
+      "company": "EnergySolutions",
+      "role": "System designer / builder",
+      "evidence": "Nuclear capability",
+      "applicability": "Plant-service dependent",
+      "limitation": "Identify component OEMs and process scope; treatment services alone do not establish every equipment manufacturer.",
+      "url": "https://www.energysolutions.com/nuclear-plant-services/"
+    }
+  ],
+  "sources": [
+    {
+      "id": "S01",
+      "title": "BWXT — Components & Equipment",
+      "url": "https://www.bwxt.com/sectors/nuclear-energy/components-equipment/",
+      "support": "Manufactures reactor pressure vessels, steam generators and heat exchangers. Does not establish suitability for this conceptual iPWR.",
+      "access": "Official page opened"
+    },
+    {
+      "id": "S02",
+      "title": "ENSA — Products",
+      "url": "https://www.ensa.es/products/?lang=en",
+      "support": "Explicit manufacturing scope includes pressure vessels, vessel heads, internals, supports, steam generators, pressurizers, fuel racks and casks.",
+      "access": "Official page opened"
+    },
+    {
+      "id": "S03",
+      "title": "Sheffield Forgemasters — Civil Nuclear",
+      "url": "https://sheffieldforgemasters.com/industry/civil-nuclear/",
+      "support": "Civil-nuclear castings and forgings, including vessel-related components and pressurizer shells.",
+      "access": "Official page indexed"
+    },
+    {
+      "id": "S04",
+      "title": "Doosan — US NuScale SMR",
+      "url": "https://www.doosanenerbility.com/en/business/smr_nuscale",
+      "support": "Describes NuScale partnership and prospective supply of core SMR equipment. Production forecasts are not completed deliveries.",
+      "access": "Official page opened"
+    },
+    {
+      "id": "S05",
+      "title": "NuScale / Framatome fuel agreement — March 10, 2026",
+      "url": "https://www.nuscalepower.com/press-releases/2026/framatome-and-nuscale-power-contract-to-support-global-supply-chain-and-accelerate-fuel-delivery",
+      "support": "Documents Framatome fuel fabrication relationship and qualification work for NuFUEL-HTP2. Contains future delivery intentions, not available inventory.",
+      "access": "Official page opened"
+    },
+    {
+      "id": "S06",
+      "title": "Framatome — Richland",
+      "url": "https://www.framatome.com/en/implantations/richland/",
+      "support": "Official indexed description explicitly lists UO2 powder, pellets, fuel rods and fuel assemblies produced at Richland.",
+      "access": "Official search excerpt; direct fetch failed"
+    },
+    {
+      "id": "S07",
+      "title": "Framatome — Fuel design and manufacturing",
+      "url": "https://www.framatome.com/en/expertise/design-and-fuel-manufacturing/",
+      "support": "Official indexed text identifies fuel and rod-cluster control-assembly design and fuel manufacturing. Exact control-assembly procurement scope needs confirmation.",
+      "access": "Official search excerpt; direct fetch failed"
+    },
+    {
+      "id": "S08",
+      "title": "Framatome — Fuel cladding delivery",
+      "url": "https://www.framatome.com/medias/framatome-and-cnnc-first-fuel-cladding-tubes-delivery-for-hualong-1-nuclear-power-plant/",
+      "support": "Documents zirconium-alloy cladding-tube delivery and describes guide tubes and grids. Historical reference, not this SMR contract.",
+      "access": "Official page indexed; historical reference"
+    },
+    {
+      "id": "S09",
+      "title": "Curtiss-Wright EMD — Power Products & Services",
+      "url": "https://electro-mechanicalsystems.curtisswright.com/emd/markets-and-products/power-products-and-services",
+      "support": "Explicit manufacture and delivery of reactor coolant pumps, control-rod drives and integrated vessel-head equipment.",
+      "access": "Official page opened"
+    },
+    {
+      "id": "S10",
+      "title": "Alleima — Nuclear steam-generator tubes",
+      "url": "https://www.alleima.com/en/products/tube-pipe/tubular-products/nuclear-steam-generator-tubing/",
+      "support": "Documents manufacture of nuclear steam-generator tubing. Coil forming, alloy selection and exact geometry are separate qualification questions.",
+      "access": "Official page opened"
+    },
+    {
+      "id": "S11",
+      "title": "Cegelec CEM — Reactor pool liners",
+      "url": "https://www.cegelec-cem.fr/en/activities/reactor-pool-liners/",
+      "support": "Explicit design, fabrication and installation of nuclear reactor-pool liners.",
+      "access": "Official page opened"
+    },
+    {
+      "id": "S12",
+      "title": "Bechtel — Nuclear Power",
+      "url": "https://www.bechtel.com/markets/nuclear-power/",
+      "support": "Nuclear engineering and construction capability, with named SMR project involvement. This is an EPC role, not a component manufacturing claim.",
+      "access": "Official page indexed"
+    },
+    {
+      "id": "S13",
+      "title": "Curtiss-Wright Trentec — Containment Integrity",
+      "url": "https://nuclear.curtisswright.com/brands/qualtech-np/containment-integrity",
+      "support": "Custom design/manufacturing and support for containment access and protective-barrier products.",
+      "access": "Official page indexed"
+    },
+    {
+      "id": "S14",
+      "title": "Curtiss-Wright — Advanced-reactor containment products",
+      "url": "https://nuclear.curtisswright.com/sites/default/files/Download-Library/AP-Services/Containment-Solutions-for-Advanced-Reactors.pdf",
+      "support": "Trentec brochure states fabrication capability for airlocks, hatches, gates and specialty doors. Not evidence for manufacture of a complete reactor containment vessel.",
+      "access": "Official PDF indexed"
+    },
+    {
+      "id": "S15",
+      "title": "Holtec — Nuclear heat exchangers",
+      "url": "https://holtecinternational.com/products-and-services/heat-transfer-equipment/heat-exchangers-for-nuclear-power-plants/",
+      "support": "Designs/fabricates nuclear heat exchangers; named uses include residual heat removal, component cooling, fuel-pool cooling, regenerative and letdown service.",
+      "access": "Official page opened"
+    },
+    {
+      "id": "S16",
+      "title": "Joseph Oat — Nuclear Power",
+      "url": "https://www.josephoat.com/industries-served/nuclear-power/",
+      "support": "Fabricates nuclear heat exchangers, pressure vessels and specialty weldments; named applications include tanks, accumulators and demineralizers.",
+      "access": "Official page opened"
+    },
+    {
+      "id": "S17",
+      "title": "Velan — Nuclear valves",
+      "url": "https://velan.com/literature/nuclear-valves/",
+      "support": "Nuclear valve manufacturer brochure; establishes nuclear valve capability, not selected duty or qualification for this concept.",
+      "access": "Official PDF indexed"
+    },
+    {
+      "id": "S18",
+      "title": "Curtiss-Wright Target Rock",
+      "url": "https://electro-mechanicalsystems.curtisswright.com/target-rock",
+      "support": "Critical-service valve supplier for nuclear safety-related markets. Specific valve type and duty remain to be matched.",
+      "access": "Official page indexed"
+    },
+    {
+      "id": "S19",
+      "title": "Flowserve — Limitorque SMB actuator",
+      "url": "https://www.flowserve.com/products/products-catalog/actuators-instrumentation/electric-actuators/intrusive-multi-turn-actuators/intrusive-multi-turn-actuators-smb/",
+      "support": "Electric actuator expressly offered for severe/critical service including nuclear power.",
+      "access": "Official page indexed"
+    },
+    {
+      "id": "S20",
+      "title": "M.E.G.A. — Nuclear fittings",
+      "url": "https://www.mega-spa.com/en/sectors/nuclear-fittings/",
+      "support": "States in-house forging-through-testing production of nuclear fittings and special seamless tubular products.",
+      "access": "Official page indexed"
+    },
+    {
+      "id": "S21",
+      "title": "DuBose — Nuclear pipe and fittings",
+      "url": "https://www.dubosenes.com/pipe-and-pipe-fittings/",
+      "support": "Describes custom pipe/fitting fabrication and material-supply capability. Original mill manufacture and distributor roles must be separated.",
+      "access": "Official page indexed"
+    },
+    {
+      "id": "S22",
+      "title": "LISEGA — Nuclear power plants",
+      "url": "https://www.lisega.de/en/industries/nuclear-power-plants/",
+      "support": "Nuclear safety-related pipe supports, shock absorbers, constant hangers and spring hangers.",
+      "access": "Official page opened"
+    },
+    {
+      "id": "S23",
+      "title": "B&G Manufacturing — Energy fasteners",
+      "url": "https://bgmfg.com/",
+      "support": "Manufacturer identifies studs, screws, bolts and nuts for nuclear and other energy industries. Nuclear procurement scope must be verified.",
+      "access": "Official page indexed"
+    },
+    {
+      "id": "S24",
+      "title": "Garlock — Nuclear sealing",
+      "url": "https://www.garlock.com/industries/nuclear",
+      "support": "Nuclear-sector engineered sealing solutions. Select the exact gasket/packing family and obtain its qualification evidence.",
+      "access": "Official page indexed"
+    },
+    {
+      "id": "S25",
+      "title": "Arabelle Solutions — SMR steam turbines",
+      "url": "https://www.arabellesolutions.com/en/our-technology/pioneering-steam-turbines/steam-turbines-for-smrs",
+      "support": "SMR turbine portfolio and documented Darlington BWRX-300 turbine supply. BWRX-300 reference does not prove iPWR compatibility.",
+      "access": "Official page opened"
+    },
+    {
+      "id": "S26",
+      "title": "Arabelle Solutions — SMR generators",
+      "url": "https://www.arabellesolutions.com/en/our-technology/generators-for-nuclear-power-plants/generators-for-smrs",
+      "support": "Generator product offering for SMRs; pairing with the selected turbine and electrical system remains open.",
+      "access": "Official page opened"
+    },
+    {
+      "id": "S27",
+      "title": "Holtec — Heat-transfer equipment",
+      "url": "https://holtecinternational.com/products-and-services/heat-transfer-equipment/",
+      "support": "Heat-transfer equipment portfolio, including condensers and manufactured feedwater heaters.",
+      "access": "Official page indexed"
+    },
+    {
+      "id": "S28",
+      "title": "Arabelle Solutions — Moisture-separator reheaters",
+      "url": "https://www.arabellesolutions.com/en/our-technology/heat-exchangers/moisture-separator-reheaters",
+      "support": "Nuclear turbine-cycle moisture-separation/reheat equipment. Applicability depends on the selected steam cycle.",
+      "access": "Official page indexed"
+    },
+    {
+      "id": "S29",
+      "title": "KSB — Nuclear power plants",
+      "url": "https://www.ksb.com/en-nl/applications/energy-technology/nuclear-power-plants",
+      "support": "Explicit nuclear pump offering includes feed and cooling-water applications. Select pump duty before choosing a product.",
+      "access": "Official page indexed"
+    },
+    {
+      "id": "S30",
+      "title": "SPX Cooling Tech",
+      "url": "https://spxcooling.com/",
+      "support": "Manufacturer of cooling towers, evaporative fluid coolers, evaporative condensers and air-cooled heat exchangers. Industrial capability only for this map.",
+      "access": "Official page indexed"
+    },
+    {
+      "id": "S31",
+      "title": "Holtec — Air-cooled condensers",
+      "url": "https://holtecinternational.com/products-and-services/heat-transfer-equipment/air-cooled-condensers/",
+      "support": "Air-cooled condenser product offering; this is an alternative to the drawing's water-cooled condenser plus separate heat-rejection loop.",
+      "access": "Official page indexed"
+    },
+    {
+      "id": "S32",
+      "title": "Hitachi Energy — Generator step-up transformers",
+      "url": "https://www.hitachienergy.com/us/en/products-and-solutions/transformers/power-transformers/generator-step-up-transformers-gsu",
+      "support": "Generator step-up transformer product family for power-plant/grid interconnection. Nuclear safety classification is not established.",
+      "access": "Official page indexed"
+    },
+    {
+      "id": "S33",
+      "title": "ABB / Paragon — Nuclear-sector agreement",
+      "url": "https://new.abb.com/news/detail/128596/abb-signs-agreement-with-paragon-energy-solutions-to-develop-integrated-offering-for-the-us-nuclear-power-sector",
+      "support": "Announced integrated nuclear-sector offering including electrical equipment, controls and qualification. Partnership is not a product-specific approval.",
+      "access": "Official page indexed"
+    },
+    {
+      "id": "S34",
+      "title": "EnerSys — PowerSafe GN",
+      "url": "https://www.enersys.com/en/products/batteries/powersafe/powersafe-gn/",
+      "support": "Product page documents manufacture and nuclear application of station batteries.",
+      "access": "Official page opened"
+    },
+    {
+      "id": "S35",
+      "title": "AMETEK Solidstate Controls — BCS chargers",
+      "url": "https://www.solidstatecontrolsinc.com/products/nuclear/class-1e-safety-related/bcs",
+      "support": "Nuclear generating-facility battery chargers; both safety-related and other essential versions offered.",
+      "access": "Official page opened"
+    },
+    {
+      "id": "S36",
+      "title": "AMETEK — Nuclear product brochure",
+      "url": "https://www.solidstatecontrolsinc.com/-/media/ameteksolidstatecontrols/documentation/brochures/nuclear_web.pdf?la=en&revision=cff3504f-0cc0-41d4-b2a9-84957ba79286",
+      "support": "Nuclear power-electronics product family including inverters/UPS and chargers.",
+      "access": "Official PDF indexed"
+    },
+    {
+      "id": "S37",
+      "title": "Fairbanks Morse Defense — Engines",
+      "url": "https://www.fairbanksmorsedefense.com/solutions/engines/",
+      "support": "Current page includes nuclear power plants among commercial customers; exact new-build emergency-generator offering is not established here.",
+      "access": "Official page opened"
+    },
+    {
+      "id": "S38",
+      "title": "Paragon — HIPS platform",
+      "url": "https://paragones.com/hips/",
+      "support": "Protection-system platform with stated NuScale development history. Platform-level review is not approval of a complete plant implementation.",
+      "access": "Official page opened"
+    },
+    {
+      "id": "S39",
+      "title": "Westinghouse — Control Systems",
+      "url": "https://westinghousenuclear.com/operating-plants/instrumentation-controls-systems/control-systems/",
+      "support": "Westinghouse nuclear controls use Emerson Ovation with Westinghouse integration/components.",
+      "access": "Official page indexed"
+    },
+    {
+      "id": "S40",
+      "title": "Mirion — Reactor safety and control",
+      "url": "https://www.mirion.com/solutions/nuclear-power/reactor-construction-control",
+      "support": "Reactor monitoring offering, including neutron-flux instrumentation.",
+      "access": "Official page indexed"
+    },
+    {
+      "id": "S41",
+      "title": "Mirion — Radiation monitoring systems",
+      "url": "https://www.mirion.com/products/technologies/radiation-monitoring-systems",
+      "support": "Radiation-monitoring product portfolio; plant-specific area, process and effluent channels require selection.",
+      "access": "Official page indexed"
+    },
+    {
+      "id": "S42",
+      "title": "Emerson — Rosemount 3153N",
+      "url": "https://www.emerson.com/en/measurement-instrumentation/products/rosemount-3153n-pressure-transmitter",
+      "support": "Dedicated nuclear pressure-transmitter product page.",
+      "access": "Official page indexed"
+    },
+    {
+      "id": "S43",
+      "title": "Curtiss-Wright — Nuclear temperature measurement",
+      "url": "https://cwic.curtisswright.com/products/nuclear-qualified-instrumentation/nuclear-qualified-temperature-measurement/",
+      "support": "Nuclear temperature-sensor product family; Weed heritage now presented under Curtiss-Wright.",
+      "access": "Official page indexed"
+    },
+    {
+      "id": "S44",
+      "title": "Lynxeo — Nuclear power plant cables",
+      "url": "https://www.lynxeogroup.com/en/business/resources/power-plants-nuclear.html",
+      "support": "States manufacture of ENERGEN nuclear cables for different plant environments.",
+      "access": "Official page opened"
+    },
+    {
+      "id": "S45",
+      "title": "Curtiss-Wright — Electrical penetration assemblies",
+      "url": "https://nuclear.curtisswright.com/sites/default/files/Download-Library/AP-Services/EPA-Brochure.pdf",
+      "support": "Containment electrical penetration assemblies transmitting power/signals while maintaining the pressure boundary.",
+      "access": "Official PDF indexed"
+    },
+    {
+      "id": "S46",
+      "title": "Camfil — Nuclear filtration systems",
+      "url": "https://www.camfil.com/en-gb/products/nuclear-systems",
+      "support": "HEPA filters, containment systems and filtration equipment for nuclear applications.",
+      "access": "Official page indexed"
+    },
+    {
+      "id": "S47",
+      "title": "Veolia Water Technologies — Power",
+      "url": "https://www.veoliawatertechnologies.com/en/core-markets/power",
+      "support": "Water-treatment solutions for power stations; exact plant package, OEMs and nuclear classification need confirmation.",
+      "access": "Official page indexed"
+    },
+    {
+      "id": "S48",
+      "title": "EnergySolutions — Nuclear plant services",
+      "url": "https://www.energysolutions.com/nuclear-plant-services/",
+      "support": "Design/build scope includes radwaste-processing systems, coded pressure vessels and remote handling equipment.",
+      "access": "Official page opened"
+    },
+    {
+      "id": "S49",
+      "title": "PAR Systems — Nuclear plants and SMRs",
+      "url": "https://www.par.com/industries/nuclear/large-power-plant-small-modular-reactor/",
+      "support": "Explicit in-house design/manufacture of fuel-handling systems and outage-critical cranes for nuclear plants and SMRs.",
+      "access": "Official page opened"
+    },
+    {
+      "id": "S50",
+      "title": "Holtec — Fuel and waste management",
+      "url": "https://holtecinternational.com/products-and-services/nuclear-fuel-and-waste-management/",
+      "support": "Wet and dry spent-fuel storage offerings. Exact fuel form and authorized system configuration must be established.",
+      "access": "Official page indexed"
+    },
+    {
+      "id": "S51",
+      "title": "NuScale — Fuel-handling and rack contracts",
+      "url": "https://www.nuscalepower.com/press-releases/2022/nuscale-power-announces-fuel-handling-and-storage-rack-contracts-with-framatome",
+      "support": "2022 awards to Framatome to design fuel-handling equipment and storage racks; design contracts do not establish current manufacturing delivery.",
+      "access": "Official page indexed; historical contract"
+    },
+    {
+      "id": "S52",
+      "title": "NuScale — Paragon license agreement",
+      "url": "https://www.nuscalepower.com/press-releases/2022/nuscale-and-paragon-sign-agreement",
+      "support": "Documents HIPS protection-system architecture and NuScale/Paragon relationship.",
+      "access": "Official page indexed; historical agreement"
+    }
+  ]
+}

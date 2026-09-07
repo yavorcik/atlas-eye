@@ -8,6 +8,9 @@ const commit = env.COMMIT_REF || execFileSync('git', ['rev-parse', 'HEAD'], { en
 // https://vite.dev/config/
 export default defineConfig({
   base: '/',
+  build: {
+    rollupOptions: { input: { main: 'index.html', supplyChain: 'supply-chain/index.html' } },
+  },
   plugins: [react(), {
     name: 'atlas-preview-identity',
     generateBundle() { this.emitFile({ type: 'asset', fileName: 'build-info.json', source: JSON.stringify({ commit }) }) },

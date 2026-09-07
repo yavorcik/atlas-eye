@@ -1,0 +1,194 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AtlasEye · Conceptual SMR assembly</title><style>:root{--background:#111214;--foreground:#f5f5f2;--muted:#27292d;--border:#52555c;--primary:#cf302f;--primary-foreground:#fff;--viz-series-1:#ddd;--viz-series-2:#f06960;--viz-series-3:#aaa;color-scheme:dark}body{margin:0;padding:20px;background:var(--background);color:var(--foreground);font:16px/1.5 system-ui}h2{font-size:20px}h3{font-size:18px}.viz-row,.viz-controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center}.viz-controls{margin:16px 0}.text-small{font-size:14px}.text-muted{color:#b9bac1}button,select{font:inherit;border:1px solid #666;border-radius:6px;padding:10px;background:#25262a;color:white}button{cursor:pointer}button:disabled{opacity:.4}button:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #f06960;outline-offset:3px}.btn-primary{background:#a72325}.form-label{display:flex;align-items:center;gap:8px}a{color:#f5a29e}</style></head><body><div id="smr-kit">
+  <div class="viz-row" style="justify-content:space-between">
+    <h2>SMR / Assembly study</h2>
+    <span class="text-small">Conceptual integral water-cooled reactor</span>
+  </div>
+  <div class="viz-controls">
+    <button type="button" class="btn" data-action="back" aria-label="Previous assembly step">Back</button>
+    <button type="button" class="btn btn-primary" data-action="play">Play assembly</button>
+    <button type="button" class="btn" data-action="next" aria-label="Next assembly step">Next</button>
+    <label class="form-label">Step <select class="form-select" aria-label="Assembly step"></select></label>
+  </div>
+  <div class="smr-stage">
+    <svg class="smr-drawing" role="img" aria-labelledby="smr-title smr-description">
+      <title id="smr-title">Exploded assembly of a conceptual small modular reactor plant</title>
+      <desc id="smr-description">Numbered plant components move from exploded positions onto a foundation. The reactor is shown in cutaway. Use the step controls for an explanation of each component.</desc>
+      <defs>
+        <pattern id="smr-hatch" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><path d="M0 0V9" class="hatch"/></pattern>
+        <marker id="smr-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="var(--foreground)" stroke-width="1.5"/></marker>
+      </defs>
+      <g data-scene>
+        <g class="smr-landing" fill="none" stroke="var(--border)" stroke-dasharray="4 7">
+          <path d="M28 337L347 151L703 352L384 532Z"/>
+          <path d="M52 336L384 524M108 301L440 489M164 269L497 457M219 236L552 424M275 204L608 392M330 172L664 360"/>
+          <path d="M89 370L404 185M147 404L462 219M206 437L521 253M265 471L579 286M324 504L638 320"/>
+        </g>
+        <g data-part="1" class="smr-part">
+          <path class="side" d="M28 328L384 528V548L28 348Z"/>
+          <path class="side-dark" d="M384 528L703 341V361L384 548Z"/>
+          <path class="surface" d="M28 328L347 141L703 341L384 528Z"/>
+          <path d="M28 328L384 528L703 341" class="line"/>
+          <path d="M51 344L376 527" stroke="url(#smr-hatch)" stroke-width="13"/>
+        </g>
+        <g data-part="2" class="smr-part">
+          <path class="side" d="M78 269L219 350V404L78 323Z"/>
+          <path class="side-dark" d="M219 350L349 274V328L219 404Z"/>
+          <path class="surface" d="M78 269L208 193L349 274L219 350Z"/>
+          <path class="water" d="M97 268L208 205L330 275L219 338Z"/>
+          <path class="line" opacity=".45" d="M109 280L217 219L319 278M127 292L218 240L296 286M151 306L221 265L274 295"/>
+          <path d="M78 269L219 350V404L78 323Z" fill="url(#smr-hatch)" stroke="none"/>
+        </g>
+        <g data-part="3" class="smr-part">
+          <path class="vessel-outer" d="M158 280V139C158 79 266 79 266 139V280C266 315 158 315 158 280Z"/>
+          <ellipse class="surface" cx="212" cy="279" rx="54" ry="25"/>
+          <path class="vessel-inner" d="M178 272V147C178 111 246 111 246 147V272C246 296 178 296 178 272Z"/>
+          <path class="line" d="M187 168C204 158 221 158 237 168M187 179C204 169 221 169 237 179M187 190C204 180 221 180 237 190M187 201C204 191 221 191 237 201"/>
+          <path class="core" d="M192 239L211 228L231 239V266L212 278L192 266Z"/>
+          <path class="line" d="M201 239V263M211 234V270M222 239V264"/>
+          <path class="line" d="M200 226V148M211 223V139M222 225V147"/>
+          <path class="surface" d="M188 132L212 119L237 132L213 146Z"/>
+          <path class="line" d="M201 124V112M213 120V104M225 126V114"/>
+          <path class="line" d="M158 143C166 163 184 166 194 168M266 143C262 154 254 159 245 162"/>
+          <path class="line" stroke-dasharray="3 5" d="M158 279V148M266 279V148"/>
+        </g>
+        <g data-part="4" class="smr-part">
+          <path class="side" d="M370 230L458 280V297L370 247Z"/>
+          <path class="side-dark" d="M458 280L552 225V242L458 297Z"/>
+          <path class="surface" d="M370 230L464 175L552 225L458 280Z"/>
+          <path class="side" d="M387 220V199L423 177L457 197V220L422 241Z"/>
+          <path class="surface" d="M387 199L423 177L457 197L422 219Z"/>
+          <ellipse class="surface" cx="417" cy="212" rx="20" ry="24" transform="rotate(-30 417 212)"/>
+          <path class="line" d="M407 194L426 229M402 216L432 207M404 204L430 218"/>
+          <path class="shaft" d="M438 223L472 242"/>
+          <path class="side" d="M468 238V212L494 198L529 218V244L502 260Z"/>
+          <path class="surface" d="M468 212L494 198L529 218L502 235Z"/>
+          <path class="line" d="M480 218L503 231M486 213L510 227M492 208L516 223"/>
+        </g>
+        <g data-part="5" class="smr-part">
+          <path class="side" d="M373 342V307L426 277L477 306V342L425 373Z"/>
+          <path class="surface" d="M373 307L426 277L477 306L425 337Z"/>
+          <path class="line" d="M385 307L426 284L465 307M394 313L428 294L456 310M407 320L430 307L442 314"/>
+          <path class="line" d="M388 333L416 349M388 343L416 359"/>
+        </g>
+        <g data-part="6" class="smr-part">
+          <path class="side" d="M531 355V315L597 277L661 314V354L595 393Z"/>
+          <path class="surface" d="M531 315L597 277L661 314L595 353Z"/>
+          <ellipse class="surface" cx="574" cy="313" rx="23" ry="13"/>
+          <ellipse class="surface" cx="619" cy="315" rx="23" ry="13"/>
+          <path class="line" d="M554 313H594M574 302V324M599 315H639M619 304V326"/>
+          <path class="line" d="M545 337L584 360M545 345L584 368M609 358L648 335M609 367L648 344"/>
+          <g class="smr-heat" fill="none" stroke="var(--viz-series-2)" stroke-width="2"><path d="M574 287V254" marker-end="url(#smr-arrow)"/><path d="M619 289V256" marker-end="url(#smr-arrow)"/></g>
+        </g>
+        <g data-part="7" class="smr-part" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path class="pipe-under" d="M246 182L303 214L358 182L397 203M420 246V287M379 327L340 350L251 299L251 206M459 343L494 363L551 330M549 358L497 388L450 361"/>
+          <path class="steam" d="M246 182L303 214L358 182L397 203"/>
+          <path class="return" d="M420 246V287M379 327L340 350L251 299L251 206"/>
+          <path class="cooling" d="M459 343L494 363L551 330M549 358L497 388L450 361"/>
+          <circle class="surface" cx="340" cy="350" r="9"/>
+          <path class="line" d="M336 346L345 350L336 354Z"/>
+          <g class="smr-flow"><path class="steam" d="M246 182L303 214L358 182L397 203"/><path class="return" d="M420 246V287M379 327L340 350L251 299L251 206"/><path class="cooling" d="M459 343L494 363L551 330M549 358L497 388L450 361"/></g>
+        </g>
+        <g data-part="8" class="smr-part">
+          <path class="side" d="M280 433V390L330 361L397 399V442L347 471Z"/>
+          <path class="surface" d="M280 390L330 361L397 399L347 429Z"/>
+          <path class="side-dark" d="M347 429L397 399V442L347 471Z"/>
+          <path class="screen" d="M290 401L309 412V428L290 417ZM316 416L336 428V444L316 432Z"/>
+          <path class="line" d="M294 411L298 410L303 418M320 426L324 425L332 434"/>
+          <path class="line" d="M365 431V450M373 426V445M381 421V440"/>
+          <path class="signal" d="M290 378L254 357L267 349M378 382L410 364"/>
+        </g>
+        <g class="smr-numbers"></g>
+        <g class="smr-current-guide" fill="none" stroke="var(--foreground)" stroke-dasharray="4 5" marker-end="url(#smr-arrow)"><path/></g>
+      </g>
+    </svg>
+  </div>
+  <div class="progress" role="progressbar" aria-label="Assembly sequence" aria-valuemin="0" aria-valuemax="9" aria-valuenow="0"><div class="progress-bar" style="width:0%"></div></div>
+  <div class="viz-row text-small smr-legend" style="padding-top:10px" hidden><span>Steam → turbine</span><span>Water → reactor module</span><span>Cooling loop → air</span></div>
+  <div class="smr-caption" aria-live="polite" aria-atomic="true">
+    <div class="viz-row" style="justify-content:space-between"><h3 data-heading>00 / Parts laid out</h3><span class="text-small" data-status>UNASSEMBLED</span></div>
+    <p data-why>Eight main assemblies. Press Play to bring them together, one piece at a time.</p>
+  </div>
+  <div class="text-small text-muted">Illustrative sequence · cutaway · not to scale · engineering and commissioning not depicted</div>
+</div>
+<style>
+  #smr-kit .smr-stage{width:100%;overflow:hidden}
+  #smr-kit .smr-drawing{display:block;width:100%;overflow:visible}
+  #smr-kit .smr-caption{min-height:112px;padding-top:12px}
+  #smr-kit .smr-caption p{margin-top:6px}
+  #smr-kit .smr-legend[hidden]{display:none}
+  #smr-kit .smr-legend span:before{content:'';display:inline-block;width:18px;margin-right:6px;border-top:3px solid var(--viz-series-2);vertical-align:middle}
+  #smr-kit .smr-legend span:nth-child(2):before{border-color:var(--viz-series-1)}
+  #smr-kit .smr-legend span:nth-child(3):before{border-color:var(--viz-series-3)}
+  #smr-kit .smr-drawing path,#smr-kit .smr-drawing ellipse,#smr-kit .smr-drawing circle{vector-effect:non-scaling-stroke}
+  #smr-kit .surface{fill:var(--background);stroke:var(--foreground);stroke-width:1.4}
+  #smr-kit .side{fill:var(--muted);stroke:var(--foreground);stroke-width:1.4}
+  #smr-kit .side-dark{fill:var(--border);stroke:var(--foreground);stroke-width:1.4}
+  #smr-kit .line{fill:none;stroke:var(--foreground);stroke-width:1.3}
+  #smr-kit .hatch{stroke:var(--foreground);stroke-width:.6;opacity:.25}
+  #smr-kit .water{fill:color-mix(in srgb,var(--viz-series-3) 14%,var(--background));stroke:var(--viz-series-3);stroke-width:1}
+  #smr-kit .vessel-outer{fill:color-mix(in srgb,var(--foreground) 5%,var(--background));stroke:var(--foreground);stroke-width:2}
+  #smr-kit .vessel-inner{fill:var(--background);stroke:var(--foreground);stroke-width:1.6}
+  #smr-kit .core{fill:color-mix(in srgb,var(--viz-series-2) 30%,var(--background));stroke:var(--viz-series-2);stroke-width:1.6}
+  #smr-kit .shaft{stroke:var(--foreground);stroke-width:4}
+  #smr-kit .screen{fill:color-mix(in srgb,var(--viz-series-1) 15%,var(--background));stroke:var(--foreground);stroke-width:1}
+  #smr-kit .signal{fill:none;stroke:var(--foreground);stroke-width:1;stroke-dasharray:3 3}
+  #smr-kit .pipe-under{stroke:var(--background);stroke-width:7}
+  #smr-kit .steam{stroke:var(--viz-series-2);stroke-width:3;fill:none}
+  #smr-kit .return{stroke:var(--viz-series-1);stroke-width:3;fill:none}
+  #smr-kit .cooling{stroke:var(--viz-series-3);stroke-width:3;fill:none}
+  #smr-kit .smr-flow{display:none}
+  #smr-kit .smr-flow path{stroke:var(--background);stroke-width:1.5;stroke-dasharray:2 17}
+  #smr-kit .smr-heat{opacity:0}
+  #smr-kit[data-complete="true"] .smr-flow{display:inline}
+  #smr-kit[data-complete="true"] .smr-heat{opacity:1}
+  #smr-kit .smr-numbers text{fill:var(--foreground);text-anchor:middle;dominant-baseline:central}
+  #smr-kit .smr-numbers circle{fill:var(--background);stroke:var(--foreground);stroke-width:1.3}
+  #smr-kit .smr-numbers .current circle{fill:var(--primary);stroke:var(--primary)}
+  #smr-kit .smr-numbers .current text{fill:var(--primary-foreground)}
+</style>
+<script>
+(()=>{
+const root=document.getElementById('smr-kit');
+const svg=root.querySelector('.smr-drawing'),scene=root.querySelector('[data-scene]'),select=root.querySelector('select');
+const play=root.querySelector('[data-action="play"]'),back=root.querySelector('[data-action="back"]'),next=root.querySelector('[data-action="next"]');
+const heading=root.querySelector('[data-heading]'),why=root.querySelector('[data-why]'),status=root.querySelector('[data-status]');
+const progress=root.querySelector('[role="progressbar"]'),bar=progress.firstElementChild;
+const guide=root.querySelector('.smr-current-guide path'),numbers=root.querySelector('.smr-numbers');
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const steps=[
+['Parts laid out','UNASSEMBLED','Eight main assemblies. Press Play to bring them together, one piece at a time.'],
+['Foundation','01 / PLACED','The foundation supports the plant and transfers its loads into the ground. Site-specific ground and seismic conditions shape its design.'],
+['Shielding structure + pool','02 / PLACED','Concrete provides shielding and support. In this concept, the surrounding water also acts as a heat sink for the reactor module.'],
+['Factory-built reactor module','03 / SEATED','The cutaway reveals the core, control rods and steam generator inside the vessel, surrounded by containment. The module is factory-built; the core is shown for orientation, with fuel loading a separate activity.'],
+['Turbine + generator','04 / PLACED','Steam spins the turbine; its shaft drives the generator. This is where thermal energy becomes mechanical energy, then electricity.'],
+['Condenser','05 / PLACED','The condenser removes heat from turbine exhaust steam, turning it back into water so it can return to the steam generator.'],
+['Heat-rejection equipment','06 / PLACED','This conceptual air-cooling bank releases unused heat outdoors. A power plant must move out the heat it does not convert into electricity.'],
+['Steam, water + cooling connections','07 / CONNECTED','Steam goes to the turbine; condensed water returns through a pump. A separate cooling circuit carries condenser heat to the cooling bank. Reactor coolant stays inside the module.'],
+['Controls + auxiliary systems','08 / CONNECTED','Instrumentation monitors plant conditions. Protection, electrical and auxiliary systems support control and shutdown; one cabinet symbolizes this larger set of equipment.'],
+['The plant comes together','ASSEMBLY ILLUSTRATED','Follow the moving marks: steam to turbine, water back to the module, waste heat to the air. Physical assembly is only one milestone; testing and authorization still precede operation.']
+];
+const parts=[...root.querySelectorAll('[data-part]')];
+const offsets=[[0,0],[-15,-25],[-40,-60],[5,-60],[10,-20],[10,-15],[0,-50],[-15,0]];
+const badges=[[100,369],[94,315],[156,130],[459,184],[372,299],[648,299],[309,219],[278,387]];
+let step=0,playing=false,timer=null,motion=null,flow=null,scale=1,positions=offsets.map(p=>p.slice());
+steps.forEach((s,i)=>{const o=document.createElement('option');o.value=i;o.textContent=String(i).padStart(2,'0')+' · '+s[0];select.append(o)});
+const ns='http://www.w3.org/2000/svg';
+const marks=parts.map((p,i)=>{const g=document.createElementNS(ns,'g'),c=document.createElementNS(ns,'circle'),t=document.createElementNS(ns,'text');c.setAttribute('r','11');t.textContent=i+1;g.append(c,t);numbers.append(g);return g});
+function paint(){parts.forEach((p,i)=>{const pos=positions[i];p.setAttribute('transform','translate('+pos[0]+' '+pos[1]+')');const opacity=step===0?1:(i<step?1:.1);p.style.opacity=opacity;marks[i].style.opacity=step===0||i<step?1:0;marks[i].setAttribute('transform','translate('+(badges[i][0]+pos[0])+' '+(badges[i][1]+pos[1])+') scale('+(1/scale)+')');marks[i].classList.toggle('current',step===i+1)});}
+function resize(){const w=root.querySelector('.smr-stage').clientWidth;scale=Math.max(w,1)/736;const h=570*scale+16;svg.setAttribute('viewBox','0 0 '+w+' '+h);svg.style.height=h+'px';scene.setAttribute('transform','translate(0 8) scale('+scale+')');paint();}
+function stop(){playing=false;clearTimeout(timer);play.textContent=step===9?'Replay assembly':'Play assembly';}
+function flowDemo(){cancelAnimationFrame(flow);if(step!==9||reduced)return;let t0;const paths=[...root.querySelectorAll('.smr-flow path')];function tick(t){if(!t0)t0=t;const elapsed=t-t0;paths.forEach(p=>p.style.strokeDashoffset=String(-elapsed/65));if(elapsed<14000&&step===9)flow=requestAnimationFrame(tick);}flow=requestAnimationFrame(tick);}
+function show(n){
+cancelAnimationFrame(motion);step=n;root.dataset.complete=String(step===9);root.querySelector('.smr-legend').hidden=step<7;select.value=String(n);heading.textContent=String(n).padStart(2,'0')+' / '+steps[n][0];status.textContent=steps[n][1];why.textContent=steps[n][2];back.disabled=n===0;next.disabled=n===9;progress.setAttribute('aria-valuenow',n);bar.style.width=(n/9*100)+'%';
+const starts=positions.map(p=>p.slice());const targets=offsets.map((p,i)=>step===0?p.slice():(i<step?[0,0]:[p[0],p[1]-35]));
+if(step>0&&step<9&&starts[step-1][0]===0&&starts[step-1][1]===0)starts[step-1]=[0,-70];
+if(step>0&&step<9){const b=badges[step-1];guide.setAttribute('d','M'+(b[0]+24)+' '+(b[1]-63)+'V'+(b[1]-15));}else guide.setAttribute('d','');
+let start;function frame(t){if(!start)start=t;const u=reduced?1:Math.min((t-start)/1250,1);const e=1-Math.pow(1-u,3);positions=starts.map((p,i)=>[p[0]+(targets[i][0]-p[0])*e,p[1]+(targets[i][1]-p[1])*e]);paint();if(u<1)motion=requestAnimationFrame(frame);else guide.setAttribute('d','');}motion=requestAnimationFrame(frame);flowDemo();if(!playing)play.textContent=n===9?'Replay assembly':'Play assembly';
+}
+function schedule(){timer=setTimeout(()=>{if(step<9){show(step+1);if(step<9)schedule();else stop();}},6200);}
+play.addEventListener('click',()=>{if(playing){stop();return;}if(step===9)show(0);playing=true;play.textContent='Pause assembly';if(step<9)show(step+1);if(step<9)schedule();else stop();});
+back.addEventListener('click',()=>{stop();show(Math.max(0,step-1));});next.addEventListener('click',()=>{stop();show(Math.min(9,step+1));});select.addEventListener('change',()=>{stop();show(Number(select.value));});
+new ResizeObserver(resize).observe(root.querySelector('.smr-stage'));resize();show(0);
+})();
+</script>
+<p class="text-small">Educational illustration only. This sequence is not construction or operating instructions. <a href="https://www.energy.gov/ne/advanced-small-modular-reactors-smrs" target="_blank" rel="noopener noreferrer">DOE: small modular reactors</a></p></body></html>

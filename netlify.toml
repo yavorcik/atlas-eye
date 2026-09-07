@@ -108,6 +108,18 @@
   status = 200
 
 [[redirects]]
+  from = "/supply-chain"
+  to = "/supply-chain/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/supply-chain/"
+  to = "/supply-chain/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
