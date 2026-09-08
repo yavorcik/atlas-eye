@@ -2,7 +2,7 @@
 
 ## Backend decision — AWS
 
-Manufacturer intake will use **AWS API Gateway → Lambda → a private DynamoDB table**. The public directory stays in AtlasEye's existing website repository and hosting workflow. This resolves the new feature's provider choice; its implementation no longer depends on Supabase.
+Manufacturer intake uses **AWS API Gateway → Lambda → a private DynamoDB table**. The public directory stays in AtlasEye's existing website repository and hosting workflow. This resolves the new feature's provider choice; its implementation no longer depends on Supabase.
 
 The new intake service has a public submission endpoint and no public read, administrative, or publication endpoint. It does not require access to the private Atlas pilot, its database, evidence volumes, buckets, or deployment controls. The existing website inquiry form remains untouched; this change does not claim that every legacy Supabase integration has been migrated.
 
@@ -34,7 +34,7 @@ Publish accepted information through a reviewed website change with manufacturer
 
 ## Deployment
 
-This package is executable preparation, not evidence of an active AWS service. Use an authenticated AWS CLI session in the intended account. No new AWS plugin or Supabase connection is required when using that operator session.
+The operator reported successful deployment and live acceptance on 8 September 2026; see the verification record below. The following commands document the deployment process. Use an authenticated AWS CLI session in the intended account. No new AWS plugin or Supabase connection is required when using that operator session.
 
 Build and inspect the CloudFormation template:
 
@@ -62,12 +62,20 @@ It creates one clearly labeled synthetic private record, verifies the actual sto
 
 Set `VITE_SUPPLIER_SUBMISSION_URL` to the returned endpoint in the website's build environment, rebuild the preview, and submit one labeled browser test. After acceptance, release through the existing website workflow. Remove the optional preview origin when preview testing ends. To stop intake without deleting records, remove the public POST route or disable the endpoint in the website build and redeploy.
 
-## Verification and remaining access requirement
+## Verification and release status
 
 `npm run build`, lint, and the Node tests cover the directory, submission contract, AWS event adapter, retry behavior and existing inquiry/routes. `tests/supplier-dynamodb-local.mjs` exercises the real transaction expressions against the official DynamoDB Local service; it only accepts a loopback endpoint and deletes its disposable test table. It requires an isolated AWS SDK installation supplied by `DYNAMO_SDK_MODULE`.
 
 AWS implementation verification on 7 September 2026: production build and lint passed; all 37 Node checks passed. The generated template passed `cfn-lint`, and its actual bundled Lambda loaded and answered the allowed preflight. Official DynamoDB Local integration passed concurrent retry identity, payload conflict, both rate limits, and exactly 100 pending records; the disposable test table and local server were removed afterward. These are local implementation checks, not proof of AWS deployment or IAM permissions.
 
-The earlier live preview passed search, empty results, unresolved filtering, assembly-stage controls, supplier-update prefill and required-field checks. Those UI checks did not verify AWS storage. Actual AWS IAM evaluation, stack deployment and live receipts must still be checked in the target account.
+The earlier live preview passed search, empty results, unresolved filtering, assembly-stage controls, supplier-update prefill and required-field checks. Those earlier UI checks did not verify AWS storage.
 
-The current workspace has no AWS CLI session, role credentials or AWS deployment connector. Infrastructure activation and AWS live tests cannot be claimed until authenticated deployment access is available. No AWS resources have been provisioned by this change.
+### Operator deployment report — 8 September 2026
+
+The authenticated operator reported stack `atlas-eye-supplier-intake` in `us-east-2` reached `CREATE_COMPLETE`, with the inspected ten-resource change set at `EXECUTE_COMPLETE`. Deployed backend source: `4048b4fa5db45020750b265915d4f384eda0995e`.
+
+The checked-in live acceptance script passed. Operator evidence confirms a private pending synthetic record, identical retry receipt, changed-payload and consent rejection, unrelated-origin rejection, no public read route, and enabled PITR. Receipt: `5534c149-7029-4c82-bd60-73666532c88e`. The operator reported one synthetic submission and its two rate counters. No customer listing was published.
+
+Public endpoint: `https://9u7zmbfpr6.execute-api.us-east-2.amazonaws.com/supplier-submissions`.
+
+`netlify.toml` now supplies that public endpoint to deploy-preview builds. The backend permits only the explicitly configured PR #22 preview origin in addition to production origins. Production website enablement and merge remain pending; the public endpoint contains no credential. Browser acceptance of the connected preview is recorded in PR #22. This workspace has no authenticated AWS role, so the operator's direct DynamoDB inspection is distinguished from browser-observed receipt evidence.

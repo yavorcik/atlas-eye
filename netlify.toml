@@ -3,6 +3,9 @@
   publish = "dist"
   functions = "netlify/functions"
 
+[context.deploy-preview.environment]
+  VITE_SUPPLIER_SUBMISSION_URL = "https://9u7zmbfpr6.execute-api.us-east-2.amazonaws.com/supplier-submissions"
+
 [[redirects]]
   from = "/part53-workspace"
   to = "/index.html"
