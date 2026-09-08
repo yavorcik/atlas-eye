@@ -28,6 +28,8 @@ The 7 September 2026 snapshot contains 70 major component/procurement families, 
 
 Authorized operators review pending records using AWS IAM-protected access. Confirm company authority, facility, supplier role and product evidence before approving anything. Business email and the private payload must never be copied to the public catalog.
 
+Command is the initial accountable editorial owner and assigns a qualified reviewer when the product scope requires one. Check the queue each business day; this is an internal operating target, not a promised response time. Do not automatically approve an item because it is old. Use the [operator procedure](supplier-editorial-operations.md) to inspect private submissions and record decisions atomically.
+
 Record each editorial decision as a new item with key `REVIEW#<receipt>#<new UUID>`, reviewer, action, timestamp and notes. Update the submission status separately in the same operator transaction. Do not overwrite prior review events or the original submission payload. The public Lambda exposes no editorial controls.
 
 Publish accepted information through a reviewed website change with manufacturer-submitted provenance, source review date, unresolved limitations and Git history. An accepted queue record alone does not publish a listing. Basic listings are free; any future sponsorship must be separately labeled and cannot change evidence or qualification status.
@@ -78,4 +80,4 @@ The checked-in live acceptance script passed. Operator evidence confirms a priva
 
 Public endpoint: `https://9u7zmbfpr6.execute-api.us-east-2.amazonaws.com/supplier-submissions`.
 
-`netlify.toml` now supplies that public endpoint to deploy-preview builds. The backend permits only the explicitly configured PR #22 preview origin in addition to production origins. Production website enablement and merge remain pending; the public endpoint contains no credential. Browser acceptance of the connected preview is recorded in PR #22. This workspace has no authenticated AWS role, so the operator's direct DynamoDB inspection is distinguished from browser-observed receipt evidence.
+`netlify.toml` supplies that public endpoint to deploy-preview and production builds. The backend permits only the explicitly configured PR #22 preview origin in addition to production origins. The production-release configuration was authorized on 8 September 2026; the actual merge and hosted acceptance result are recorded in PR #22. The public endpoint contains no credential. Browser acceptance of the connected preview returned receipt `066aa74a-8aeb-47b3-ab81-f7ee1b8d8cbc`. This workspace has no authenticated AWS role, so the operator's direct DynamoDB inspection is distinguished from browser-observed receipt evidence.
