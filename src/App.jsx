@@ -860,6 +860,12 @@ function Dashboard({ workspace, reset }) {
         </a>)}
       </div>
       <PresenterGuide />
+      <section className="panel" aria-labelledby="supply-chain-title">
+        <p className="eyebrow">PUBLIC REFERENCE</p>
+        <h2 id="supply-chain-title">Nuclear Supply Chain Explorer</h2>
+        <p>Explore 70 component families, candidate suppliers, and their public evidence. Manufacturers can submit products for editorial review.</p>
+        <a className="button secondary" href="/supply-chain/">Explore the supply chain →</a>
+      </section>
     </section>
   </Shell>
 }

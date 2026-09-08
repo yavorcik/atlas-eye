@@ -17,4 +17,6 @@
 /api/ask      /.netlify/functions/ask      200
 /api/listen   /.netlify/functions/listen   200
 /api/speak    /.netlify/functions/speak    200
+/supply-chain      /supply-chain/index.html 200!
+/supply-chain/     /supply-chain/index.html 200!
 /*            /index.html                  200
