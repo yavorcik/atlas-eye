@@ -50,6 +50,8 @@ const resources = {
   } },
   NotifierLogs: { Type: 'AWS::Logs::LogGroup', Properties: { RetentionInDays: 30 } },
   NotificationFailureQueue: { Type: 'AWS::SQS::Queue', Properties: { MessageRetentionPeriod: 1209600, SqsManagedSseEnabled: true } },
+  NotificationAlarmTopic: { Type: 'AWS::SNS::Topic', Properties: { KmsMasterKeyId: 'alias/aws/sns', DisplayName: 'Atlas supplier notification failures' } },
+  NotificationAlarmSubscription: { Type: 'AWS::SNS::Subscription', Properties: { Protocol: 'email', Endpoint: ref('OwnerEmail'), TopicArn: ref('NotificationAlarmTopic') } },
   Notifier: { Type: 'AWS::Lambda::Function', Properties: {
     Runtime: 'nodejs22.x', Handler: 'index.handler', Role: attr('Role', 'Arn'), Timeout: 30, MemorySize: 128,
     LoggingConfig: { LogGroup: ref('NotifierLogs') },
@@ -63,7 +65,7 @@ const resources = {
   } },
   NotificationFailureAlarm: { Type: 'AWS::CloudWatch::Alarm', Properties: {
     AlarmDescription: 'Supplier owner notification entered the dead-letter queue', Namespace: 'AWS/SQS', MetricName: 'ApproximateNumberOfMessagesVisible',
-    Dimensions: [{ Name: 'QueueName', Value: attr('NotificationFailureQueue', 'QueueName') }], Statistic: 'Maximum', Period: 300, EvaluationPeriods: 1, Threshold: 0, ComparisonOperator: 'GreaterThanThreshold', TreatMissingData: 'notBreaching',
+    Dimensions: [{ Name: 'QueueName', Value: attr('NotificationFailureQueue', 'QueueName') }], Statistic: 'Maximum', Period: 300, EvaluationPeriods: 1, Threshold: 0, ComparisonOperator: 'GreaterThanThreshold', TreatMissingData: 'notBreaching', AlarmActions: [ref('NotificationAlarmTopic')],
   } },
   SchedulerRole: { Type: 'AWS::IAM::Role', Properties: {
     AssumeRolePolicyDocument: { Version: '2012-10-17', Statement: [{ Effect: 'Allow', Principal: { Service: 'scheduler.amazonaws.com' }, Action: 'sts:AssumeRole' }] },
@@ -94,9 +96,10 @@ const template = {
     PreviewOrigin: { Type: 'String', Default: '', AllowedPattern: '^$|^https://deploy-preview-[1-9][0-9]*--atlas-eye\\.netlify\\.app$' },
     OwnerActivityUrl: { Type: 'String', Default: 'https://nnudwaqrgtztmcrcwpxn.supabase.co/functions/v1/owner-activity', AllowedPattern: '^https://[a-z0-9-]+\\.supabase\\.co/functions/v1/owner-activity$' },
     OwnerActivitySecretArn: { Type: 'String', AllowedPattern: '^arn:aws[a-zA-Z-]*:secretsmanager:[a-z0-9-]+:[0-9]{12}:secret:[A-Za-z0-9/_+=.@-]+$' },
+    OwnerEmail: { Type: 'String', Default: 'yavorcik@gmail.com', AllowedValues: ['yavorcik@gmail.com'] },
   },
   Resources: resources,
-  Outputs: { SubmissionUrl: { Value: sub('https://${Api}.execute-api.${AWS::Region}.${AWS::URLSuffix}/supplier-submissions') }, RecordsTable: { Value: ref('Records') }, FunctionName: { Value: ref('Intake') }, NotificationFunctionName: { Value: ref('Notifier') }, NotificationFailureQueueUrl: { Value: ref('NotificationFailureQueue') }, DailyDigestSchedule: { Value: ref('DailyDigest') } },
+  Outputs: { SubmissionUrl: { Value: sub('https://${Api}.execute-api.${AWS::Region}.${AWS::URLSuffix}/supplier-submissions') }, RecordsTable: { Value: ref('Records') }, FunctionName: { Value: ref('Intake') }, NotificationFunctionName: { Value: ref('Notifier') }, NotificationFailureQueueUrl: { Value: ref('NotificationFailureQueue') }, NotificationAlarmTopicArn: { Value: ref('NotificationAlarmTopic') }, DailyDigestSchedule: { Value: ref('DailyDigest') } },
 }
 fs.mkdirSync(path.dirname(path.resolve(output)), { recursive: true })
 fs.writeFileSync(output, JSON.stringify(template, null, 2) + '\n')
