@@ -112,7 +112,12 @@ async function createDigest(supabase: ReturnType<typeof createClient>, body: Rec
   for (const row of rows || []) if (formatter.format(new Date(row.occurred_at)) === day && counts[row.site]) counts[row.site][row.event_type] += 1;
   const { data: sources } = await supabase.from("owner_activity_sources").select("site,collection_started_at");
   const active = new Map((sources || []).map((s) => [s.site, s.collection_started_at]));
-  const summary = Object.entries(counts).map(([site, value]) => active.has(site) ? `${site}: ${value.page_view} traffic events, ${value.click} clicks, ${value.download} downloads` : `${site}: unavailable (collection has not been observed live)`).join("; ");
+  const summary = Object.entries(counts).map(([site, value]) => {
+    const startedAt = active.get(site);
+    if (!startedAt || formatter.format(new Date(startedAt)) > day) return `${site}: unavailable (collection had not started)`;
+    const partial = formatter.format(new Date(startedAt)) === day ? `, partial since ${new Date(startedAt).toISOString()}` : "";
+    return `${site}: ${value.page_view} traffic events, ${value.click} clicks, ${value.download} downloads${partial}`;
+  }).join("; ");
   return createImmediate(supabase, { event_id: `daily-digest:${day}`, site: "owner-notifications", event_type: "daily_digest", occurred_at: new Date().toISOString(), reference: day, next_action: summary });
 }
 
