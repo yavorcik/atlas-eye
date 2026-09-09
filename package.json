@@ -9,6 +9,8 @@
     "lint": "eslint .",
     "test:positioning": "node scripts/validate-positioning.mjs",
     "test:contact": "node --test tests/contact-form.test.mjs",
+    "test:owner-activity": "node --test tests/owner-activity.test.mjs",
+    "test:supplier-owner-events": "node --test tests/supplier-owner-events.test.mjs",
     "test:part53": "node --test tests/part53-integration.test.mjs",
     "test:part53:adversarial": "node tests/part53-adversarial-runner.mjs --profile standard",
     "test:part53:smoke": "node tests/part53-adversarial-runner.mjs --profile smoke",

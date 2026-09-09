@@ -21,7 +21,7 @@ async function boundedJson(request) {
   for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.length }
   return JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes))
 }
-export function createHandler({ save, previewOrigin = '' }) {
+export function createHandler({ save, previewOrigin = '', reportFailure = async () => {} }) {
   const allowedOrigins = new Set(ORIGINS)
   // Opt in one specific AtlasEye preview for live acceptance tests; never allow a wildcard.
   if (previewOrigin) {
@@ -47,6 +47,10 @@ export function createHandler({ save, previewOrigin = '' }) {
       if (!['created', 'duplicate'].includes(result?.outcome) || !result.reference) throw Error('storage')
       // Return only a receipt. Email, company data and review state remain private.
       return response(200, { ok: true, reference: result.reference }, origin)
-    } catch { return response(503, { error: 'submission_unavailable' }, origin) }
+    } catch {
+      try { await reportFailure({ requestId: value.request_id, occurredAt: new Date().toISOString() }) }
+      catch (error) { console.error('supplier notification failure', { code: error?.message || 'unknown' }) }
+      return response(503, { error: 'submission_unavailable' }, origin)
+    }
   }
 }
