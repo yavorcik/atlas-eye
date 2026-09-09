@@ -29,7 +29,7 @@ for (const width of [1366, 390]) test(`presenter story, keyboard basis, mobile a
     await panel.locator('summary').focus()
     await page.keyboard.press('Enter')
     assert.equal(await panel.getAttribute('open'), '')
-    assert.match(await panel.innerText(), /Atlas workflow control/)
+    assert.match(await panel.innerText(), /AtlasEye workflow control/)
     assert.match(await panel.innerText(), /No contract, license incorporation or NQA-1/)
     assert.equal(await panel.locator('summary').evaluate(el => el === document.activeElement), true)
     await page.screenshot({ path: `${output}/supplier-basis-${width}.png`, fullPage: true })
@@ -51,7 +51,7 @@ for (const width of [1366, 390]) test(`presenter story, keyboard basis, mobile a
       const file = `${output}/supplier-${width}.${ext}`
       await download.saveAs(file)
       const text = await readFile(file, 'utf8')
-      for (const expected of ['sup-qap-current', 'Atlas workflow control', 'Applicable within represented scope', decision.authorityBasis.version, 'sample-supplier-quality-program-rev-c', 'Current simulated decision']) assert.ok(text.includes(expected), expected)
+      for (const expected of ['sup-qap-current', 'AtlasEye workflow control', 'Applicable within represented scope', decision.authorityBasis.version, 'sample-supplier-quality-program-rev-c', 'Current simulated decision']) assert.ok(text.includes(expected), expected)
     }
     await page.emulateMedia({ media: 'print' }); await page.pdf({ path: `${output}/supplier-${width}.pdf` }); await page.emulateMedia({ media: 'screen' })
     const pdfText = execFileSync('pdftotext', [`${output}/supplier-${width}.pdf`, '-'], { encoding: 'utf8' })

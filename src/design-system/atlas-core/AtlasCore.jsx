@@ -3,7 +3,7 @@ import './AtlasCore.css'
 function AtlasCore({
   mode = 'identity',
   size = 'hero',
-  label = 'ATLAS ONLINE',
+  label = 'ATLASEYE ONLINE',
   showLabel = true,
 }) {
   return (
@@ -14,7 +14,7 @@ function AtlasCore({
         `atlas-core--${size}`,
       ].join(' ')}
       role="img"
-      aria-label={`Atlas cognitive core, ${mode} state`}
+      aria-label={`AtlasEye cognitive core, ${mode} state`}
     >
       <div className="atlas-core__field">
         <div className="atlas-core__glow" />

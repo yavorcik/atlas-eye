@@ -10,7 +10,7 @@ export async function askAtlas(question) {
   const contentType = response.headers.get('content-type') || ''
 
   if (!response.ok) {
-    let message = 'Atlas could not answer the question.'
+    let message = 'AtlasEye could not answer the question.'
 
     if (contentType.includes('application/json')) {
       const payload = await response.json()
@@ -21,7 +21,7 @@ export async function askAtlas(question) {
   }
 
   if (!contentType.includes('application/json')) {
-    throw new Error('Atlas returned an invalid response.')
+    throw new Error('AtlasEye returned an invalid response.')
   }
 
   return response.json()
@@ -64,7 +64,7 @@ export async function listenToAtlas(audioBlob) {
   if (!response.ok) {
     throw new Error(
       payload.error ||
-      'Atlas could not understand the recording.',
+      'AtlasEye could not understand the recording.',
     )
   }
 
@@ -85,7 +85,7 @@ export async function speakAtlas(text) {
   if (!response.ok) {
     throw new Error(
       payload.error ||
-      'Atlas could not generate speech.',
+      'AtlasEye could not generate speech.',
     )
   }
 

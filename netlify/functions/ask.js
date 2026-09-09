@@ -78,7 +78,7 @@ export async function handler(event) {
           error:
             result.error ||
             result.message ||
-            'Atlas Nuclear returned an error.',
+            'AtlasEye Nuclear returned an error.',
           upstream: result,
         },
       )
@@ -92,13 +92,13 @@ export async function handler(event) {
       ),
     )
   } catch (error) {
-    console.error('Atlas bridge error:', error)
+    console.error('AtlasEye bridge error:', error)
 
     return jsonResponse(
       502,
       {
         error:
-          'The Atlas Nuclear reasoning service is unavailable.',
+          'The AtlasEye Nuclear reasoning service is unavailable.',
         detail:
           error instanceof Error
             ? error.message
@@ -121,7 +121,7 @@ function normalizeAtlasResponse(question, result) {
     governed.summary ||
     governed.message ||
     result.answer ||
-    'Atlas completed the analysis.'
+    'AtlasEye completed the analysis.'
 
   const confidenceValue =
     governed.confidence ??

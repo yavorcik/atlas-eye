@@ -24,7 +24,7 @@ export default function AtlasEye() {
     <div
       ref={ref}
       className="eye"
-      aria-label="Active Atlas Eye"
+      aria-label="Active AtlasEye"
       data-active-eye="true"
       style={{ '--eye-x': `${motion.x}px`, '--eye-y': `${motion.y}px` }}
     >

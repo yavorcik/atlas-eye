@@ -42,7 +42,7 @@ test('homepage restores the historical Atlas Nuclear launch eye and enters Missi
     await assertVisible(page, '.launch-orbit.orbit-three')
     await assertVisible(page, '.launch-sweep')
     await assertVisible(page, '[data-primary-cover-cta="true"]')
-    await assertVisible(page, 'text=ENTER ATLAS')
+    await assertVisible(page, 'text=ENTER ATLASEYE')
 
     assert.equal(await page.locator('[data-active-eye="true"], .eye-core, .eye-aperture').count(), 0)
     assert.equal(await page.locator('.module-card').count(), 0)

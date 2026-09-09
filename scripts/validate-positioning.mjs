@@ -14,8 +14,8 @@ for (const prohibited of [
   'end-to-end nuclear operating system',
 ]) assert.equal(publicText.includes(prohibited), false, `prohibited positioning: ${prohibited}`)
 
-assert.match(app, /ENTER ATLAS/)
-assert.match(app, /ATLAS EYE/)
+assert.match(app, /ENTER ATLASEYE/)
+assert.match(app, /ATLASEYE/)
 assert.match(app, /From concept to governed readiness\./)
 assert.match(app, /Open a sample project/)
 assert.match(app, /saved project workspace/)
@@ -29,6 +29,6 @@ assert.match(app, /does not upload documents to Atlas/)
 assert.match(app, /does not mean the application is complete or accepted/)
 assert.doesNotMatch(app, /href="#|scrollIntoView|location\.hash|hashchange/)
 assert.doesNotMatch(app, />Demonstration</)
-assert.match(document, /Atlas Nuclear \| SMR Project Readiness \+ Evidence Control/)
+assert.match(document, /AtlasEye Nuclear \| SMR Project Readiness \+ Evidence Control/)
 
 console.log('Atlas Eye positioning controls: PASS')
