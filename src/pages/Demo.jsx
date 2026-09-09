@@ -16,7 +16,7 @@ const welcomeMessage = {
   id: 'atlas-welcome',
   role: 'atlas',
   text:
-    "Hello. I'm Atlas. Ask me anything about nuclear engineering, licensing, deployment, construction, or operations.",
+    "Hello. I'm AtlasEye. Ask me anything about nuclear engineering, licensing, deployment, construction, or operations.",
 }
 
 function formatIntent(intent) {
@@ -117,7 +117,7 @@ function Demo() {
         result.answer ||
         result.response ||
         result.conclusion ||
-        'Atlas completed the analysis.'
+        'AtlasEye completed the analysis.'
 
       setMessages((current) => [
         ...current,
@@ -218,7 +218,7 @@ function Demo() {
       audio.onerror = () => {
         finishPlayback()
         setVoiceError(
-          'Atlas generated the response, but the audio could not be played.',
+          'AtlasEye generated the response, but the audio could not be played.',
         )
       }
 
@@ -242,8 +242,8 @@ function Demo() {
 
       setVoiceError(
         error instanceof Error
-          ? `Atlas answered, but could not speak: ${error.message}`
-          : 'Atlas answered, but could not speak.',
+          ? `AtlasEye answered, but could not speak: ${error.message}`
+          : 'AtlasEye answered, but could not speak.',
       )
     }
   }
@@ -254,7 +254,7 @@ function Demo() {
     if (!audio) {
       setPlaybackRequired(false)
       setVoiceError(
-        'The Atlas audio response is no longer available.',
+        'The AtlasEye audio response is no longer available.',
       )
       return
     }
@@ -393,7 +393,7 @@ function Demo() {
             result.answer ||
             result.response ||
             result.conclusion ||
-            'Atlas completed the analysis.'
+            'AtlasEye completed the analysis.'
 
           setMessages((current) => [
             ...current,
@@ -420,7 +420,7 @@ function Demo() {
           setVoiceError(
             error instanceof Error
               ? error.message
-              : 'Atlas could not understand the recording.',
+              : 'AtlasEye could not understand the recording.',
           )
 
           setStatus('error')
@@ -443,7 +443,7 @@ function Demo() {
         )
       } else {
         setVoiceError(
-          'Atlas could not access the microphone.',
+          'AtlasEye could not access the microphone.',
         )
       }
     }
@@ -454,11 +454,11 @@ function Demo() {
       <header className="demo-header">
         <a className="demo-brand" href="/">
           <span className="demo-brand-mark" />
-          ATLAS
+          ATLASEYE
         </a>
 
         <a className="demo-home-link" href="/">
-          Atlas Eye
+          AtlasEye
         </a>
       </header>
 
@@ -469,7 +469,7 @@ function Demo() {
               <span className="demo-atlas-avatar" />
 
               <div>
-                <strong>Atlas</strong>
+                <strong>AtlasEye</strong>
                 <span>
                   {listening
                     ? 'Listening...'
@@ -580,7 +580,7 @@ function Demo() {
                 onClick={resumeAtlasVoice}
               >
                 <span aria-hidden="true">▶</span>
-                Hear Atlas
+                Hear AtlasEye
               </button>
             )}
 
@@ -600,11 +600,11 @@ function Demo() {
                 placeholder={
                   listening
                     ? 'Listening...'
-                    : 'Ask Atlas anything...'
+                    : 'Ask AtlasEye anything...'
                 }
                 rows="1"
                 disabled={status === 'thinking'}
-                aria-label="Ask Atlas"
+                aria-label="Ask AtlasEye"
               />
 
               <button
@@ -644,7 +644,7 @@ function Demo() {
                   listening
                 }
               >
-                Ask Atlas
+                Ask AtlasEye
               </button>
             </div>
 

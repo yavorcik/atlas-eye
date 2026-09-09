@@ -235,7 +235,7 @@ const projectStages = [
         ],
       },
       {
-        label: 'What information should Atlas use?',
+        label: 'What information should AtlasEye use?',
         options: [
           'Procedures',
           'Operating experience',
@@ -541,7 +541,7 @@ function ProjectPath() {
                   disabled={!assessmentComplete}
                   onClick={beginConversation}
                 >
-                  Continue with Atlas
+                  Continue with AtlasEye
                 </button>
               </div>
             </div>

@@ -30,7 +30,7 @@ test('Mission Control routes point to real workspace routes before fallback', ()
 })
 
 test('homepage keeps original entry interaction and module choices link to workspaces', () => {
-  assert.match(app, /ENTER ATLAS/)
+  assert.match(app, /ENTER ATLASEYE/)
   assert.match(eye, /data-active-eye="true"/)
   assert.match(app, /href: '\/mission-control\/transportation\/'/)
   assert.match(app, /href: '\/part53\/'/)

@@ -6,7 +6,7 @@ export const story = [
     organs: [],
     narration: [
       "Hello.",
-      "My name is Atlas.",
+      "My name is AtlasEye.",
       "Thank you for meeting me.",
       "Before I tell you what I can do, I would like to tell you who I am."
     ]
@@ -102,10 +102,10 @@ export const story = [
     eye: "standby",
     organs: [],
     narration: [
-      "You do not install Atlas.",
-      "You adopt Atlas.",
-      "Every Atlas begins with the same anatomy.",
-      "Every Atlas develops differently.",
+      "You do not install AtlasEye.",
+      "You adopt AtlasEye.",
+      "Every AtlasEye begins with the same anatomy.",
+      "Every AtlasEye develops differently.",
       "Because every human life is different."
     ]
   },

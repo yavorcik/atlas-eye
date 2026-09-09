@@ -99,7 +99,7 @@ export async function handler(event) {
         error:
           result.message ||
           result.error ||
-          'Atlas could not transcribe the recording.',
+          'AtlasEye could not transcribe the recording.',
       })
     }
 
@@ -108,11 +108,11 @@ export async function handler(event) {
       normalizeVoiceResponse(result),
     )
   } catch (error) {
-    console.error('Atlas voice bridge error:', error)
+    console.error('AtlasEye voice bridge error:', error)
 
     return jsonResponse(502, {
       error:
-        'The Atlas voice service is unavailable.',
+        'The AtlasEye voice service is unavailable.',
       detail:
         error instanceof Error
           ? error.message
@@ -161,7 +161,7 @@ function normalizeVoiceResponse(result) {
       governed.conclusion ||
       governed.summary ||
       governed.message ||
-      'Atlas completed the analysis.',
+      'AtlasEye completed the analysis.',
 
     intent:
       governed.intent ||

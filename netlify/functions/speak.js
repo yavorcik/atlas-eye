@@ -65,7 +65,7 @@ export async function handler(event) {
       return jsonResponse(response.status, {
         error:
           errorText ||
-          'Atlas could not generate speech.',
+          'AtlasEye could not generate speech.',
       })
     }
 
@@ -80,11 +80,11 @@ export async function handler(event) {
         'audio/wav',
     })
   } catch (error) {
-    console.error('Atlas speech bridge error:', error)
+    console.error('AtlasEye speech bridge error:', error)
 
     return jsonResponse(502, {
       error:
-        'The Atlas speech service is unavailable.',
+        'The AtlasEye speech service is unavailable.',
       detail:
         error instanceof Error
           ? error.message

@@ -62,7 +62,7 @@ export default function HistoricalAtlasNuclearEye() {
       </div>
       <img
         src="/brand/atlas-nuclear-logo.png"
-        alt="Atlas Nuclear red mechanical eye"
+        alt="AtlasEye Nuclear red mechanical eye"
         className="launch-logo"
         ref={logoRef}
       />

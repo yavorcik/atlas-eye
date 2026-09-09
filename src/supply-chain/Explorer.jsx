@@ -107,7 +107,7 @@ export default function Explorer() {
   return <div className="sc-app">
     <a className="sc-skip" href="#sc-main">Skip to content</a>
     <header className="sc-header">
-      <a className="sc-brand" href="/"><img src="/favicon.png" width="36" height="36" alt="" />ATLAS EYE</a>
+      <a className="sc-brand" href="/"><img src="/favicon.png" width="36" height="36" alt="" />ATLASEYE</a>
       <nav aria-label="Supply chain"><button aria-current={view === 'explore' ? 'page' : undefined} onClick={explore}>Explore components</button><button aria-current={view === 'submit' ? 'page' : undefined} onClick={() => listProduct()}>List a product</button><a href="/mission-control/">Mission Control ↗</a></nav>
     </header>
     <main id="sc-main">

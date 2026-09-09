@@ -234,9 +234,9 @@ const part53Fields = [
   ['safety', 'Safety analysis', '10 CFR § 53.1416', 'What safety analysis will support the application?', 'p53-safety'],
   ['environment', 'Environmental information', '10 CFR § 53.1419', 'What environmental information will support the application?', 'p53-environment'],
   ['eligibility', 'Legal eligibility review', '10 CFR § 53.1118', 'What legal eligibility review is required?', 'p53-eligibility'],
-  ['evidence', 'Controlled records', 'Atlas controlled-record workflow', 'Which controlled records support this application?', 'p53-records'],
-  ['reviews', 'Reviews and open items', 'Atlas review workflow', 'What reviews and open items remain?', 'p53-reviews'],
-  ['history', 'Traceable history', 'Atlas traceability workflow', 'What application history must remain traceable?', 'p53-history'],
+  ['evidence', 'Controlled records', 'AtlasEye controlled-record workflow', 'Which controlled records support this application?', 'p53-records'],
+  ['reviews', 'Reviews and open items', 'AtlasEye review workflow', 'What reviews and open items remain?', 'p53-reviews'],
+  ['history', 'Traceable history', 'AtlasEye traceability workflow', 'What application history must remain traceable?', 'p53-history'],
 ].map(([id, label, citation, prompt, requirement]) => ({ id, label, citation, prompt, requirement }))
 
 function initialProjects() {
@@ -323,7 +323,7 @@ function initialProjects() {
       },
       requirements: [
         { id: 'trn-material', title: 'Material and HRCQ facts', source: 'transportHrcq', relevance: 'The sample movement includes Class 7/fissile-material facts that drive route and package questions.', linkedEvidence: [], status: 'gap', question: 'Record the activity/package threshold facts needed to resolve HRCQ.' },
-        { id: 'trn-package', title: 'Package compatibility', source: 'atlasGovernance', relevance: 'Atlas cannot support shipment readiness unless a package compatibility record is linked to these represented contents.', linkedEvidence: [], status: 'gap', question: 'Attach or load package compatibility evidence.' },
+        { id: 'trn-package', title: 'Package compatibility', source: 'atlasGovernance', relevance: 'AtlasEye cannot support shipment readiness unless a package compatibility record is linked to these represented contents.', linkedEvidence: [], status: 'gap', question: 'Attach or load package compatibility evidence.' },
         { id: 'trn-carrier', title: 'Carrier authority', source: 'atlasGovernance', relevance: 'The primary path assumes a domestic highway carrier and keeps authority distinct from package evidence.', linkedEvidence: ['ev-carrier'], status: 'supported', question: 'Confirm carrier authority evidence.' },
         { id: 'trn-route', title: 'Route and mode', source: 'transportHrcq', relevance: 'Route and mode gates depend on HRCQ status and selected highway or maritime scope.', linkedEvidence: [], status: 'gap', question: 'Confirm route and mode evidence.' },
         { id: 'trn-security', title: 'Security and physical protection', source: 'atlasGovernance', relevance: 'Security readiness is evaluated separately and keeps sensitive details out of the public demo.', linkedEvidence: [], status: 'gap', question: 'Resolve security evidence.' },
@@ -349,7 +349,7 @@ function initialProjects() {
       history: [
         history('Shipment facts entered for the primary highway path.', 'Transportation lead'),
         history('Carrier authority sample evidence loaded.', 'Carrier manager'),
-        history('Package compatibility evidence left unresolved.', 'Atlas'),
+        history('Package compatibility evidence left unresolved.', 'AtlasEye'),
       ],
     },
     'supplier-qualification': {
@@ -378,7 +378,7 @@ function initialProjects() {
       },
       history: [
         history('Supplier review opened with bounded sample scope.', 'Supplier quality reviewer'),
-        history('Quality Program Manual Rev. B identified as superseded by supplier transmittal.', 'Atlas'),
+        history('Quality Program Manual Rev. B identified as superseded by supplier transmittal.', 'AtlasEye'),
       ],
     },
   }
@@ -413,7 +413,7 @@ function history(action, actor) {
 function Shell({ title, eyebrow = 'MISSION CONTROL', children }) {
   return <main className="workspace-shell">
     <header className="workspace-header">
-      <a className="brand" href="/" aria-label="Atlas Nuclear home"><span>A</span> ATLAS NUCLEAR</a>
+      <a className="brand" href="/" aria-label="AtlasEye Nuclear home"><span>A</span> ATLASEYE NUCLEAR</a>
       <div className="workspace-breadcrumb"><span>{eyebrow}</span><strong>{title}</strong></div>
       <a className="button secondary compact" href="/mission-control/">Mission Control</a>
     </header>
@@ -424,12 +424,12 @@ function Shell({ title, eyebrow = 'MISSION CONTROL', children }) {
 function Cover() {
   return <main className="cover-page">
     <section className="cover-panel" aria-labelledby="cover-title">
-      <p className="launch-kicker">ATLAS NUCLEAR</p>
+      <p className="launch-kicker">ATLASEYE NUCLEAR</p>
       <HistoricalAtlasNuclearEye />
-      <p className="eyebrow">ATLAS EYE</p>
-      <h1 id="cover-title">ATLAS EYE</h1>
+      <p className="eyebrow">ATLASEYE</p>
+      <h1 id="cover-title">ATLASEYE</h1>
       <p className="cover-copy">From concept to governed readiness.</p>
-      <a className="button primary hero-primary" href="/mission-control/" data-primary-cover-cta="true">ENTER ATLAS <span aria-hidden="true">→</span></a>
+      <a className="button primary hero-primary" href="/mission-control/" data-primary-cover-cta="true">ENTER ATLASEYE <span aria-hidden="true">→</span></a>
     </section>
   </main>
 }
@@ -511,7 +511,7 @@ function evaluateProject(project) {
   const findings = project.requirements.map((req) => {
     const linked = req.linkedEvidence.filter((id) => supportedEvidence.has(id))
     let status = req.status
-    let reason = 'Evidence exists but human review remains separate from Atlas assessment.'
+    let reason = 'Evidence exists but human review remains separate from AtlasEye assessment.'
     if (req.status === 'supported' && linked.length) reason = 'Linked evidence exists for this sample requirement; real-world acceptance is not established.'
     if (req.status === 'review') reason = 'A supporting record exists, but qualified review is still needed.'
     if (req.status === 'gap' && linked.length) {
@@ -834,7 +834,7 @@ function Dashboard({ workspace, reset }) {
       <DemoNotice workspace={workspace} reset={reset} />
       <p className="eyebrow">PUBLIC DEMONSTRATION</p>
       <h1 id="dashboard-title">Open a sample project.</h1>
-      <p className="module-copy">Atlas now presents the public demo as a saved project workspace. Each project has its own inputs, evidence, findings, history, and report.</p>
+      <p className="module-copy">AtlasEye now presents the public demo as a saved project workspace. Each project has its own inputs, evidence, findings, history, and report.</p>
       <div className="project-list" aria-label="Sample projects">
         {projects.map((project) => {
           const findings = evaluateProject(project)
@@ -1088,7 +1088,7 @@ function ProjectWorkspace({ projectId, initialView, workspace, updateProject, re
       const ready = Boolean(validateShipment(next.inputs).valid && evaluateTransportationProject(next).readyForReview && current?.readyForReview && current.manifestFingerprint && current.projectRevision === (next.transportRevision || 0))
       if (!ready) {
         next.acceptanceError = next.evaluationStatus === 'error' ? 'Acceptance blocked because detailed transportation evaluation is unavailable.' : 'Acceptance blocked until the current project revision finishes detailed evaluation and hashing.'
-        next.history.unshift(history(next.acceptanceError, 'Atlas'))
+        next.history.unshift(history(next.acceptanceError, 'AtlasEye'))
         return
       }
       next.acceptanceError = ''
@@ -1144,7 +1144,7 @@ function ProjectHeader({ project, findings }) {
       <span>{project.role}</span>
     </div>
     <p>{project.purpose}</p>
-    <p><strong>Atlas identified:</strong> {customerReportModel(project, findings).stage} <strong>Next:</strong> {customerReportModel(project, findings).nextAction} <strong>Produce:</strong> a bounded draft and evidence/action register.</p>
+    <p><strong>AtlasEye identified:</strong> {customerReportModel(project, findings).stage} <strong>Next:</strong> {customerReportModel(project, findings).nextAction} <strong>Produce:</strong> a bounded draft and evidence/action register.</p>
   </header>
 }
 
@@ -1157,7 +1157,7 @@ function Overview({ project, findings, setView }) {
       <p>{project.scope}</p>
       <div className="summary-grid">
         <article><span>What this project is trying to accomplish</span><strong>{project.purpose}</strong></article>
-        <article><span>What Atlas identified</span><strong>{open.length ? `${open.length} unresolved evidence or review findings` : 'No unresolved demo findings'}</strong></article>
+        <article><span>What AtlasEye identified</span><strong>{open.length ? `${open.length} unresolved evidence or review findings` : 'No unresolved demo findings'}</strong></article>
         <article><span>What the visitor should do next</span><strong>{customerReportModel(project, findings).nextAction}</strong></article>
         <article><span>Deliverable</span><strong>{project.id === 'reactor-app' ? 'Application draft and evidence/action register' : project.id === 'fuel-transport' ? 'Transportation readiness package' : 'Supplier review report'}</strong></article>
       </div>
@@ -1360,7 +1360,7 @@ function EvidenceInventory({ project, activeEvidence, setSelectedEvidence, attac
   return <div className="workspace-grid">
     <section className="panel wide">
       <h2>Evidence Inventory</h2>
-      <p>Attachments are processed in this browser only. Atlas records existence, integrity, relevance links, review status, and replacement history separately.</p>
+      <p>Attachments are processed in this browser only. AtlasEye records existence, integrity, relevance links, review status, and replacement history separately.</p>
       <div className="evidence-table">
         {items.map((item) => <article key={item.id}>
           <button type="button" className="evidence-open" onClick={() => setSelectedEvidence(item.id)}>{item.filename}</button>
@@ -1429,7 +1429,7 @@ function Findings({ project, findings, compact = false }) {
 }
 
 function TransportationDetails({ project }) {
-  return <details><summary>Evaluation details and prior records</summary><p>Atlas workflow diagnostics. Embedded engine references have not received provision-level legal verification; legal verification pending for any broader conclusion. Use the reviewed basis panels for the represented scope.</p>
+  return <details><summary>Evaluation details and prior records</summary><p>AtlasEye workflow diagnostics. Embedded engine references have not received provision-level legal verification; legal verification pending for any broader conclusion. Use the reviewed basis panels for the represented scope.</p>
     <p>Current revision: {project.transportRevision}. Evaluation: {project.evaluationStatus}.</p>
     <p>Fingerprint: {currentTransportationEvaluation(project)?.manifestFingerprint || 'Awaiting completed checking'}</p>
     {project.staleTransportEvaluation ? <p>Prior evaluation revision: {project.staleTransportEvaluation.projectRevision}. Retained because: {project.staleTransportEvaluation.staleReason}. Fingerprint: {project.staleTransportEvaluation.manifestFingerprint}</p> : null}
@@ -1493,7 +1493,7 @@ function requirementSource(req) {
 function SourceLink({ source, label }) {
   const section = label?.match(/53\.\d+/)?.[0]
   if (section) source = { ...source, sourceUrl: `https://www.ecfr.gov/current/title-10/chapter-I/part-53/subpart-H/section-${section}` }
-  return source.sourceUrl ? <a href={source.sourceUrl} target="_blank" rel="noreferrer">{label || source.citation}</a> : <span>{label || source.citation} — Atlas demo control, not a regulatory requirement</span>
+  return source.sourceUrl ? <a href={source.sourceUrl} target="_blank" rel="noreferrer">{label || source.citation}</a> : <span>{label || source.citation} — AtlasEye demo control, not a regulatory requirement</span>
 }
 function representedScope(project) {
   if (project.id !== 'fuel-transport') return project.scope
@@ -1509,7 +1509,7 @@ function supplierReady(project) {
 function staleSupplierReview(project, reason) {
   if (!project.review) return
   project.review = { ...project.review, simulatedAcceptance: false, status: 'stale' }
-  project.history.unshift(history(`Prior supplier decision marked historical after ${reason}.`, 'Atlas'))
+  project.history.unshift(history(`Prior supplier decision marked historical after ${reason}.`, 'AtlasEye'))
 }
 function SupplierReview({ project, decide }) {
   const [explanation, setExplanation] = useState('')
@@ -1571,7 +1571,7 @@ function buildReport(project, findings) {
   const generated = nowIso()
   const evidence = Object.values(project.evidence)
   const actions = findings.map(finding => [finding.requirementId, finding.title, readableStatus(finding.status), finding.nextAction, finding.role, finding.source.citation])
-  const limitations = 'This public demonstration uses browser-local storage, sample evidence, and simulated review. It does not upload documents to Atlas, create a regulatory submission, grant real shipment authorization, or establish supplier qualification or NQA-1 certification. The application draft covers only the fourteen demonstrated questions; complete analyses, other required sections, legal sufficiency, and qualified review are not established.'
+  const limitations = 'This public demonstration uses browser-local storage, sample evidence, and simulated review. It does not upload documents to AtlasEye, create a regulatory submission, grant real shipment authorization, or establish supplier qualification or NQA-1 certification. The application draft covers only the fourteen demonstrated questions; complete analyses, other required sections, legal sufficiency, and qualified review are not established.'
   const decisions = model.decisions.map(decision => ({ ...decision, label: model.accepted && decision.acceptedAt === project.review?.acceptedAt ? 'Current simulated decision' : `Historical decision — relevant revision ${decision.acceptedRevision ?? 'not recorded'}` }))
   const csv = [
     ['Project', project.name], ['Scope', model.scope], ['Generated', generated], ['Project revision', model.revision], ['Review state', model.status], ['Primary next action', model.nextAction], ['Demo limitations', limitations],
@@ -1586,7 +1586,7 @@ function buildReport(project, findings) {
     ...evidence.flatMap(item => (item.replacements || []).map(previous => ['Evidence history', previous.filename, previous.version, previous.status, previous.failureReason || 'Prior usable version', previous.hash])),
     ...project.history.map(entry => ['History', entry.at, entry.actor, entry.action]),
   ].map(row => row.map(csvCell).join(',')).join('\n')
-  const sourceHtml = source => source.sourceUrl ? `<a href="${esc(source.sourceUrl)}">${esc(source.citation)}</a>` : `${esc(source.citation)} — Atlas demo control, not a regulatory requirement`
+  const sourceHtml = source => source.sourceUrl ? `<a href="${esc(source.sourceUrl)}">${esc(source.citation)}</a>` : `${esc(source.citation)} — AtlasEye demo control, not a regulatory requirement`
   const body = `<h1>${esc(project.name)}</h1>
     <h2>Executive summary</h2><p><strong>${esc(model.status)}</strong></p>
     <p>${esc(project.purpose)} This is a bounded demonstration draft. Missing facts, evidence gaps, and open review items remain listed below.</p>
@@ -1622,7 +1622,7 @@ async function processEvidenceFile(file, scope) {
     try {
       const parsed = JSON.parse(text)
       metadata = parsed?.metadata && typeof parsed.metadata === 'object' ? parsed.metadata : {}
-    } catch { return { ...base, hash, status: 'failed', failureReason: 'Malformed JSON. Atlas computed a hash but did not treat the file as extracted evidence.' } }
+    } catch { return { ...base, hash, status: 'failed', failureReason: 'Malformed JSON. AtlasEye computed a hash but did not treat the file as extracted evidence.' } }
   }
   if (text.includes('\u0000')) return { ...base, hash, status: 'failed', failureReason: 'File content does not appear to be a supported text document.' }
   return { ...base, hash, status: 'processed', preview: text.slice(0, 5000), fullText: text, previewTruncated: text.length > 5000, metadata }
@@ -1648,7 +1648,7 @@ function staleTransportationReview(project, reason) {
   if (!project.review?.simulatedAcceptance) return
   project.review.simulatedAcceptance = false
   project.review.status = 'stale'
-  project.history.unshift(history(`Prior transportation review marked stale after ${reason}.`, 'Atlas'))
+  project.history.unshift(history(`Prior transportation review marked stale after ${reason}.`, 'AtlasEye'))
 }
 
 function markTransportationDirty(project, reason) {
@@ -1728,7 +1728,7 @@ function esc(value) {
 }
 
 function Privacy() {
-  return <main><section className="section"><p className="eyebrow">PRIVACY NOTICE</p><h1>Atlas Nuclear inquiry privacy</h1><p>Atlas Nuclear uses project-readiness inquiry information only to respond to the inquiry. Do not submit safeguards information, security-sensitive information, export-controlled technical data, proprietary reactor information, or controlled project records.</p><p>Submitting an inquiry does not create an attorney-client relationship, engineering engagement, project approval, regulatory submission, or authorization to proceed.</p><a className="button primary" href="/">Return to Atlas Nuclear</a></section></main>
+  return <main><section className="section"><p className="eyebrow">PRIVACY NOTICE</p><h1>AtlasEye Nuclear inquiry privacy</h1><p>AtlasEye Nuclear is a business of L8FORCOURT. LLC, an Ohio limited liability company. L8FORCOURT. LLC operates this website and handles project-readiness inquiries.</p><p>AtlasEye Nuclear uses project-readiness inquiry information only to respond to the inquiry. Do not submit safeguards information, security-sensitive information, export-controlled technical data, proprietary reactor information, or controlled project records.</p><p>Submitting an inquiry does not create an attorney-client relationship, engineering engagement, project approval, regulatory submission, or authorization to proceed.</p><a className="button primary" href="/">Return to AtlasEye Nuclear</a></section></main>
 }
 
 function routeInfo(path) {

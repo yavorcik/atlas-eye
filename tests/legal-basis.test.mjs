@@ -23,7 +23,7 @@ test('missing and broken references cannot become supported legal conclusions', 
   assert.match(basisFor('trn-material', project, {}).authorityStatus, /verification pending/)
 })
 test('controls, guidance, standards, proposals and future rules retain actual status', () => {
-  assert.match(basisHtml(basisFor('sup-qap-current', project)), /Atlas workflow control/)
+  assert.match(basisHtml(basisFor('sup-qap-current', project)), /AtlasEye workflow control/)
   for (const category of ['C', 'D']) {
     const record = { ...authorities['dot-hrcq'], category, legalStatus: 'nonbinding' }
     assert.equal(sourceSupport(['fixture'], { fixture: record }), 'nonstatutory basis')

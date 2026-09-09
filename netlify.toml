@@ -129,3 +129,11 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+# Revalidate the stable deck link when investor materials are corrected.
+[[headers]]
+  for = "/pitch-deck.pdf"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+    Cloudflare-CDN-Cache-Control = "no-store"
+    Content-Disposition = 'inline; filename="AtlasEye_Nuclear_JumpStart_Deck.pdf"'
