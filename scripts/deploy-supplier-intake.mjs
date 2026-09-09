@@ -8,10 +8,11 @@ import { execPath } from 'node:process'
 
 const { values } = parseArgs({ options: {
   stack: { type: 'string', default: 'atlas-eye-supplier-intake' }, account: { type: 'string' },
-  region: { type: 'string', default: 'us-east-2' }, preview: { type: 'string', default: '' }, apply: { type: 'boolean', default: false },
+  region: { type: 'string', default: 'us-east-2' }, preview: { type: 'string', default: '' }, 'owner-secret-arn': { type: 'string' }, apply: { type: 'boolean', default: false },
 } })
 if (!/^\d{12}$/.test(values.account || '')) throw Error('Supply --account with the intended AWS account ID')
 if (values.preview && !/^https:\/\/deploy-preview-[1-9][0-9]*--atlas-eye\.netlify\.app$/.test(values.preview)) throw Error('Invalid AtlasEye preview URL')
+if (!new RegExp(`^arn:aws[a-zA-Z-]*:secretsmanager:${values.region}:${values.account}:secret:[A-Za-z0-9/_+=.@-]+$`).test(values['owner-secret-arn'] || '')) throw Error('Supply --owner-secret-arn for the intended account and region')
 const root = fileURLToPath(new URL('..', import.meta.url))
 const aws = args => execFileSync('aws', [...args, '--region', values.region, '--no-cli-pager'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] })
 const identity = JSON.parse(aws(['sts', 'get-caller-identity', '--output', 'json']))
@@ -21,7 +22,7 @@ if (dirty.trim()) throw Error('Commit the intake source before creating a deploy
 const directory = mkdtempSync(path.join(tmpdir(), 'atlas-supplier-deploy-')), template = path.join(directory, 'template.json')
 execFileSync(execPath, [path.join(root, 'scripts/build-supplier-intake.mjs'), template], { stdio: 'inherit' })
 aws(['cloudformation', 'validate-template', '--template-body', `file://${template}`])
-const args = ['cloudformation', 'deploy', '--stack-name', values.stack, '--template-file', template, '--capabilities', 'CAPABILITY_IAM', '--no-fail-on-empty-changeset', '--parameter-overrides', `PreviewOrigin=${values.preview}`]
+const args = ['cloudformation', 'deploy', '--stack-name', values.stack, '--template-file', template, '--capabilities', 'CAPABILITY_IAM', '--no-fail-on-empty-changeset', '--parameter-overrides', `PreviewOrigin=${values.preview}`, `OwnerActivitySecretArn=${values['owner-secret-arn']}`]
 if (!values.apply) args.push('--no-execute-changeset')
 console.log(aws(args))
 if (values.apply) {
