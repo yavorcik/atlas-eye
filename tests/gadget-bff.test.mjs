@@ -59,6 +59,39 @@ test('auth start uses PKCE, read scope, safe return path, and hardened cookie', 
   assert.match(result.multiValueHeaders['Set-Cookie'][0], /HttpOnly; Secure; SameSite=Lax/)
 })
 
+test('auth callback exchanges the PKCE code server-side and seals the access token', async () => {
+  const started = await handler(event('auth-start', {
+    queryStringParameters: { action: 'auth-start', returnTo: '/mission-control/evidence/' },
+  }))
+  const authorize = new URL(started.headers.Location)
+  const transactionCookie = started.multiValueHeaders['Set-Cookie'][0].split(';', 1)[0]
+  let tokenRequest
+  global.fetch = async (url, options) => {
+    tokenRequest = { url: String(url), options }
+    return {
+      ok: true,
+      text: async () => JSON.stringify({
+        access_token: 'callback-private-access-token', token_type: 'Bearer', expires_in: 900,
+      }),
+    }
+  }
+  const completed = await handler(event('auth-callback', {
+    headers: { cookie: transactionCookie },
+    queryStringParameters: {
+      action: 'auth-callback', code: 'one-time-code', state: authorize.searchParams.get('state'),
+    },
+  }))
+  assert.equal(completed.statusCode, 302)
+  assert.equal(completed.headers.Location, `${env.GADGET_SITE_ORIGIN}/mission-control/evidence/`)
+  assert.equal(tokenRequest.url, `${env.GADGET_COGNITO_DOMAIN}/oauth2/token`)
+  assert.match(String(tokenRequest.options.body), /code_verifier=/)
+  const sessionCookie = completed.multiValueHeaders['Set-Cookie'].find(value => value.startsWith('__Host-atlas_gadget_session='))
+  assert.match(sessionCookie, /HttpOnly; Secure; SameSite=Lax/)
+  assert.doesNotMatch(completed.body + completed.headers.Location, /callback-private-access-token/)
+  const sealed = sessionCookie.split(';', 1)[0].split('=', 2)[1]
+  assert.equal(testables.open(sealed, key).accessToken, 'callback-private-access-token')
+})
+
 test('session exposes only CSRF state and never the browser-hidden access token', async () => {
   const request = authenticatedEvent()
   request.httpMethod = 'GET'
