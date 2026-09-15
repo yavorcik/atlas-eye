@@ -18,10 +18,10 @@ export async function handler(event) {
   const action = requestedAction(event)
   try {
     if (action === 'auth-start') return authStart(event)
-    if (action === 'auth-callback') return authCallback(event)
+    if (action === 'auth-callback') return await authCallback(event)
     if (action === 'session') return sessionStatus(event)
     if (action === 'logout') return logout(event)
-    if (action === 'query') return query(event)
+    if (action === 'query') return await query(event)
     return response(404, { error: 'not_found' })
   } catch {
     return response(503, { error: 'gadget_unavailable' })

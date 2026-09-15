@@ -151,6 +151,12 @@ test('invalid or missing configuration fails closed', async () => {
   const result = await handler(event('session'))
   assert.equal(result.statusCode, 503)
   assert.deepEqual(JSON.parse(result.body), { error: 'gadget_unavailable' })
+
+  delete process.env.GADGET_SITE_ORIGIN
+  const queryResult = await handler(authenticatedEvent())
+  assert.equal(queryResult.statusCode, 503)
+  assert.deepEqual(JSON.parse(queryResult.body), { error: 'gadget_unavailable' })
+  assert.doesNotMatch(queryResult.body, /TypeError|Invalid URL|stack|\/var\/task/)
 })
 
 test('fixed same-origin routes survive Netlify rewrite query loss', async () => {
