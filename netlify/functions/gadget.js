@@ -6,9 +6,16 @@ const MAX_BODY_BYTES = 16_384
 const MAX_UPSTREAM_BYTES = 65_536
 const RATE_WINDOW_MS = 60_000
 const rateState = new Map()
+const ROUTE_ACTIONS = Object.freeze({
+  '/api/gadget/auth/start': 'auth-start',
+  '/api/gadget/auth/callback': 'auth-callback',
+  '/api/gadget/session.json': 'session',
+  '/api/gadget/logout': 'logout',
+  '/api/gadget/query': 'query',
+})
 
 export async function handler(event) {
-  const action = event.queryStringParameters?.action || ''
+  const action = requestedAction(event)
   try {
     if (action === 'auth-start') return authStart(event)
     if (action === 'auth-callback') return authCallback(event)
@@ -19,6 +26,23 @@ export async function handler(event) {
   } catch {
     return response(503, { error: 'gadget_unavailable' })
   }
+}
+
+function requestedAction(event) {
+  const explicit = event.queryStringParameters?.action
+  if (typeof explicit === 'string' && explicit) return explicit
+  const candidates = [event.path, event.rawPath]
+  if (typeof event.rawUrl === 'string') {
+    try {
+      candidates.push(new URL(event.rawUrl).pathname)
+    } catch {
+      return ''
+    }
+  }
+  for (const path of candidates) {
+    if (typeof path === 'string' && ROUTE_ACTIONS[path]) return ROUTE_ACTIONS[path]
+  }
+  return ''
 }
 
 function configuration() {

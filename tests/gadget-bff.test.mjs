@@ -152,3 +152,19 @@ test('invalid or missing configuration fails closed', async () => {
   assert.equal(result.statusCode, 503)
   assert.deepEqual(JSON.parse(result.body), { error: 'gadget_unavailable' })
 })
+
+test('fixed same-origin routes survive Netlify rewrite query loss', async () => {
+  const session = await handler(event(undefined, {
+    path: '/.netlify/functions/gadget',
+    rawUrl: `${env.GADGET_SITE_ORIGIN}/api/gadget/session.json`,
+    queryStringParameters: {},
+  }))
+  assert.equal(session.statusCode, 401)
+  assert.deepEqual(JSON.parse(session.body), { authenticated: false })
+
+  const unknown = await handler(event(undefined, {
+    rawUrl: `${env.GADGET_SITE_ORIGIN}/api/gadget/not-a-route`,
+    queryStringParameters: {},
+  }))
+  assert.equal(unknown.statusCode, 404)
+})
