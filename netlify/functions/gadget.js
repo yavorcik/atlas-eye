@@ -12,6 +12,7 @@ const ROUTE_ACTIONS = Object.freeze({
   '/api/gadget/session.json': 'session',
   '/api/gadget/logout': 'logout',
   '/api/gadget/query': 'query',
+  '/api/gadget/objectives': 'objectives',
 })
 
 export async function handler(event) {
@@ -22,6 +23,10 @@ export async function handler(event) {
     if (action === 'session') return sessionStatus(event)
     if (action === 'logout') return logout(event)
     if (action === 'query') return await query(event)
+    if (action === 'objectives') return await workforce(event, 'objectives')
+    if (action === 'objective-overview') return await workforce(event, 'overview')
+    if (action === 'objective-continue') return await workforce(event, 'continue')
+    if (action === 'objective-work') return await workforce(event, 'work')
     return response(404, { error: 'not_found' })
   } catch {
     return response(503, { error: 'gadget_unavailable' })
@@ -41,8 +46,17 @@ function requestedAction(event) {
   }
   for (const path of candidates) {
     if (typeof path === 'string' && ROUTE_ACTIONS[path]) return ROUTE_ACTIONS[path]
+    const match = typeof path === 'string' && path.match(/^\/api\/gadget\/objectives\/([A-Za-z0-9_-]{1,128})\/(overview|continue|work)$/)
+    if (match) return `objective-${match[2]}`
   }
   return ''
+}
+
+function workforceConfiguration() {
+  const origin = exactOrigin(process.env.GADGET_WORKFORCE_API_ORIGIN)
+  const token = process.env.GADGET_AGENT_OBJECTIVE_INTERNAL_TOKEN || ''
+  if (token.length < 32) throw new Error('invalid workforce config')
+  return { origin, token }
 }
 
 function configuration() {
@@ -165,8 +179,17 @@ async function authCallback(event) {
   }
   const lifetime = Math.min(Number(tokens.expires_in) || 0, 900)
   if (lifetime < 60) return response(401, { error: 'authentication_failed' }, [cookie(TRANSACTION_COOKIE, '', 0)])
+  const userInfoResponse = await fetch(new URL('/oauth2/userInfo', config.cognitoDomain), {
+    headers: { Authorization: `Bearer ${tokens.access_token}`, Accept: 'application/json' }, signal: AbortSignal.timeout(10_000),
+  })
+  const userInfoRaw = await userInfoResponse.text()
+  let userInfo
+  try { userInfo = JSON.parse(userInfoRaw) } catch { userInfo = null }
+  if (!userInfoResponse.ok || Buffer.byteLength(userInfoRaw) > 16_384 || !userInfo || typeof userInfo.sub !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(userInfo.sub)) {
+    return response(401, { error: 'authentication_failed' }, [cookie(TRANSACTION_COOKIE, '', 0)])
+  }
   const csrf = base64url(crypto.randomBytes(24))
-  const session = seal({ accessToken: tokens.access_token, csrf, expiresAt: Date.now() + lifetime * 1_000 }, config.key)
+  const session = seal({ accessToken: tokens.access_token, subject: userInfo.sub, csrf, expiresAt: Date.now() + lifetime * 1_000 }, config.key)
   return redirect(`${config.siteOrigin}${cleanReturnTo(transaction.returnTo)}`, [
     cookie(TRANSACTION_COOKIE, '', 0), cookie(SESSION_COOKIE, session, lifetime),
   ])
@@ -174,10 +197,49 @@ async function authCallback(event) {
 
 function readSession(event, config) {
   const session = open(cookieValue(event, SESSION_COOKIE), config.key)
-  if (typeof session.accessToken !== 'string' || typeof session.csrf !== 'string' || Date.now() >= session.expiresAt) {
+  if (typeof session.accessToken !== 'string' || typeof session.subject !== 'string' || typeof session.csrf !== 'string' || Date.now() >= session.expiresAt) {
     throw new Error('expired session')
   }
   return session
+}
+
+async function workforce(event, action) {
+  const expectedMethod = action === 'objectives' || action === 'continue' ? 'POST' : 'GET'
+  if (!method(event, expectedMethod)) return response(405, { error: 'method_not_allowed' })
+  const config = configuration(); const workforceConfig = workforceConfiguration()
+  let session
+  try { session = readSession(event, config) } catch { return response(401, { error: 'authentication_required' }, [cookie(SESSION_COOKIE, '', 0)]) }
+  if (expectedMethod === 'POST') {
+    if (!sameOrigin(event, config) || !safeEqual(event.headers?.['x-atlas-csrf'], session.csrf)) return response(403, { error: 'request_rejected' })
+    if (Buffer.byteLength(event.body || '') > MAX_BODY_BYTES) return response(413, { error: 'request_too_large' })
+  }
+  const objectId = objectiveId(event)
+  const suffix = action === 'objectives' ? '' : `/${objectId}/${action === 'continue' ? 'continue' : action}`
+  if (action !== 'objectives' && !objectId) return response(404, { error: 'not_found' })
+  let body = undefined
+  if (action === 'objectives') {
+    try { body = JSON.parse(event.body || '') } catch { return response(400, { error: 'invalid_request' }) }
+    if (!body || typeof body !== 'object' || Array.isArray(body) || Object.keys(body).some(key => !['objective'].includes(key)) || typeof body.objective !== 'string' || !body.objective.trim() || body.objective.length > 2_000) return response(400, { error: 'invalid_request' })
+    body = { objective: body.objective.trim() }
+  } else if (action === 'continue' && event.body && event.body !== '{}') return response(400, { error: 'invalid_request' })
+  try {
+    const upstream = await fetch(`${workforceConfig.origin}/api/agent/objectives${suffix}`, {
+      method: expectedMethod, headers: { 'Content-Type': 'application/json', Accept: 'application/json',
+        'X-Atlas-Agent-Objective-Internal-Token': workforceConfig.token, 'X-Atlas-Verified-Subject': session.subject },
+      ...(body ? { body: JSON.stringify(body) } : {}), signal: AbortSignal.timeout(20_000), redirect: 'error',
+    })
+    const text = await upstream.text(); if (Buffer.byteLength(text) > MAX_UPSTREAM_BYTES) throw new Error('oversized upstream')
+    if (!upstream.ok) return response(upstream.status === 401 ? 401 : upstream.status === 404 ? 404 : 503, { error: upstream.status === 401 ? 'authentication_required' : 'gadget_unavailable' })
+    return response(200, JSON.parse(text))
+  } catch { return response(503, { error: 'gadget_unavailable' }) }
+}
+
+function objectiveId(event) {
+  for (const value of [event.path, event.rawPath, (() => { try { return new URL(event.rawUrl).pathname } catch { return '' } })()]) {
+    const match = typeof value === 'string' && value.match(/^\/api\/gadget\/objectives\/([A-Za-z0-9_-]{1,128})\/(?:overview|continue|work)$/)
+    if (match) return match[1]
+  }
+  return ''
 }
 
 function sessionStatus(event) {

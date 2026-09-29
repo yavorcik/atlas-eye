@@ -14,7 +14,7 @@ async function preview() {
   throw new Error('preview did not start')
 }
 
-test('Gadget renders only inside Mission Control and remains responsive', async () => {
+test('Gadget cockpit replaces only the Mission Control default and remains responsive', async () => {
   await readFile('dist/index.html', 'utf8').catch(() => { throw new Error('run npm run build before this browser test') })
   const child = await preview()
   const browser = await chromium.launch({ headless: true })
@@ -28,35 +28,15 @@ test('Gadget renders only inside Mission Control and remains responsive', async 
     await page.route('**/api/gadget/session.json', route => route.fulfill({
       status: 200, contentType: 'application/json', body: JSON.stringify({ authenticated: true, csrf: 'browser-test-csrf' }),
     }))
-    await page.route('**/api/gadget/query', async route => {
-      const payload = route.request().postDataJSON()
-      assert.equal(payload.assistant, 'gadget')
-      assert.ok(payload.conversation_context.length <= 4)
-      for (const forbidden of ['agent_id', 'session_id', 'tools', 'path', 'url']) assert.equal(payload[forbidden], undefined)
-      return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({
-        status: 'success', response: {
-          direct_answer: 'A deterministic review conclusion.',
-          what_this_means: 'This is bounded public-safe guidance.',
-          recommended_next_move: 'Ask the qualified evidence owner.',
-          evidence_message: 'No reviewed evidence pack is connected.', citations: [],
-          boundary: 'Advisory only; no approval or execution.',
-          model: {
-            status: 'model_backed', analysis: 'Prioritize the named evidence gap.',
-            priorities: ['Resolve provenance first.'], inferences: [],
-            follow_up_question: 'Who owns the review?',
-          },
-        },
-      }) })
-    })
+    await page.route('**/api/gadget/objectives', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ objective_id: 'obj-1' }) }))
+    await page.route('**/api/gadget/objectives/obj-1/overview', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ objective_id: 'obj-1', objective: { objective_text: 'Resolve bounded evidence.' }, working: [], needs_you: [], holds: [], specialists: Array.from({ length: 8 }, (_, i) => ({ label: `Specialist ${i + 1}` })), project_context: { project_id: 'project-1', scope: 'Server resolved' }, recent_activity: [], evidence_summary: { note: 'Record-backed.' }, decision_summary: { note: 'No approval path.' } }) }))
+    await page.route('**/api/gadget/objectives/obj-1/work', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({}) }))
     await page.goto('http://127.0.0.1:4188/mission-control/', { waitUntil: 'networkidle' })
-    assert.equal(await page.locator('[data-testid="gadget-panel"]').count(), 1)
-    assert.equal(await page.locator('[data-testid="gadget-panel"] img').getAttribute('src'), '/brand/gadget-mascot.png')
-    await page.getByRole('button', { name: 'Open Gadget' }).click()
-    await page.locator('#gadget-question').fill('What should we review next?')
-    await page.getByRole('button', { name: 'Ask Gadget' }).click()
-    await page.getByText('A deterministic review conclusion.').waitFor()
-    assert.equal(await page.getByText('Model analysis / inference').count(), 1)
-    assert.equal(await page.getByText('Prioritize the named evidence gap.').count(), 1)
+    assert.equal(await page.locator('[data-testid="gadget-cockpit"]').count(), 1)
+    await page.locator('#objective').fill('Resolve bounded evidence.')
+    await page.getByRole('button', { name: 'Create governed objective' }).click()
+    await page.getByText('Resolve bounded evidence.').waitFor()
+    assert.equal(await page.locator('.specialist-strip span').count(), 8)
     await page.goto('http://127.0.0.1:4188/mission-control/nuclear-readiness/', { waitUntil: 'networkidle' })
     assert.equal(await page.locator('[data-testid="gadget-panel"]').count(), 1)
 

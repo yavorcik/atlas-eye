@@ -8,6 +8,7 @@
 
 [context.production.environment]
   VITE_SUPPLIER_SUBMISSION_URL = "https://9u7zmbfpr6.execute-api.us-east-2.amazonaws.com/supplier-submissions"
+  VITE_OWNER_ACTIVITY_ENDPOINT = "https://nnudwaqrgtztmcrcwpxn.supabase.co/functions/v1/owner-activity"
 
 [[redirects]]
   from = "/part53-workspace"
@@ -137,6 +138,26 @@
 [[redirects]]
   from = "/api/gadget/query"
   to = "/.netlify/functions/gadget?action=query"
+  status = 200
+
+[[redirects]]
+  from = "/api/gadget/objectives"
+  to = "/.netlify/functions/gadget?action=objectives"
+  status = 200
+
+[[redirects]]
+  from = "/api/gadget/objectives/:id/overview"
+  to = "/.netlify/functions/gadget?action=objective-overview"
+  status = 200
+
+[[redirects]]
+  from = "/api/gadget/objectives/:id/continue"
+  to = "/.netlify/functions/gadget?action=objective-continue"
+  status = 200
+
+[[redirects]]
+  from = "/api/gadget/objectives/:id/work"
+  to = "/.netlify/functions/gadget?action=objective-work"
   status = 200
 
 [[redirects]]

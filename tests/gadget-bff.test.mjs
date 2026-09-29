@@ -11,6 +11,8 @@ const env = {
   GADGET_COGNITO_CLIENT_ID: 'previewclient123',
   GADGET_ATLAS_API_URL: 'https://preview-api.atlaseye.example/api/gadget/query',
   GADGET_SESSION_SECRET: key.toString('base64'),
+  GADGET_WORKFORCE_API_ORIGIN: 'https://workforce-preview.atlaseye.example',
+  GADGET_AGENT_OBJECTIVE_INTERNAL_TOKEN: 'workforce-internal-token-longer-than-thirty-two-bytes',
 }
 const originalFetch = global.fetch
 
@@ -35,7 +37,7 @@ function event(action, overrides = {}) {
 
 function authenticatedEvent(payload = { assistant: 'gadget', question: 'What next?' }) {
   const csrf = 'csrf-value-long-enough'
-  const sealed = testables.seal({ accessToken: 'private-cognito-access-token', csrf, expiresAt: Date.now() + 60_000 }, key)
+  const sealed = testables.seal({ accessToken: 'private-cognito-access-token', subject: 'verified-cognito-subject', csrf, expiresAt: Date.now() + 60_000 }, key)
   return event('query', {
     httpMethod: 'POST',
     headers: {
@@ -67,6 +69,7 @@ test('auth callback exchanges the PKCE code server-side and seals the access tok
   const transactionCookie = started.multiValueHeaders['Set-Cookie'][0].split(';', 1)[0]
   let tokenRequest
   global.fetch = async (url, options) => {
+    if (String(url).endsWith('/oauth2/userInfo')) return { ok: true, text: async () => JSON.stringify({ sub: 'verified-cognito-subject' }) }
     tokenRequest = { url: String(url), options }
     return {
       ok: true,
@@ -90,6 +93,22 @@ test('auth callback exchanges the PKCE code server-side and seals the access tok
   assert.doesNotMatch(completed.body + completed.headers.Location, /callback-private-access-token/)
   const sealed = sessionCookie.split(';', 1)[0].split('=', 2)[1]
   assert.equal(testables.open(sealed, key).accessToken, 'callback-private-access-token')
+  assert.equal(testables.open(sealed, key).subject, 'verified-cognito-subject')
+})
+
+test('workforce routes are fixed, subject-derived, CSRF-protected, and never proxy arbitrary URLs', async () => {
+  let upstream
+  global.fetch = async (url, options) => { upstream = { url: String(url), options }; return { ok: true, text: async () => JSON.stringify({ objective_id: 'objective-1' }) } }
+  const create = authenticatedEvent({ objective: 'Resolve bounded site evidence.' })
+  create.queryStringParameters = { action: 'objectives' }
+  const created = await handler(create)
+  assert.equal(created.statusCode, 200)
+  assert.equal(upstream.url, 'https://workforce-preview.atlaseye.example/api/agent/objectives')
+  assert.equal(upstream.options.headers['X-Atlas-Verified-Subject'], 'verified-cognito-subject')
+  assert.equal(upstream.options.headers['X-Atlas-Agent-Objective-Internal-Token'], env.GADGET_AGENT_OBJECTIVE_INTERNAL_TOKEN)
+  assert.deepEqual(JSON.parse(upstream.options.body), { objective: 'Resolve bounded site evidence.' })
+  const bad = authenticatedEvent({ objective: 'x', upstream_url: 'https://evil.invalid' }); bad.queryStringParameters = { action: 'objectives' }
+  assert.equal((await handler(bad)).statusCode, 400)
 })
 
 test('session exposes only CSRF state and never the browser-hidden access token', async () => {

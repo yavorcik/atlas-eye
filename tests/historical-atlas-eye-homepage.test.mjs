@@ -90,8 +90,8 @@ test('homepage restores the historical Atlas Nuclear launch eye and enters Missi
 
     await page.locator('[data-primary-cover-cta="true"]').click()
     await page.waitForURL('**/mission-control/')
-    await assertVisible(page, 'text=Transportation Readiness')
-    assert.equal(await page.locator('.module-card').count(), 4)
+    await assertVisible(page, '[data-testid="gadget-cockpit"]')
+    assert.equal(await page.locator('.module-card').count(), 0)
 
     await page.goto(`${BASE_URL}/part53/`, { waitUntil: 'networkidle' })
     await page.waitForURL('**/part53-workspace/')
