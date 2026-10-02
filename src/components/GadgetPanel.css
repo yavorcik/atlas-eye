@@ -1,0 +1,20 @@
+.gadget-panel { width: min(1180px, calc(100% - 2rem)); margin: 1.5rem auto 0; padding: clamp(1rem, 3vw, 1.5rem); border: 1px solid rgba(237, 28, 36, .55); border-radius: 4px; background: linear-gradient(145deg, rgba(28, 12, 14, .98), rgba(8, 8, 9, .98)); box-shadow: 0 20px 70px rgba(0,0,0,.32); }
+.gadget-panel > header { display: grid; grid-template-columns: 76px 1fr auto; align-items: center; gap: 1rem; }
+.gadget-panel header img { width: 76px; height: 76px; object-fit: contain; filter: drop-shadow(0 8px 18px rgba(237,28,36,.2)); }
+.gadget-panel h2 { margin: 0; font-size: clamp(1.8rem, 4vw, 2.6rem); }
+.gadget-panel .eyebrow { margin: 0 0 .2rem; }
+.gadget-read-only { padding: .35rem .55rem; border: 1px solid rgba(255,255,255,.25); color: var(--atlas-muted); font-size: .72rem; letter-spacing: .14em; }
+.gadget-scope, .gadget-fallback { padding: .7rem .85rem; border-left: 3px solid var(--atlas-red); background: rgba(255,255,255,.035); color: var(--atlas-muted); }
+.gadget-transcript { display: grid; gap: .8rem; max-height: min(52vh, 620px); margin: 1rem 0; padding-right: .25rem; overflow-y: auto; }
+.gadget-question, .gadget-response, .gadget-empty { margin: 0; padding: .9rem; border: 1px solid rgba(255,255,255,.1); background: rgba(0,0,0,.2); }
+.gadget-response { display: grid; gap: .55rem; }
+.gadget-response p, .gadget-response ol, .gadget-response ul { margin-block: 0; }
+.gadget-response small { display: block; color: var(--atlas-muted); }
+.gadget-classification { color: #fff; font-size: .78rem; letter-spacing: .09em; text-transform: uppercase; }
+.gadget-analysis { display: grid; gap: .6rem; padding: .8rem; border: 1px solid rgba(255,255,255,.12); }
+.gadget-panel form { display: grid; gap: .5rem; }
+.gadget-panel textarea { width: 100%; resize: vertical; padding: .8rem; border: 1px solid rgba(255,255,255,.25); background: #070708; color: #fff; font: inherit; }
+.gadget-panel form > div { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.gadget-error { color: #ffb8bb; }
+@media (max-width: 620px) { .gadget-panel > header { grid-template-columns: 58px 1fr; } .gadget-panel header img { width: 58px; height: 58px; } .gadget-read-only { grid-column: 1 / -1; width: max-content; } .gadget-panel { width: min(100% - 1rem, 1180px); } }
+@media print { .gadget-panel { display: none !important; } }
