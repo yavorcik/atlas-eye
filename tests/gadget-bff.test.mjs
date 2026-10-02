@@ -61,6 +61,16 @@ test('auth start uses PKCE, read scope, safe return path, and hardened cookie', 
   assert.match(result.multiValueHeaders['Set-Cookie'][0], /HttpOnly; Secure; SameSite=Lax/)
 })
 
+test('authentication routes work without the read-only query backend configuration', async () => {
+  delete process.env.GADGET_ATLAS_API_URL
+  const started = await handler(event('auth-start'))
+  assert.equal(started.statusCode, 302)
+
+  const session = await handler(event('session'))
+  assert.equal(session.statusCode, 401)
+  assert.deepEqual(JSON.parse(session.body), { authenticated: false })
+})
+
 test('auth callback exchanges the PKCE code server-side and seals the access token', async () => {
   const started = await handler(event('auth-start', {
     queryStringParameters: { action: 'auth-start', returnTo: '/mission-control/evidence/' },
@@ -97,6 +107,7 @@ test('auth callback exchanges the PKCE code server-side and seals the access tok
 })
 
 test('workforce routes are fixed, subject-derived, CSRF-protected, and never proxy arbitrary URLs', async () => {
+  delete process.env.GADGET_ATLAS_API_URL
   let upstream
   global.fetch = async (url, options) => { upstream = { url: String(url), options }; return { ok: true, text: async () => JSON.stringify({ objective_id: 'objective-1' }) } }
   const create = authenticatedEvent({ objective: 'Resolve bounded site evidence.' })
@@ -109,6 +120,19 @@ test('workforce routes are fixed, subject-derived, CSRF-protected, and never pro
   assert.deepEqual(JSON.parse(upstream.options.body), { objective: 'Resolve bounded site evidence.' })
   const bad = authenticatedEvent({ objective: 'x', upstream_url: 'https://evil.invalid' }); bad.queryStringParameters = { action: 'objectives' }
   assert.equal((await handler(bad)).statusCode, 400)
+})
+
+test('query requires a valid read-only query backend configuration', async () => {
+  global.fetch = () => { throw new Error('must not fetch') }
+  delete process.env.GADGET_ATLAS_API_URL
+  const absent = await handler(authenticatedEvent())
+  assert.equal(absent.statusCode, 503)
+  assert.deepEqual(JSON.parse(absent.body), { error: 'gadget_unavailable' })
+
+  process.env.GADGET_ATLAS_API_URL = 'https://preview-api.atlaseye.example/api/gadget/not-query'
+  const malformed = await handler(authenticatedEvent())
+  assert.equal(malformed.statusCode, 503)
+  assert.deepEqual(JSON.parse(malformed.body), { error: 'gadget_unavailable' })
 })
 
 test('session exposes only CSRF state and never the browser-hidden access token', async () => {

@@ -59,18 +59,23 @@ function workforceConfiguration() {
   return { origin, token }
 }
 
-function configuration() {
+function authenticationConfiguration() {
   const siteOrigin = exactOrigin(process.env.GADGET_SITE_ORIGIN)
   const cognitoDomain = exactOrigin(process.env.GADGET_COGNITO_DOMAIN)
   const clientId = process.env.GADGET_COGNITO_CLIENT_ID || ''
-  const atlasUrl = new URL(process.env.GADGET_ATLAS_API_URL || '')
   if (!/^[A-Za-z0-9]{1,128}$/.test(clientId)) throw new Error('invalid config')
+  const key = Buffer.from(process.env.GADGET_SESSION_SECRET || '', 'base64')
+  if (key.length !== 32) throw new Error('invalid config')
+  return { siteOrigin, cognitoDomain, clientId, key }
+}
+
+function queryConfiguration() {
+  const config = authenticationConfiguration()
+  const atlasUrl = new URL(process.env.GADGET_ATLAS_API_URL || '')
   if (atlasUrl.protocol !== 'https:' || atlasUrl.username || atlasUrl.password || atlasUrl.search || atlasUrl.hash || atlasUrl.pathname !== '/api/gadget/query') {
     throw new Error('invalid config')
   }
-  const key = Buffer.from(process.env.GADGET_SESSION_SECRET || '', 'base64')
-  if (key.length !== 32) throw new Error('invalid config')
-  return { siteOrigin, cognitoDomain, clientId, atlasUrl: atlasUrl.href, key }
+  return { ...config, atlasUrl: atlasUrl.href }
 }
 
 function exactOrigin(value = '') {
@@ -134,7 +139,7 @@ function sameOrigin(event, config) {
 
 function authStart(event) {
   if (!method(event, 'GET')) return response(405, { error: 'method_not_allowed' })
-  const config = configuration()
+  const config = authenticationConfiguration()
   const state = base64url(crypto.randomBytes(24))
   const verifier = base64url(crypto.randomBytes(48))
   const challenge = base64url(crypto.createHash('sha256').update(verifier).digest())
@@ -152,7 +157,7 @@ function authStart(event) {
 
 async function authCallback(event) {
   if (!method(event, 'GET')) return response(405, { error: 'method_not_allowed' })
-  const config = configuration()
+  const config = authenticationConfiguration()
   const transaction = open(cookieValue(event, TRANSACTION_COOKIE), config.key)
   const code = event.queryStringParameters?.code
   const state = event.queryStringParameters?.state
@@ -206,7 +211,7 @@ function readSession(event, config) {
 async function workforce(event, action) {
   const expectedMethod = action === 'objectives' || action === 'continue' ? 'POST' : 'GET'
   if (!method(event, expectedMethod)) return response(405, { error: 'method_not_allowed' })
-  const config = configuration(); const workforceConfig = workforceConfiguration()
+  const config = authenticationConfiguration(); const workforceConfig = workforceConfiguration()
   let session
   try { session = readSession(event, config) } catch { return response(401, { error: 'authentication_required' }, [cookie(SESSION_COOKIE, '', 0)]) }
   if (expectedMethod === 'POST') {
@@ -244,7 +249,7 @@ function objectiveId(event) {
 
 function sessionStatus(event) {
   if (!method(event, 'GET')) return response(405, { error: 'method_not_allowed' })
-  const config = configuration()
+  const config = authenticationConfiguration()
   try {
     const session = readSession(event, config)
     return response(200, { authenticated: true, csrf: session.csrf })
@@ -255,7 +260,7 @@ function sessionStatus(event) {
 
 function logout(event) {
   if (!method(event, 'POST')) return response(405, { error: 'method_not_allowed' })
-  const config = configuration()
+  const config = authenticationConfiguration()
   if (!sameOrigin(event, config)) return response(403, { error: 'request_rejected' })
   try {
     const session = readSession(event, config)
@@ -289,7 +294,7 @@ function rateAllowed(key) {
 
 async function query(event) {
   if (!method(event, 'POST')) return response(405, { error: 'method_not_allowed' })
-  const config = configuration()
+  const config = queryConfiguration()
   if (!sameOrigin(event, config)) return response(403, { error: 'request_rejected' })
   let session
   try {
@@ -352,4 +357,4 @@ function redirect(location, cookies) {
   return { statusCode: 302, headers: { ...headers(), Location: location }, multiValueHeaders: { 'Set-Cookie': cookies }, body: '' }
 }
 
-export const testables = { seal, open, cookieValue, cleanReturnTo, sameOrigin, configuration, rateState }
+export const testables = { seal, open, cookieValue, cleanReturnTo, sameOrigin, authenticationConfiguration, workforceConfiguration, queryConfiguration, rateState }
