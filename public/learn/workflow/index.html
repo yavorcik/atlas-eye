@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#050505">
+  <meta name="description" content="Explore a behind-the-scenes AI workflow design: turn a fictional customer inquiry into a brief, reply draft and follow-up preview. An interactive rules-based simulation by AtlasEye.">
+  <link rel="canonical" href="https://atlaseye.ai/learn/workflow/">
+  <link rel="stylesheet" href="./style.css">
+  <title>See a Workflow in Action | AtlasEye</title>
+</head>
+<body>
+  <a class="skip" href="#demo">Skip to the interactive demo</a>
+  <header class="site-header wrap">
+    <a class="brand" href="/learn/">ATLAS<span>Powered by AtlasEye</span></a>
+    <nav aria-label="Main navigation"><a href="/learn/">Explore the work</a><a class="nav-book" href="/learn/#book">Book a free intro <span aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></a></nav>
+  </header>
+  <main>
+    <section class="hero wrap">
+      <div class="hero-copy"><p class="eyebrow"><span class="red-dot" aria-hidden="true"></span> A look behind the scenes</p>
+        <h1>One inquiry.<br>A clearer <em>next step.</em></h1>
+        <p class="lead">See how a behind-the-scenes AI workflow could turn an incoming request into something your team can act on. No chat window required.</p>
+        <a class="button primary" href="#demo">Try the workflow <span aria-hidden="true">↓</span></a>
+        <p class="small hero-note">Interactive simulation · Fictional examples · Nothing sent</p>
+      </div>
+      <div class="flow-art" aria-label="A sample inquiry becomes a project brief, then a draft reply, then human review">
+        <div class="art-label">THE WORK BETWEEN THE TOOLS</div>
+        <div class="flow-node"><span class="node-number">01</span><div><small>INPUT</small><strong>Customer inquiry</strong></div><span class="node-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></div>
+        <div class="flow-connector" aria-hidden="true"></div>
+        <div class="flow-node red"><span class="node-number">02</span><div><small>ORGANIZE + PREPARE</small><strong>A useful first draft</strong></div><span class="node-symbol" aria-hidden="true">+</span></div>
+        <div class="flow-connector" aria-hidden="true"></div>
+        <div class="flow-node"><span class="node-number">03</span><div><small>YOU STAY IN CONTROL</small><strong>Review before action</strong></div><span class="node-symbol" aria-hidden="true">✓</span></div>
+        <p>No customer records changed.<br>No emails sent. No commitments made.</p>
+      </div>
+    </section>
+
+    <section class="workspace-section" id="demo" aria-labelledby="demo-title">
+      <div class="wrap">
+        <div class="section-heading"><div><p class="eyebrow">The workflow lab</p><h2 id="demo-title">Change the input.<br>See what changes.</h2></div><span class="badge">Rules-based simulation</span></div>
+        <p class="disclosure"><strong>How this version works:</strong> rules read the labeled fields and match request keywords; templates prepare the outputs in your browser. It does not call a live AI model or connect to your apps. Use fictional information only.</p>
+        <noscript><p class="notice">This interactive simulation needs JavaScript. The example workflow is: collect an inquiry, identify missing information, prepare a brief and reply, then have a person review before any action. <a href="/learn/#book">Discuss your own workflow on a free call.</a></p></noscript>
+        <div class="workspace">
+          <section class="input-panel panel" aria-labelledby="input-title">
+            <div class="panel-top"><span class="step-label">01 / THE INPUT</span><span class="small">All examples are fictional</span></div>
+            <h3 id="input-title">Start with a real-world task.</h3>
+            <fieldset class="samples"><legend>Choose a sample</legend>
+              <label class="sample"><input type="radio" name="sample" value="inquiries" checked><span><strong>A busy service inbox</strong><small>Customer inquiries</small></span><span class="sample-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></label>
+              <label class="sample"><input type="radio" name="sample" value="orders"><span><strong>The same order questions</strong><small>Customer support</small></span><span class="sample-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></label>
+              <label class="sample"><input type="radio" name="sample" value="reporting"><span><strong>Friday reporting, simplified</strong><small>Weekly reporting</small></span><span class="sample-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></label>
+            </fieldset>
+            <form id="inquiry-form" novalidate>
+              <div class="field-label"><label for="inquiry">Sample customer inquiry</label><span id="char-count" class="small">0 / 2,000</span></div>
+              <textarea id="inquiry" name="inquiry" rows="13" maxlength="2000" spellcheck="false" aria-describedby="input-help form-error" required></textarea>
+              <p id="input-help" class="small">Edit the fictional details. Keep the labels Business, Request, Tools, Volume, Timeline and Budget on separate lines so the rules can read them.</p>
+              <div class="tweak-row"><button class="text-button" id="add-budget" type="button">Try adding a $2,500 budget</button><button class="text-button" id="reset" type="button">Reset sample</button></div>
+              <p id="form-error" class="error" role="alert"></p>
+              <button id="run" class="button primary run-button" type="submit" disabled>Run the simulation <span aria-hidden="true">→</span></button>
+              <p class="small privacy-note">Input stays in this tab. No model requests, form submissions or app connections.</p>
+            </form>
+          </section>
+
+          <section class="output-panel panel" aria-labelledby="output-title" aria-busy="false">
+            <div class="panel-top"><span class="step-label">02 / THE OUTPUT</span><span id="run-status" class="small" role="status">Ready when you are</span></div>
+            <h3 id="output-title" tabindex="-1">From scattered details to a plan.</h3>
+            <div id="empty-state" class="empty-state"><div class="empty-mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></div><p>One request. Three useful outputs.</p><ol><li><span>1</span> A brief with the gaps called out</li><li><span>2</span> A reply your team can review</li><li><span>3</span> A follow-up and record preview</li></ol><p class="small">Choose a sample and run the simulation.<br>Then change a detail and run it again.</p></div>
+            <div id="results" hidden>
+              <p id="stale-note" class="notice" hidden>Input changed. Run the simulation again to update these results.</p>
+              <div class="result-tabs" role="tablist" aria-label="Workflow outputs"><button id="tab-brief" role="tab" type="button" aria-selected="true" aria-controls="view-brief" tabindex="0">The brief</button><button id="tab-reply" role="tab" type="button" aria-selected="false" aria-controls="view-reply" tabindex="-1">Reply draft</button><button id="tab-handoff" role="tab" type="button" aria-selected="false" aria-controls="view-handoff" tabindex="-1">The handoff</button></div>
+              <section id="view-brief" role="tabpanel" aria-labelledby="tab-brief" tabindex="0"><p class="eyebrow result-eyebrow">Suggested workflow · Keyword match</p><h4 id="route-title"></h4><p id="route-scope"></p><dl id="fields" class="fields"></dl><div class="gap-box"><h5 id="gaps-title"></h5><ul id="gaps"></ul></div><div id="warnings" class="notice" hidden></div><div class="next-step"><span class="step-label">RECOMMENDED NEXT STEP</span><p id="next-step"></p></div></section>
+              <section id="view-reply" role="tabpanel" aria-labelledby="tab-reply" tabindex="0" hidden><div class="draft-header"><span>Template reply</span><span class="badge">Not sent</span></div><p class="small">Prepared from the sample fields. A person would check the facts, tone and scope before sending.</p><div id="reply" class="reply"></div></section>
+              <section id="view-handoff" role="tabpanel" aria-labelledby="tab-handoff" tabindex="0" hidden><div class="task-card"><span class="step-label">FOLLOW-UP TASK PREVIEW</span><h4 id="task-title"></h4><p><strong>Owner:</strong> Your team, to be assigned</p><p><strong>Due date:</strong> To be agreed</p><p><strong>Status:</strong> Draft only. No task created.</p></div><h5>Customer record preview</h5><dl id="record" class="fields record"></dl><p class="small">This is an example of a proposed record. Nothing is saved to a CRM or spreadsheet.</p></section>
+              <div class="review-gate"><span class="review-icon" aria-hidden="true">✓</span><div><strong>Human review is the handoff.</strong><p id="review-checks"></p></div></div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section class="explanation wrap"><p class="eyebrow">What “behind the scenes” means</p><h2>The interface is optional.<br>The useful work is the point.</h2><div class="explanation-grid"><article><span class="step-label">INPUT</span><h3>Use what arrives.</h3><p>A production workflow could start with an approved form, inbox or business tool. This demo starts with a fictional inquiry.</p></article><article><span class="step-label">PREPARATION</span><h3>Make it easier to act.</h3><p>Organize information, identify gaps and prepare a first draft. This prototype uses rules and templates; a production design can include AI.</p></article><article><span class="step-label">CONTROL</span><h3>Keep a clear boundary.</h3><p>Decide what needs approval, who reviews it and what can happen next. Access, costs and safeguards are scoped before integrations go live.</p></article></div>
+      <details><summary>What is working, and what is simulated?</summary><p>The sample picker, editable inquiry, labeled-field extraction, keyword routing, missing-information checks and generated template outputs work locally in your browser. The system does not understand arbitrary text like a language model. Order lookups, email sending, task creation and customer-record updates are not connected and are shown only as previews. It does not verify budgets, timing or tool access.</p></details>
+    </section>
+    <section class="cta-section wrap" aria-labelledby="cta-title"><p class="eyebrow">Build around your work</p><h2 id="cta-title">What would you take<br>off your team’s plate?</h2><p class="lead">Bring one repetitive task to a free 30-minute introductory call. We’ll explore a focused first step.</p><div class="cta-grid"><article><h3>Done for you.</h3><p>We scope and build a practical workflow for your team, with testing and a clear handoff.</p><a class="button primary" href="/learn/?interest=done-for-you#book">Build it for me <span aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></a></article><article><h3>Built together.</h3><p>Work alongside us, understand the decisions and learn how the pieces fit as we build.</p><a class="button" href="/learn/?interest=build-along#book">Build it with me <span aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></a></article></div><p class="small">Both options start with the same free introductory call. Scope, pricing and delivery terms are agreed before paid work.</p></section>
+  </main>
+  <footer class="wrap"><span>Atlas Learning · Powered by <a href="https://atlaseye.ai/">AtlasEye</a></span><span>Simulation only. No live AI or connected actions.</span></footer>
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>
