@@ -17,7 +17,7 @@ function request(input, headers = {}) {
 }
 
 function setup() {
-  const stores = { workshop: new Map(), inquiry: new Map() }
+  const stores = { workshop: new Map(), waitlist: new Map(), inquiry: new Map() }
   const handle = createIntakeHandler((kind) => ({
     async setJSON(key, record, options) {
       assert.equal(options.onlyIfNew, true)
@@ -27,6 +27,12 @@ function setup() {
     },
     async get(key) {
       return stores[kind].get(key)
+    },
+    async list() {
+      return { blobs: [...stores[kind].keys()].map((key) => ({ key })) }
+    },
+    async delete(key) {
+      return stores[kind].delete(key)
     },
   }), beforeWorkshop)
   return { handle, stores }
@@ -39,10 +45,29 @@ test('workshop retries deduplicate without revealing prior registration', async 
     assert.equal(response.status, 201)
     assert.deepEqual(await response.json(), { saved: true })
   }
-  assert.equal(stores.workshop.size, 1)
+  assert.equal(stores.workshop.size, 2)
   assert.equal(stores.inquiry.size, 0)
 })
 
+test('full workshop overflow can join the separate next-session waitlist', async () => {
+  const { handle, stores } = setup()
+  for (let index = 0; index < 25; index += 1) {
+    stores.workshop.set(index.toString(16).padStart(64, '0'), { attendee: true })
+  }
+
+  const full = await handle(request(workshop))
+  assert.equal(full.status, 409)
+  assert.match((await full.json()).error, /next-session list/)
+
+  const overflow = await handle(request({ ...workshop, kind: 'waitlist' }))
+  assert.equal(overflow.status, 201)
+  assert.deepEqual(await overflow.json(), { saved: true })
+  assert.equal(stores.workshop.size, 25)
+  assert.equal(stores.waitlist.size, 1)
+  assert.equal([...stores.waitlist.values()][0].consentPurpose, 'next free live workshop notifications')
+  assert.equal((await handle(request({ ...workshop, kind: 'waitlist', email: 'SAMPLE@example.com' }))).status, 201)
+  assert.equal(stores.waitlist.size, 1)
+})
 test('inquiry drafts stay private and route by fit without following submitted instructions', async () => {
   const { handle, stores } = setup()
   for (const [expected, overrides] of [['qualified', {}], ['needs_details', { goal: '' }], ['owner_review', { volume: 'none' }]]) {
@@ -76,6 +101,6 @@ test('bad requests and failed writes cannot produce a saved response', async () 
 test('workshop registration closes when the session begins', async () => {
   const closed = createIntakeHandler(() => {
     assert.fail('Closed registration must never access the store.')
-  }, () => Date.parse('2026-11-19T16:00:00-05:00'))
+  }, () => Date.parse('2026-11-20T16:00:00-05:00'))
   assert.equal((await closed(request(workshop))).status, 410)
 })
