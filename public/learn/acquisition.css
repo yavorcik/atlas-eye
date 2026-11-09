@@ -378,3 +378,94 @@ select:focus-visible {
     justify-self: center;
   }
 }
+
+
+.scout-feature {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(24px, 5vw, 64px);
+}
+
+.scout-feature-copy h2 {
+  max-width: 650px;
+}
+
+.scout-feature-copy p:not(.eyebrow) {
+  max-width: 650px;
+  color: var(--muted);
+}
+
+.scout-workflow {
+  padding: clamp(20px, 3vw, 32px);
+  background: #111115;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.scout-workflow-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 18px;
+  color: var(--accent);
+  letter-spacing: .1em;
+  font-size: 13px;
+}
+
+.scout-workflow-header span {
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: .08em;
+  text-align: right;
+}
+
+.scout-step {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 0;
+  border-top: 1px solid var(--line);
+}
+
+.scout-step-number {
+  color: #ff6069;
+  font: 600 14px/1 system-ui, sans-serif;
+}
+
+.scout-step-copy strong,
+.scout-step-copy small {
+  display: block;
+}
+
+.scout-step-copy strong {
+  font-size: 16px;
+}
+
+.scout-step-copy small {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.scout-step-state {
+  padding: 4px 9px;
+  border: 1px solid #5a5a63;
+  border-radius: 999px;
+  color: #f0f0f3;
+  font-size: 12px;
+}
+
+.scout-workflow-note {
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+@media (max-width: 850px) {
+  .scout-feature {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -11,7 +11,7 @@
 .portfolio-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin:32px 0 24px}.project{display:flex;flex-direction:column;padding:28px;border:1px solid var(--line);border-radius:10px;background:#111115}.project-number{font:500 48px/1 Georgia,serif;color:var(--accent);margin-bottom:25px}.project h3{font:500 29px/1.15 Georgia,serif;margin:18px 0 12px}.project p{font-size:16px;color:var(--muted)}.project a{margin-top:auto;padding-top:15px;font-size:15px;font-weight:650}.project .status{align-self:flex-start;font-size:11px}.portfolio-note{border-left:3px solid var(--accent);padding-left:20px}@media(max-width:850px){.portfolio-grid{grid-template-columns:1fr}.project{padding:25px}.project-number{margin-bottom:18px}}@media(max-width:700px){header{flex-direction:column}nav{justify-content:flex-start;gap:10px 18px}}
 .bot-track{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:32px;border-top:3px solid var(--accent)}.bot-track h3{margin-bottom:20px}@media(max-width:700px){.bot-track{grid-template-columns:1fr;gap:5px}}
 </style>
-<link rel="stylesheet" href="./acquisition.css">
+<link rel="stylesheet" href="./acquisition.css?v=20261109-scout-popout">
 <script type="module" src="./acquisition.js"></script>
 <script type="module" src="./intake.js"></script>
 </head>
@@ -101,6 +101,33 @@
     <video id="agent-video-player" controls playsinline></video>
   </div>
 </dialog>
+<section class="section scout-feature" id="scout" aria-labelledby="scout-heading">
+  <div class="scout-feature-copy">
+    <p class="eyebrow">Featured agent · Personal bankruptcy intake</p>
+    <h2 id="scout-heading">Meet Scout, the headless agent behind the intake.</h2>
+    <p>The client sees guided questions and document uploads. Scout coordinates the work behind the scenes, then gives staff a final checklist with missing items flagged.</p>
+    <p>This example focuses on Chapter 7 intake. Attorney and staff review stay in control; Scout organizes information and does not make legal decisions or provide legal advice.</p>
+  </div>
+  <div class="scout-workflow" aria-label="Illustrative Scout workflow using fictional information">
+    <div class="scout-workflow-header"><strong>SCOUT</strong><span>FICTIONAL SAMPLE · NO CLIENT DATA</span></div>
+    <div class="scout-step">
+      <span class="scout-step-number">01</span>
+      <div class="scout-step-copy"><strong>Intake answers</strong><small>Guided questions completed</small></div>
+      <span class="scout-step-state">Ready</span>
+    </div>
+    <div class="scout-step">
+      <span class="scout-step-number">02</span>
+      <div class="scout-step-copy"><strong>Supporting documents</strong><small>Uploads collected with intake</small></div>
+      <span class="scout-step-state">Review</span>
+    </div>
+    <div class="scout-step">
+      <span class="scout-step-number">03</span>
+      <div class="scout-step-copy"><strong>Staff checklist</strong><small>Missing items flagged for follow-up</small></div>
+      <span class="scout-step-state">Ready</span>
+    </div>
+    <p class="scout-workflow-note">Headless agent · human review built into the workflow</p>
+  </div>
+</section>
 <section class="section workshop" id="workshop" aria-labelledby="workshop-heading">
   <div>
     <p class="eyebrow">Free live workshop · 45 minutes</p>
