@@ -4,7 +4,7 @@ Friday, November 20, 2026, from 4:00 to 4:45 p.m. Eastern on Google Meet. Free 4
 
 ## Operate the signup and inquiry flows
 
-The Learn page collects permission-based workshop signups and consulting inquiries. Workshop registration is capped at 50 attendees and closes when all seats are claimed or when the session starts. People who signed up before the date was announced remain on the same list. The forms show a confirmation only after storage succeeds. They do not send email; send joining instructions manually to registrants who consented.
+The Learn page collects permission-based workshop signups and consulting inquiries. Workshop registration is capped at 25 attendees and closes when all seats are claimed or when the session starts. People who signed up before the date was announced remain on the same list. The forms show a confirmation only after storage succeeds. They do not send email; send joining instructions manually to registrants who consented.
 
 In the Atlas Eye Netlify project, open **Blobs** and choose **learning-workshop-signups** or **learning-inquiry-review**. Each signup is deduplicated by email. Each inquiry has a timestamp, a source, its intake fields, a routing status and a draft for staff to review. Use the draft and the existing booking calendar to handle the inquiry. Download only the record you need, keep it private, and remove test records and stale personal data. Preview deploys use separate per-deploy stores.
 
