@@ -7,7 +7,7 @@ const workshopCapacity = 50
 const maxBytes = 8192
 const validVolume = ['none', '1–10', '11–50', '51+']
 const validGoal = ['missed', 'slow', 'qualification', 'other']
-const validSource = ['direct', 'referral', 'linkedin', 'email', 'event', 'other']
+const validSource = ['direct', 'referral', 'linkedin', 'tiktok', 'email', 'event', 'other']
 
 const goalLabels = {
   missed: 'new inquiries getting missed',
@@ -78,7 +78,7 @@ async function reserveWorkshopRegistration(store, emailKey, record) {
         return { saved: true }
       }
       return { saved: true }
-    } catch (error) {
+    } catch {
       await store.delete(seatKey).catch(() => {})
       throw error
     }

@@ -1,5 +1,5 @@
 const query = new URLSearchParams(window.location.search)
-const allowedSources = ['referral', 'linkedin', 'email', 'event']
+const allowedSources = ['referral', 'linkedin', 'tiktok', 'email', 'event']
 const incomingSource = query.get('utm_source')?.toLowerCase()
 const source = allowedSources.includes(incomingSource) ? incomingSource : incomingSource ? 'other' : 'direct'
 const campaign = query.get('utm_campaign') || ''
