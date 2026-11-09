@@ -2,7 +2,7 @@ import { createHash, randomUUID } from 'node:crypto'
 import { getDeployStore, getStore } from '@netlify/blobs'
 
 const consultationUrl = 'https://calendar.app.google/T6uKgFsHYE6okXn28'
-const workshopStart = Date.parse('2026-11-19T16:00:00-05:00')
+const workshopStart = Date.parse('2026-11-20T16:00:00-05:00')
 const maxBytes = 8192
 const validVolume = ['none', '1–10', '11–50', '51+']
 const validGoal = ['missed', 'slow', 'qualification', 'other']

@@ -16,7 +16,7 @@ function request(input, headers = {}) {
   })
 }
 
-function setup() {
+function setup(now = beforeWorkshop) {
   const stores = { workshop: new Map(), inquiry: new Map() }
   const handle = createIntakeHandler((kind) => ({
     async setJSON(key, record, options) {
@@ -28,7 +28,7 @@ function setup() {
     async get(key) {
       return stores[kind].get(key)
     },
-  }), beforeWorkshop)
+  }), now)
   return { handle, stores }
 }
 
@@ -76,6 +76,14 @@ test('bad requests and failed writes cannot produce a saved response', async () 
 test('workshop registration closes when the session begins', async () => {
   const closed = createIntakeHandler(() => {
     assert.fail('Closed registration must never access the store.')
-  }, () => Date.parse('2026-11-19T16:00:00-05:00'))
+  }, () => Date.parse('2026-11-20T16:00:00-05:00'))
   assert.equal((await closed(request(workshop))).status, 410)
+})
+
+test('workshop registration stays open through the former start and until the rescheduled start', async () => {
+  for (const timestamp of ['2026-11-19T16:00:00-05:00', '2026-11-20T15:59:59-05:00']) {
+    const { handle, stores } = setup(() => Date.parse(timestamp))
+    assert.equal((await handle(request(workshop))).status, 201)
+    assert.equal(stores.workshop.size, 1)
+  }
 })
