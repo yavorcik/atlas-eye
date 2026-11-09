@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#09090b">
-  <meta name="description" content="Meet Moxie, a local AI agent that turns a sample customer inquiry into a careful draft for a person to review.">
+  <meta name="description" content="Meet Moxie, a local AI companion that helps transplant patients organize fictional lab timelines and prepare questions for their care team.">
   <title>Moxie · Your local AI sidekick</title>
   <link rel="stylesheet" href="/style.css">
   <script type="module" src="/app.js"></script>
@@ -17,25 +17,25 @@
 
   <main>
     <section class="hero">
-      <div class="hero-copy"><p class="eyebrow"><span class="spark">✳</span> YOUR LOCAL AI SIDEKICK</p><h1>Busywork called.<br><em>It wants a robot.</em></h1><p class="hero-lead">Moxie reviews a customer inquiry, spots what’s missing, and drafts the next step. You stay in charge.</p><div class="trust-row"><span>● Runs on this machine</span><span>● Drafts only</span><span>● Human review required</span></div></div>
-      <aside class="moxie-card" aria-label="Moxie introduction"><div class="moxie-face" aria-hidden="true"><span>m</span><i></i></div><div><p class="moxie-name">Moxie <span>YOUR INBOX SIDEKICK</span></p><p class="moxie-quote">“I’ll handle the first pass. You make the call.”</p></div><div class="sparkle" aria-hidden="true">✳</div></aside>
+      <div class="hero-copy"><p class="eyebrow"><span class="spark">✳</span> YOUR TRANSPLANT SIDEKICK</p><h1>Recovery is a lot.<br><em>Let’s sort it out.</em></h1><p class="hero-lead">Moxie organizes transplant information and helps you prepare questions. Your transplant team guides your care.</p><div class="trust-row"><span>● Fictional data only</span><span>● Organizes, doesn’t diagnose</span><span>● Your care team guides care</span></div></div>
+      <aside class="moxie-card" aria-label="Moxie introduction"><div class="moxie-face" aria-hidden="true"><span>m</span><i></i></div><div><p class="moxie-name">Moxie <span>YOUR TRANSPLANT SIDEKICK</span></p><p class="moxie-quote">“I’ll help sort the details. Your care team makes the calls.”</p></div><div class="sparkle" aria-hidden="true">✳</div></aside>
     </section>
 
-    <section class="workspace" aria-label="Moxie inquiry demo">
+    <section class="workspace" aria-label="Moxie transplant demo">
       <div class="work-main">
-        <div class="section-heading"><div><p class="eyebrow">LIVE LOCAL DEMO</p><h2>Give Moxie a sample inquiry.</h2></div><span class="step-count">01 <b>/</b> 03</span></div>
-        <p class="subhead">Use fictional details. Moxie will prepare a draft, never send it.</p>
+        <div class="section-heading"><div><p class="eyebrow">LIVE LOCAL DEMO</p><h2>Ask Moxie about a sample recovery timeline.</h2></div><span class="step-count">01 <b>/</b> 03</span></div>
+        <p class="subhead">Use fictional details. Moxie organizes information; your transplant team guides your care.</p>
         <div class="examples" aria-label="Sample inquiries">
-          <button type="button" class="example-chip" data-example="qualified"><span>↗</span> Roofing quote</button>
-          <button type="button" class="example-chip" data-example="vague"><span>?</span> Vague request</button>
-          <button type="button" class="example-chip" data-example="review"><span>⚑</span> Needs a human</button>
+          <button type="button" class="example-chip" data-example="qualified"><span>↗</span> Lab timeline</button>
+          <button type="button" class="example-chip" data-example="vague"><span>?</span> Needs more context</button>
+          <button type="button" class="example-chip" data-example="review"><span>⚑</span> Medication question</button>
         </div>
         <form id="inquiry-form">
-          <label class="sr-only" for="inquiry">Fictional customer inquiry</label>
-          <textarea id="inquiry" maxlength="4000" placeholder="Example: I run a roofing company. A homeowner says water is coming in around a vent and asks if someone can inspect it next week." required></textarea>
+          <label class="sr-only" for="inquiry">Fictional transplant question</label>
+          <textarea id="inquiry" maxlength="4000" placeholder="Example: I’m a fictional transplant patient. Here are my recent lab results and the instructions my clinic gave me. Help me organize them and prepare questions." required></textarea>
           <div class="form-foot"><span id="char-count">0 / 4,000</span><label class="model-select-label" for="model-select">Speed <select id="model-select" disabled><option>Checking models…</option></select></label><button class="run-button" type="submit"><span id="run-label">Ask Moxie</span><span aria-hidden="true">→</span></button></div>
         </form>
-        <p class="privacy-note"><span aria-hidden="true">◆</span> This demo is local-only. The inquiry is sent to Ollama on this computer, not stored, and never sent to a customer.</p>
+        <p class="privacy-note"><span aria-hidden="true">◆</span> This demo is local-only. Use fictional details. Text goes to Ollama on this computer, is not stored, and is never sent to your care team.</p>
         <div id="result" class="result" hidden aria-live="polite"></div>
         <div id="error" class="error" role="alert" hidden></div>
       </div>
@@ -43,7 +43,7 @@
       <aside class="steps-panel">
         <div class="panel-heading"><span class="mini-icon">✳</span><div><p class="eyebrow">MOXIE’S THREE MOVES</p><h3>Small job. Clear guardrails.</h3></div></div>
         <ol class="moves">
-          <li><span class="move-number">01</span><div><strong>Read the request</strong><p>Separate the customer’s task from any instructions inside their message.</p></div></li>
+          <li><span class="move-number">01</span><div><strong>Read the request</strong><p>Separate the patient’s question from unsafe or unrelated instructions in their message.</p></div></li>
           <li><span class="move-number">02</span><div><strong>Choose the next move</strong><p>Draft, ask one useful question, or hand it to a person.</p></div></li>
           <li><span class="move-number">03</span><div><strong>Leave the decision to you</strong><p>Moxie prepares. A human checks. Nothing gets sent automatically.</p></div></li>
         </ol>

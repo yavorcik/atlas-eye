@@ -1,46 +1,55 @@
-# Moxie screen-recording script
+# How I Made Moxie: A Transplant Companion
 
-Target: 4–6 minutes. Use a fictional roofing inquiry. Keep browser text and terminal text large. Select **Quick · qwen3:4b** for the live run when installed; choose **Detailed · qwen3.5:9b** when answer quality matters more than speed. Warm the selected model before recording so the first answer does not wait for a cold load.
+**Target:** 4–6 minutes  
+**Demo rule:** Use fictional details only. Never show a MyChart screen, real lab result, medication list, or patient identifier.
 
-## Storyboard and narration
+## Before recording
 
-### 1. The result (0:00–0:25)
+- Start Ollama and Moxie; confirm the selected model is warm.
+- Open the Moxie page and make the browser text large.
+- Keep a screenshot of the fictional result ready in case the model stalls.
+- Keep the terminal out of view until the Git and tech-stack explanation.
 
-Show Moxie in the browser. Click **Roofing quote** and say: “This is Moxie. It reads one sample inquiry, figures out whether it has enough information, and prepares a draft. It does not send anything.” Point out the speed selector briefly; use the quick model for the first response.
+## 0:00 — The problem
 
-### 2. The stack (0:25–1:05)
+“After a transplant, there’s a lot to keep straight: lab results, instructions, appointments, medications, and questions. I wanted to see whether an AI agent could help organize all of that. I’m a liver transplant patient, so this problem is personal to me. Today’s demo uses made-up information.”
 
-Click **Show me the tech**. Point to the map: “ChatGPT helps us design the job. Codex changes the files. Node is the small server between the browser and the model. Ollama runs the model on this computer. GitHub and hosting come later, when we want to publish.”
+## 0:35 — Design before code
 
-Clarify: “Local model means this inference runs here; it does not mean ChatGPT or Codex are local.”
+“My first question wasn’t ‘Which model should I use?’ It was ‘What job should Moxie do?’ The answer: organize information and help a patient prepare for a conversation with their transplant team.”
 
-### 3. The instruction (1:05–1:40)
+“Then I wrote down what Moxie must not do. It must not diagnose, decide whether a lab result is safe, or tell anyone to change a medication. Those boundaries shape the prompt, the interface, and the examples.”
 
-Briefly show the `instructions` and output `schema` in `server.mjs`. Say: “The prompt defines the job and guardrails. The schema makes the output predictable enough for the interface to display.”
+## 1:20 — Show the fictional example
 
-### 4. The live run (1:40–2:25)
+Click **Lab timeline** and submit the sample.
 
-Return to the browser, click the roofing example, and run Moxie. While it thinks: “The browser sends the text to our Node server. The server sends it to Ollama on this machine. Ollama returns a structured answer. We do not save it.”
+“This is a fictional timeline. Moxie can put the values in date order, describe what information was supplied, and suggest questions. It should not call the trend good or bad or pretend to know what it means for this patient.”
 
-Review the status, summary, question, draft and next step. Say: “This is a first pass, not a decision. A person reviews it.”
+Then click **Needs more context** and **Medication question**. Explain that Moxie should ask for missing information or direct medication questions back to the care team.
 
-### 5. Try a tricky case (2:25–3:10)
+## 2:30 — Show how it was built
 
-Click **Needs a human**, run it, and show that the prompt cannot override Moxie’s job. Then run **Vague request** to show it asks for clarification instead of making up details.
+“Git keeps the project’s history. I saved the original Moxie demo as a starting commit, created a separate `moxie-transplant-demo` branch, and made these changes there. If I make a mistake, I can compare versions or go back.”
 
-### 6. The code path (3:10–4:10)
+Show `git status --short --branch`, then point out the changed files. Do not stage or commit anything during the recording unless the change has been reviewed.
 
-Show the terminal with the server running, then the three files: `public/index.html` (interface), `public/app.js` (browser behavior), and `server.mjs` (local model call and validation). Say: “That’s the stack. Each piece has one job. We can change the model without rebuilding the whole workflow.”
+“Here’s the stack: the browser is the screen; Node is the small local server; Ollama runs the language model on this computer; Git tracks the code changes.”
 
-### 7. Close (4:10–4:30)
+## 3:25 — Explain RAG honestly
 
-Return to the browser and say: “Bring one task you’re tired of doing. We’ll show you how to turn it into an agent—and how to build the next one yourself. Liberation via AI Agent.”
+“Right now, Moxie follows instructions in its prompt and uses the fictional information typed into the page. It does not yet search a transplant knowledge base. The next step is RAG: retrieve a relevant passage from a small, reviewed set of patient-education sources, give that passage to Moxie, and show the source and date with the answer.”
 
-## Recording checklist
+“For a patient’s own care plan, the source would need to be their own dated instructions. A general article must never be presented as their personal medical target.”
 
-- Use sample data only; no real names, inboxes, client files or personal information.
-- Keep `server.mjs` and browser screens free of API keys and private paths.
-- Do not show attendee registrations or the private meeting link.
-- Confirm the status pill says **Local model connected** before capture.
-- Capture a clean run at 1920×1080; leave enough time for the model to answer naturally.
-- If Ollama is unavailable or the model response is malformed, stop the recording and fix it. Do not pass off a canned answer as a live model run.
+## 4:20 — Explain MyChart and privacy
+
+“This demo is not connected to MyChart. A future connection should use the patient-authorized app-access flow, if the health system supports it. Moxie should never ask a patient to give it a MyChart password.”
+
+“Git tracks code, not private records or credentials. The public demo stays fictional. A private version would need separate, carefully controlled storage and clear patient control over access and deletion.”
+
+## 5:00 — Close
+
+“That’s how I made Moxie: start with a real problem, define the job and boundaries, build one small workflow, and improve it one saved change at a time. The point isn’t that AI replaces your judgment or your care team. It’s that you can learn the tools and build an assistant around a problem you understand.”
+
+“Next, we’ll add a small, source-linked transplant education library and an optional medication reminder that the patient controls.”

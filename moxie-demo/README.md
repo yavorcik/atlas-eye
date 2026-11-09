@@ -1,6 +1,6 @@
 # Moxie local demo
 
-Moxie is a small Atlas Learning demo that reviews a fictional or redacted service-business inquiry with a local Ollama model. It can classify the inquiry, ask for missing details, draft a reply, or route it to a person. It never sends replies, stores inquiries, or calls third-party services.
+Moxie is a local Atlas Learning demo of a transplant recovery organizer. It uses fictional information to arrange a lab timeline and prepare questions for a transplant team. It does not diagnose, recommend treatment changes, connect to MyChart, or store submitted text.
 
 ## Start it
 
@@ -30,7 +30,7 @@ The browser never calls Ollama directly. The local Node server proxies the reque
 
 ## Rehearsal boundaries
 
-Use fictional or redacted inquiries. Moxie is a demonstration, not an autonomous customer-service system. It creates drafts for a person to review; it has no email, CRM, calendar, or customer-record connection. No submitted text is written to disk or logged by this app.
+Use fictional information only. This prototype has no MyChart or medical-record connection. Do not enter real health information. Submitted text is not saved to disk.
 
 The chosen model stays loaded for 15 minutes between requests, which avoids repeated reload delays during a demo. Quick mode disables Qwen3's extra reasoning for this short structured task and allows enough output tokens to finish its JSON. Smaller models generally trade some answer depth for response speed; compare both on the actual machine before presenting.
 
