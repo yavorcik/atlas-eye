@@ -1,33 +1,36 @@
-# Build an AI agent that turns inquiries into booked calls
+# Atlas Learning live build
 
-Free 45-minute workshop for owner-led service businesses that already receive quote or appointment requests. Attendees can bring a fictional or redacted inquiry. No coding experience required.
+Free 45-minute workshop for owner-led service businesses that already receive quote or appointment requests. Participants can bring a fictional or redacted inquiry.
 
-## Host checklist
+## Operate the signup and inquiry flows
 
-- Confirm the date and time. Create a group registration page with the event time zone and meeting instructions. Once it accepts signups, replace the date-pending text and switch the main Learn page button to **Save my seat for the free live build**.
-- Start with personal invitations and a local business organization. Use the workshop link with a distinct campaign tag for each channel. Track registrations, attendance and qualified inbox reviews by channel where the registration system supports attribution.
-- Rehearse with a local Ollama model and fictional inputs. Open the public scripted demo as a fallback. The inbox integration is a separate step once an isolated test inbox is selected. Use drafts and a manual review queue for the first installation.
+The Learn page collects permission-based workshop signups and consulting inquiries. The workshop list stays open while the date is pending. The forms show a confirmation only after storage succeeds. They do not send email.
+
+In the Atlas Eye Netlify project, open **Blobs** and choose **learning-workshop-signups** or **learning-inquiry-review**. Each signup is deduplicated by email. Each inquiry has a timestamp, a source, its intake fields, a routing status and a draft for staff to review. Use the draft and the existing booking calendar to handle the inquiry. Download only the record you need, keep it private, and remove test records and stale personal data. Preview deploys use separate per-deploy stores.
+
+When the host confirms the workshop date and time, create the host meeting and publish the time and time zone. Update the confirmation copy and share the joining instructions with the people who opted into that workshop. Keep the joining link out of the public repository. Use separate campaign tags for referrals, email and partner events.
 
 ## Run of show
 
 | Time | What to do |
 | --- | --- |
 | 0–7 min | Tell the Valley Tote story. The site came together quickly. The small ad test produced clicks and no verified demand. Ask where an inquiry stalls in the audience’s business. |
-| 7–17 min | Agree on the qualifying rules and define what staff should review. Show the workflow prompt and the fields it returns. |
-| 17–30 min | Run the roofing-owner inquiry through the Atlas Learning draft runner. Show the draft, the optional booking link and the review decision. |
+| 7–17 min | Agree on the qualifying rules. Open the prompt in the draft runner and build the first rule together. |
+| 17–30 min | Run a fictional roofing-owner inquiry. Show the draft, the optional booking link and the staff review decision. |
 | 30–40 min | Run a vague inquiry and an attempt to override the workflow. Invite a fictional audience example. Review errors and missing information together. |
 | 40–45 min | Offer a free inbox review. For a good fit, scope a paid setup around one inbox and one booking flow. |
 
-## Run the draft workflow
+## Rehearse the model-assisted review
 
-With Ollama running on the same machine, set the environment variable to an installed model. For example, on an Atlas host that already has `qwen3.5:9b`:
+With Ollama running locally, use an installed model. The script sends the selected text only to the Ollama endpoint on localhost. The record mode leaves the contact name and email out of the prompt.
 
 ```sh
 ATLAS_INQUIRY_MODEL=qwen3.5:9b node scripts/atlas-inquiry-draft.mjs qualified
 ATLAS_INQUIRY_MODEL=qwen3.5:9b node scripts/atlas-inquiry-draft.mjs vague
 ATLAS_INQUIRY_MODEL=qwen3.5:9b node scripts/atlas-inquiry-draft.mjs review
-printf '%s\n' 'I run a plumbing company and miss weekend requests.' |
-  ATLAS_INQUIRY_MODEL=qwen3.5:9b node scripts/atlas-inquiry-draft.mjs -
+ATLAS_INQUIRY_MODEL=qwen3.5:9b node scripts/atlas-inquiry-draft.mjs --record /path/to/private-record.json
 ```
 
-The workflow produces a review packet locally. It has no mailbox permissions or send step. Review the model output for accuracy and promises before sending a reply manually. For the first client setup, compare median first-response time, qualified inquiries that book, and booked appointments that take place against a comparable baseline. Track volume alongside each rate.
+Review the output for accuracy and promises before using it. The deployed queue uses fixed rules so it can prepare a draft without model credentials. Rehearse the local model before presenting it live. Use the interactive public demo as a fallback.
+
+For the first client setup, compare median first-response time, qualified inquiries that book, and booked appointments that take place against a comparable baseline. Record the underlying counts and capture source attribution when known.

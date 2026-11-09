@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises'
 import process from 'node:process'
 
 const { stdin, stdout, stderr, env } = process
@@ -27,8 +28,20 @@ const examples = {
 }
 
 async function readInquiry(source) {
+  if (source === '--record') {
+    const path = process.argv[3]
+    if (!path) throw new Error('Pass the path to a private review record after --record.')
+    const record = JSON.parse(await readFile(path, 'utf8'))
+    if (record.reviewState !== 'pending') throw new Error('Expected a pending Atlas Learning inquiry.')
+    return JSON.stringify({
+      business: record.business,
+      inquiry_volume: record.volume,
+      goal: record.goal,
+      details: record.details,
+    })
+  }
   if (Object.hasOwn(examples, source)) return examples[source]
-  if (source !== '-') throw new Error('Choose qualified, vague, review, or - for a redacted inquiry on stdin.')
+  if (source !== '-') throw new Error('Choose qualified, vague, review, --record, or - for a redacted inquiry on stdin.')
   let inquiry = ''
   stdin.setEncoding('utf8')
   for await (const chunk of stdin) {
