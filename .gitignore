@@ -32,4 +32,7 @@ backups/
 *.before-mobile-fix-*
 
 # Local browser-test screenshots
-test-artifacts/
+test-artifacts/\n\n# Private local Moxie care-plan notes\nmoxie-demo/private/\n
+
+# Local private Moxie profile
+/moxie-demo/private/

@@ -1,55 +1,56 @@
 # How I Made Moxie: A Transplant Companion
 
 **Target:** 4–6 minutes  
-**Demo rule:** Use fictional details only. Never show a MyChart screen, real lab result, medication list, or patient identifier.
+**Recording mode:** Public demo only. Use fictional details throughout.
 
 ## Before recording
 
-- Start Ollama and Moxie; confirm the selected model is warm.
-- Open the Moxie page and make the browser text large.
-- Keep a screenshot of the fictional result ready in case the model stalls.
-- Keep the terminal out of view until the Git and tech-stack explanation.
+- Start the public demo with `env -u MOXIE_PRIVATE_PROFILE MOXIE_PORT=4175 ./moxie-demo/start.sh`.
+- Open `http://127.0.0.1:4175` and confirm the page does not say **Private profile · local**.
+- Warm the Quick model and use the fictional examples.
+- Never show MyChart, private-profile output, real labs, medication lists, or patient identifiers.
+- Keep the terminal hidden until the Git and tech-stack section.
 
 ## 0:00 — The problem
 
-“After a transplant, there’s a lot to keep straight: lab results, instructions, appointments, medications, and questions. I wanted to see whether an AI agent could help organize all of that. I’m a liver transplant patient, so this problem is personal to me. Today’s demo uses made-up information.”
+“After a transplant, there’s a lot to keep straight: lab results, instructions, appointments, medications, and questions. I wanted to see whether an AI assistant could help organize that information. I’m a liver transplant patient, so the problem is personal to me. The information in today’s demo is made up.”
 
-## 0:35 — Design before code
+## 0:35 — Design and guardrails
 
-“My first question wasn’t ‘Which model should I use?’ It was ‘What job should Moxie do?’ The answer: organize information and help a patient prepare for a conversation with their transplant team.”
+“Before choosing a model, I decided what Moxie should do: organize information and help a patient prepare for a conversation with their transplant team.”
 
-“Then I wrote down what Moxie must not do. It must not diagnose, decide whether a lab result is safe, or tell anyone to change a medication. Those boundaries shape the prompt, the interface, and the examples.”
+“Moxie must not diagnose, interpret a result as safe or unsafe, or tell someone to change a medication. A missed-dose question goes through a fixed safety response that directs the patient to their own team. The model does not decide what dose to take.”
 
-## 1:20 — Show the fictional example
+## 1:20 — Try the demo
 
-Click **Lab timeline** and submit the sample.
+Click **Lab timeline**, submit it, and explain that Moxie organizes the fictional dates and values without judging the trend.
 
-“This is a fictional timeline. Moxie can put the values in date order, describe what information was supplied, and suggest questions. It should not call the trend good or bad or pretend to know what it means for this patient.”
+Then click **Medication question** and submit it.
 
-Then click **Needs more context** and **Medication question**. Explain that Moxie should ask for missing information or direct medication questions back to the care team.
+“Here Moxie routes the question to the transplant team. It doesn’t guess, ask the model to choose a dose, or treat general education as this patient’s instructions.”
 
 ## 2:30 — Show how it was built
 
-“Git keeps the project’s history. I saved the original Moxie demo as a starting commit, created a separate `moxie-transplant-demo` branch, and made these changes there. If I make a mistake, I can compare versions or go back.”
+“Git saves the project’s history. I started from the original Moxie demo, created a separate `moxie-transplant-demo` branch, and made the transplant changes there. I can review the differences before saving a new version.”
 
-Show `git status --short --branch`, then point out the changed files. Do not stage or commit anything during the recording unless the change has been reviewed.
+Show `git branch --show-current` and `git log -3 --oneline`. Avoid displaying private files or staging changes during the recording.
 
-“Here’s the stack: the browser is the screen; Node is the small local server; Ollama runs the language model on this computer; Git tracks the code changes.”
+“The browser is the screen. Node runs the local server. Ollama runs the language model on this computer. Git tracks the code.”
 
-## 3:25 — Explain RAG honestly
+## 3:25 — Explain retrieval
 
-“Right now, Moxie follows instructions in its prompt and uses the fictional information typed into the page. It does not yet search a transplant knowledge base. The next step is RAG: retrieve a relevant passage from a small, reviewed set of patient-education sources, give that passage to Moxie, and show the source and date with the answer.”
+“For ordinary questions, this version uses simple keyword matching against a small set of reviewed source notes. It can show which sources matched. This is a first retrieval step, not a medical knowledge system: it uses no embeddings or vector database, and a public source is never a patient’s care plan.”
 
-“For a patient’s own care plan, the source would need to be their own dated instructions. A general article must never be presented as their personal medical target.”
+“The missed-dose path is handled separately with a fixed response. In private mode, Moxie can load a local patient-reported note. That mode is not part of this public recording.”
 
-## 4:20 — Explain MyChart and privacy
+## 4:20 — Explain privacy and MyChart
 
-“This demo is not connected to MyChart. A future connection should use the patient-authorized app-access flow, if the health system supports it. Moxie should never ask a patient to give it a MyChart password.”
+“This demo runs locally and is not connected to MyChart. A future connection would need a patient-authorized access path supported by the health system. Moxie should never ask for a MyChart password.”
 
-“Git tracks code, not private records or credentials. The public demo stays fictional. A private version would need separate, carefully controlled storage and clear patient control over access and deletion.”
+“The private care-plan note is kept out of Git. The public demo uses fictional details. Nothing here reads or monitors a real patient account.”
 
 ## 5:00 — Close
 
-“That’s how I made Moxie: start with a real problem, define the job and boundaries, build one small workflow, and improve it one saved change at a time. The point isn’t that AI replaces your judgment or your care team. It’s that you can learn the tools and build an assistant around a problem you understand.”
+“That’s how I made Moxie: start with a problem you understand, define the job and its limits, build one small workflow, and improve it one saved change at a time. AI can help you build a tool around your own problem while people and care teams stay in charge.”
 
-“Next, we’ll add a small, source-linked transplant education library and an optional medication reminder that the patient controls.”
+“Next, I’ll improve how Moxie finds and presents trustworthy educational sources, then explore patient-controlled reminders and the official MyChart access options.”

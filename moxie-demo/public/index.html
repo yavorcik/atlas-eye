@@ -17,14 +17,14 @@
 
   <main>
     <section class="hero">
-      <div class="hero-copy"><p class="eyebrow"><span class="spark">✳</span> YOUR TRANSPLANT SIDEKICK</p><h1>Recovery is a lot.<br><em>Let’s sort it out.</em></h1><p class="hero-lead">Moxie organizes transplant information and helps you prepare questions. Your transplant team guides your care.</p><div class="trust-row"><span>● Fictional data only</span><span>● Organizes, doesn’t diagnose</span><span>● Your care team guides care</span></div></div>
-      <aside class="moxie-card" aria-label="Moxie introduction"><div class="moxie-face" aria-hidden="true"><span>m</span><i></i></div><div><p class="moxie-name">Moxie <span>YOUR TRANSPLANT SIDEKICK</span></p><p class="moxie-quote">“I’ll help sort the details. Your care team makes the calls.”</p></div><div class="sparkle" aria-hidden="true">✳</div></aside>
+      <div class="hero-copy"><p class="eyebrow"><span class="spark">✳</span> YOUR NEW LIVER’S SIDEKICK</p><h1>Recovery is a lot.<br><em>Let’s sort it out.</em></h1><p class="hero-lead">Moxie organizes transplant information and helps you prepare questions. Your transplant team guides your care.</p><div class="trust-row"><span>● Fictional data only</span><span>● Organizes, doesn’t diagnose</span><span>● Your care team guides care</span></div></div>
+      <aside class="moxie-card" aria-label="Moxie, a cartoon liver and transplant recovery sidekick"><div class="moxie-face" aria-hidden="true"><img src="/moxie-liver.svg" alt=""></div><div><p class="moxie-name">Moxie <span>YOUR NEW LIVER’S SIDEKICK</span></p><p class="moxie-quote">“New liver, who dis? I wrangle the labs. Your team makes the calls.”</p></div><div class="sparkle" aria-hidden="true">✳</div></aside>
     </section>
 
     <section class="workspace" aria-label="Moxie transplant demo">
       <div class="work-main">
         <div class="section-heading"><div><p class="eyebrow">LIVE LOCAL DEMO</p><h2>Ask Moxie about a sample recovery timeline.</h2></div><span class="step-count">01 <b>/</b> 03</span></div>
-        <p class="subhead">Use fictional details. Moxie organizes information; your transplant team guides your care.</p>
+        <p class="subhead">Use fictional details by default. A private local care-plan note loads only when private-profile mode is enabled.</p>
         <div class="examples" aria-label="Sample inquiries">
           <button type="button" class="example-chip" data-example="qualified"><span>↗</span> Lab timeline</button>
           <button type="button" class="example-chip" data-example="vague"><span>?</span> Needs more context</button>
@@ -35,7 +35,7 @@
           <textarea id="inquiry" maxlength="4000" placeholder="Example: I’m a fictional transplant patient. Here are my recent lab results and the instructions my clinic gave me. Help me organize them and prepare questions." required></textarea>
           <div class="form-foot"><span id="char-count">0 / 4,000</span><label class="model-select-label" for="model-select">Speed <select id="model-select" disabled><option>Checking models…</option></select></label><button class="run-button" type="submit"><span id="run-label">Ask Moxie</span><span aria-hidden="true">→</span></button></div>
         </form>
-        <p class="privacy-note"><span aria-hidden="true">◆</span> This demo is local-only. Use fictional details. Text goes to Ollama on this computer, is not stored, and is never sent to your care team.</p>
+        <p class="privacy-note"><span aria-hidden="true">◆</span> Local-only: text goes to Ollama on this computer and is not stored. Use fictional details unless private-profile mode is intentionally enabled. No MyChart connection.</p>
         <div id="result" class="result" hidden aria-live="polite"></div>
         <div id="error" class="error" role="alert" hidden></div>
       </div>
@@ -59,9 +59,9 @@
         <article><span class="stack-num">03</span><h3>Interface · Browser</h3><p>Give a person a simple place to enter a sample inquiry.</p><small>THE FRONT DOOR</small></article>
         <article><span class="stack-num">04</span><h3>Server · Node.js</h3><p>Validate the request and relay it to the model without exposing the app internals.</p><small>THE MESSENGER</small></article>
         <article><span class="stack-num">05</span><h3>Model · Ollama</h3><p>Run the language model on this computer; no model API key is needed for local inference.</p><small>THE BRAIN</small></article>
-        <article><span class="stack-num">06</span><h3>Keep & share · GitHub + hosting</h3><p>Save the code and publish it when the local version is ready.</p><small>THE WORKSHOP + ADDRESS</small></article>
+        <article><span class="stack-num">06</span><h3>Version history · Git</h3><p>Save changes and compare versions. GitHub and hosting can come later.</p><small>THE WORKSHOP</small></article>
       </div>
-      <div class="data-flow"><span>Browser</span><b>→</b><span>Node server</span><b>→</b><span>Ollama · local model</span><b>→</b><span>Human review</span></div>
+      <div class="data-flow data-flow-branches"><div><span>Browser</span><b>→</b><span>Node.js router</span></div><div><span>Routine question</span><b>→</b><span>Source retrieval + Ollama</span></div><div><span>Missed-dose question</span><b>→</b><span>Fixed safety response · no model call</span></div><div><span>Both paths</span><b>→</b><span>Human review</span></div></div>
       <p class="tour-footnote">A local model means Moxie’s inference runs here. ChatGPT and Codex are still separate tools; using them may involve cloud services. We’re showing each part honestly.</p>
     </section>
   </main>

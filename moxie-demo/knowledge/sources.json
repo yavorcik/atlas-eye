@@ -1,0 +1,50 @@
+[
+  {
+    "id": "cc-liver-transplant-recovery",
+    "title": "Cleveland Clinic: Discharge, Planning & Recovery",
+    "url": "https://my.clevelandclinic.org/departments/transplant/programs/liver/recovery",
+    "checked_at": "2026-11-09",
+    "scope": "United States; Cleveland Clinic program information. Its lab schedule is center-specific, not a personal care plan.",
+    "text": "Cleveland Clinic describes repeated lab studies after a liver transplant. Its post-transplant coordinator reviews outpatient lab work, and abnormal values are reviewed with a transplant physician. Do not apply the program's schedule to another center or patient."
+  },
+  {
+    "id": "cc-liver-transplantation",
+    "title": "Cleveland Clinic: Liver Transplantation",
+    "url": "https://my.clevelandclinic.org/health/procedures/8111-liver-transplantation",
+    "checked_at": "2026-11-09",
+    "scope": "United States; general patient education. Follow the patient's own transplant team's instructions.",
+    "text": "Cleveland Clinic describes follow-up visits and blood tests after transplant. The team teaches patients how to take medicines, watch for problems, and know when to contact the team. These general points do not determine what an individual patient's lab results mean."
+  },
+  {
+    "id": "mayo-liver-transplant",
+    "title": "Mayo Clinic: Liver Transplant",
+    "url": "https://www.mayoclinic.org/tests-procedures/liver-transplant/about/pac-20384842",
+    "checked_at": "2026-11-09",
+    "scope": "United States; general patient education. Mayo's information is not another center's protocol.",
+    "text": "Mayo Clinic describes frequent follow-up and blood tests after liver transplant, with the transplant team creating the patient's checkup schedule. Recovery varies. Use this source for general background only, not to predict an individual's recovery or interpret their results."
+  },
+  {
+    "id": "nhsbt-liver-home",
+    "title": "NHS Blood and Transplant: Taking Care of Yourself at Home",
+    "url": "https://www.nhsbt.nhs.uk/organ-transplantation/liver/at-the-transplant-centre/taking-care-of-yourself-at-home/",
+    "checked_at": "2026-11-09",
+    "scope": "United Kingdom; patient education. Follow the patient's own transplant centre's advice.",
+    "text": "NHS Blood and Transplant describes home recovery topics such as wound care, activity, diet, work, driving, and medicines. It advises patients to take medicines as prescribed and contact their transplant team if they miss doses or have problems."
+  },
+  {
+    "id": "nhsbt-liver-medicines",
+    "title": "NHS Blood and Transplant: Liver Transplant Medicines",
+    "url": "https://www.nhsbt.nhs.uk/organ-transplantation/liver/living-with-a-liver-transplant/liver-transplant-medicines/",
+    "checked_at": "2026-11-09",
+    "scope": "United Kingdom; general patient education. Medication plans differ by transplant centre.",
+    "text": "NHS Blood and Transplant explains that liver transplant centres may prescribe different medicines. Patients should follow their own team's prescription and discuss side effects or medicine questions with that team. This source cannot determine an individual's dose or whether a medication should be changed."
+  },
+  {
+    "id": "nhsbt-liver-warning-signs",
+    "title": "NHS Blood and Transplant: Warning Signs After a Liver Transplant",
+    "url": "https://www.nhsbt.nhs.uk/organ-transplantation/liver/living-with-a-liver-transplant/warning-signs-after-a-liver-transplant/",
+    "checked_at": "2026-11-09",
+    "scope": "United Kingdom; contact guidance from NHS Blood and Transplant. Do not substitute for another centre's instructions.",
+    "text": "NHS Blood and Transplant describes symptoms and follow-up concerns for its patients and advises contacting the transplant team for medical guidance. Moxie should use a patient's own center-specific contact instructions when available and should not merge warning thresholds from different hospitals."
+  }
+]

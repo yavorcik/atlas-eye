@@ -30,10 +30,21 @@ function escapeHtml(value) {
   })[character])
 }
 
+function renderSources(sources) {
+  if (!sources?.length) return '<li>No external source matched; Moxie used only the details you entered.</li>'
+  return sources.map((item) => {
+    const title = item.url
+      ? `<a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.title)}</a>`
+      : `<strong>${escapeHtml(item.title)}</strong>`
+    const tag = item.personal ? ' <em>PRIVATE · USER-REPORTED</em>' : ''
+    return `<li>${title}${tag}<br><span>${escapeHtml(item.scope)}</span></li>`
+  }).join('')
+}
+
 function renderResult(data) {
   const questions = data.questions?.length ? data.questions.join('\n') : 'No follow-up question needed.'
   const risks = data.risk_flags?.length ? data.risk_flags.join('\n') : 'No additional flags.'
-  result.innerHTML = `<div class="result-top"><h3>Moxie’s first pass</h3><span class="status-badge ${escapeHtml(data.status)}">${escapeHtml(statusLabels[data.status] || 'Review required')}</span></div><div class="result-grid"><div class="result-block"><small>Summary</small><p>${escapeHtml(data.summary)}</p></div><div class="result-block"><small>Next step</small><p>${escapeHtml(data.next_step)}</p></div><div class="result-block"><small>Questions</small><p>${escapeHtml(questions)}</p></div><div class="result-block"><small>Why this route</small><p>${escapeHtml(data.reason)}</p></div><div class="result-block full reply"><small>Patient-friendly overview</small><p>${escapeHtml(data.reply_draft)}</p></div><div class="result-block full"><small>Risk flags</small><p>${escapeHtml(risks)}</p></div></div><p class="result-disclaimer">Human review required · Not stored · Not sent · Model: ${escapeHtml(data.model)}</p>`
+  result.innerHTML = `<div class="result-top"><h3>Moxie’s first pass</h3><span class="status-badge ${escapeHtml(data.status)}">${escapeHtml(statusLabels[data.status] || 'Review required')}</span></div><div class="result-grid"><div class="result-block"><small>Summary</small><p>${escapeHtml(data.summary)}</p></div><div class="result-block"><small>Next step</small><p>${escapeHtml(data.next_step)}</p></div><div class="result-block"><small>Questions</small><p>${escapeHtml(questions)}</p></div><div class="result-block"><small>Why this route</small><p>${escapeHtml(data.reason)}</p></div><div class="result-block full reply"><small>Patient-friendly overview</small><p>${escapeHtml(data.reply_draft)}</p></div><div class="result-block full"><small>Risk flags</small><p>${escapeHtml(risks)}</p></div></div><div class="result-block full"><small>Reference sources provided</small><ul>${renderSources(data.sources)}</ul></div><p class="result-disclaimer">Human review required · Not stored · Not sent · Model: ${escapeHtml(data.model)}</p>`
   result.hidden = false
 }
 
@@ -43,7 +54,7 @@ async function updateStatus() {
     const status = await response.json()
     const ready = response.ok && status.connected && status.installed
     dot.className = ready ? 'connected' : 'offline'
-    statusText.textContent = ready ? 'Local model connected' : 'Local model not connected'
+    statusText.textContent = ready ? (status.privateProfile ? 'Private profile · local' : 'Local model connected') : 'Local model not connected'
     modelName.textContent = `Ollama · ${status.model || 'unavailable'}`
     modelDetail.textContent = ready ? 'First run can take longer. Moxie keeps the selected model warm for 15 minutes.' : status.detail
     const previous = modelSelect.value

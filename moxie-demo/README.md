@@ -35,3 +35,9 @@ Use fictional information only. This prototype has no MyChart or medical-record 
 The chosen model stays loaded for 15 minutes between requests, which avoids repeated reload delays during a demo. Quick mode disables Qwen3's extra reasoning for this short structured task and allows enough output tokens to finish its JSON. Smaller models generally trade some answer depth for response speed; compare both on the actual machine before presenting.
 
 See [`recording-script.md`](./recording-script.md) for the screen-recording walkthrough.
+
+## Local source retrieval (RAG)
+
+The demo keeps short, reviewed source summaries in `knowledge/sources.json`. For each question, the Node server scores source text against the question's words, passes up to two matching summaries to Ollama, and returns their titles, links, and scope for display. If nothing matches, Moxie is told to say that no external source matched.
+
+This is intentionally simple keyword retrieval for teaching. It does not use embeddings, a vector database, MyChart, or patient records. The sources are general education, not an individual care plan. Use fictional details in the public demo.
