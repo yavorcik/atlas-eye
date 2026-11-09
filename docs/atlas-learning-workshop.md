@@ -1,6 +1,6 @@
 # Atlas Learning live build
 
-Thursday, November 19, 2026, from 4:00 to 4:45 p.m. Eastern on Google Meet. Free 45-minute workshop for owner-led service businesses that already receive quote or appointment requests. Participants can bring a fictional or redacted inquiry.
+Friday, November 20, 2026, from 4:00 to 4:45 p.m. Eastern on Google Meet. Free 45-minute workshop for owner-led service businesses that already receive quote or appointment requests. Participants can bring a fictional or redacted inquiry.
 
 ## Operate the signup and inquiry flows
 
