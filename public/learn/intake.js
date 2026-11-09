@@ -59,7 +59,7 @@ for (const form of document.querySelectorAll('[data-intake]')) {
       submittedData = undefined
       requestId = undefined
       status.textContent = form.dataset.intake === 'workshop'
-        ? 'Your registration is saved for November 19. We’ll share the Google Meet joining instructions using the email you provided.'
+        ? 'Your registration is saved for November 20. We’ll share the Google Meet joining instructions using the email you provided.'
         : 'Your inquiry is saved for review. If you’d like to talk sooner, you can book a free call below.'
     } catch {
       status.textContent = 'We could not confirm the submission. Please try again.'

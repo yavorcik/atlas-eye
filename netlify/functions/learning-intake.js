@@ -2,7 +2,8 @@ import { createHash, randomUUID } from 'node:crypto'
 import { getDeployStore, getStore } from '@netlify/blobs'
 
 const consultationUrl = 'https://calendar.app.google/T6uKgFsHYE6okXn28'
-const workshopStart = Date.parse('2026-11-19T16:00:00-05:00')
+const workshopStart = Date.parse('2026-11-20T16:00:00-05:00')
+const workshopCapacity = 50
 const maxBytes = 8192
 const validVolume = ['none', '1–10', '11–50', '51+']
 const validGoal = ['missed', 'slow', 'qualification', 'other']
@@ -51,6 +52,40 @@ function reviewLead({ volume, goal, business, details }) {
     status: 'qualified',
     draft: `Thanks for reaching out. We can start by looking at ${goalLabels[goal]}. If you’d like to walk through one example together, you can pick a free introductory call here: ${consultationUrl}`,
   }
+}
+
+async function reserveWorkshopRegistration(store, emailKey, record) {
+  if (await store.get(emailKey, { type: 'json', consistency: 'strong' })) return { saved: true }
+
+  const { blobs } = await store.list()
+  const legacyKeys = blobs.map((blob) => blob.key).filter((key) => /^[a-f0-9]{64}$/i.test(key))
+  if (legacyKeys.length >= workshopCapacity) return { full: true }
+
+  // Convert registrations already stored under their email hashes into occupied seats.
+  for (let index = 0; index < Math.min(legacyKeys.length, workshopCapacity); index += 1) {
+    await store.setJSON(`_capacity/seat-${String(index + 1).padStart(2, '0')}`, { legacy: true }, { onlyIfNew: true })
+  }
+
+  for (let index = 1; index <= workshopCapacity; index += 1) {
+    const seatKey = `_capacity/seat-${String(index).padStart(2, '0')}`
+    const seat = await store.setJSON(seatKey, { emailKey, claimedAt: record.receivedAt }, { onlyIfNew: true })
+    if (!seat.modified) continue
+
+    try {
+      const saved = await store.setJSON(emailKey, record, { onlyIfNew: true })
+      if (!saved.modified) {
+        await store.delete(seatKey).catch(() => {})
+        return { saved: true }
+      }
+      return { saved: true }
+    } catch (error) {
+      await store.delete(seatKey).catch(() => {})
+      throw error
+    }
+  }
+
+  if (await store.get(emailKey, { type: 'json', consistency: 'strong' })) return { saved: true }
+  return { full: true }
 }
 
 export function createIntakeHandler(openStore, now = Date.now) {
@@ -135,9 +170,16 @@ export function createIntakeHandler(openStore, now = Date.now) {
 
     try {
       const store = openStore(kind, context)
-      const write = await store.setJSON(key, record, { onlyIfNew: true })
-      if (!write.modified && !(await store.get(key, { type: 'json', consistency: 'strong' }))) {
-        return reply({ error: 'We could not save your submission. Please try again.' }, 503)
+      if (kind === 'workshop') {
+        const registration = await reserveWorkshopRegistration(store, key, record)
+        if (registration.full) {
+          return reply({ error: 'This workshop has reached its 50-person limit. Registration is closed.' }, 409)
+        }
+      } else {
+        const write = await store.setJSON(key, record, { onlyIfNew: true })
+        if (!write.modified && !(await store.get(key, { type: 'json', consistency: 'strong' }))) {
+          return reply({ error: 'We could not save your submission. Please try again.' }, 503)
+        }
       }
     } catch {
       return reply({ error: 'We could not save your submission. Please try again.' }, 503)
