@@ -7,6 +7,8 @@ import { validateShipment, evidenceApplicability } from './demoValidation.js'
 import ReadinessReviewForm from './ReadinessReviewForm.jsx'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import HistoricalAtlasNuclearEye from './components/HistoricalAtlasNuclearEye.jsx'
+import GadgetPanel from './components/GadgetPanel.jsx'
+import GadgetCockpit from './components/GadgetCockpit.jsx'
 
 import { STORE_KEY, mergeProject, migrateWorkspace, workspaceTransaction } from './workspacePersistence.js'
 const MAX_FILE_SIZE = 512 * 1024
@@ -1746,9 +1748,9 @@ function App() {
   const { workspace, updateProject, reset } = useWorkspace()
   const path = window.location.pathname.replace(/\/+$/, '') || '/'
   if (path === '/privacy') return <Privacy />
-  if (path === '/mission-control') return <><Dashboard workspace={workspace} reset={reset} /><ReadinessReviewForm open={reviewOpen} onClose={closeReview} /></>
+  if (path === '/mission-control') return <GadgetCockpit />
   const route = routeInfo(path)
-  if (route) return <ProjectWorkspace projectId={route.projectId} initialView={route.view} workspace={workspace} updateProject={updateProject} reset={reset} />
+  if (route) return <><ProjectWorkspace projectId={route.projectId} initialView={route.view} workspace={workspace} updateProject={updateProject} reset={reset} /><GadgetPanel page="Project workspace" workspace="Public demonstration workspace" projectId={route.projectId} /></>
   if (path === '/demo') { window.location.replace('https://lab.atlaseye.ai'); return null }
   return <Cover />
 }

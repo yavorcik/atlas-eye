@@ -19,4 +19,13 @@
 /api/speak    /.netlify/functions/speak    200
 /supply-chain      /supply-chain/index.html 200!
 /supply-chain/     /supply-chain/index.html 200!
+/api/gadget/auth/start                 /.netlify/functions/gadget?action=auth-start             200
+/api/gadget/auth/callback              /.netlify/functions/gadget?action=auth-callback          200
+/api/gadget/session.json               /.netlify/functions/gadget?action=session                200!
+/api/gadget/logout                     /.netlify/functions/gadget?action=logout                 200
+/api/gadget/query                      /.netlify/functions/gadget?action=query                  200
+/api/gadget/objectives                 /.netlify/functions/gadget?action=objectives             200
+/api/gadget/objectives/:id/overview    /.netlify/functions/gadget?action=objective-overview     200
+/api/gadget/objectives/:id/continue    /.netlify/functions/gadget?action=objective-continue     200
+/api/gadget/objectives/:id/work        /.netlify/functions/gadget?action=objective-work         200
 /*            /index.html                  200

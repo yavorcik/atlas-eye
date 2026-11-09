@@ -28,12 +28,9 @@ test('customer-testable Mission Control workspace journeys', async () => {
   page.on('console', m => { if (m.type() === 'error') errors.push(m.text()) })
   try {
     await page.goto(`${process.env.ATLAS_PREVIEW_URL || 'http://127.0.0.1:4173'}/mission-control/`, { waitUntil: 'networkidle' })
-    await expectText(page, 'h1', 'Open a sample project.')
-    assert.equal(await page.locator('.project-card').count(), 3)
-    await assertContains(page, 'body', '8 evidence gaps or review findings')
-    await assertContains(page, 'body', 'Browser-local demo')
-
-    await page.click('text=Piketon Advanced Reactor COL Assembly')
+    await expectText(page, 'h1', 'Gadget')
+    assert.equal(await page.locator('[data-testid="gadget-cockpit"]').count(), 1)
+    await page.goto((process.env.ATLAS_PREVIEW_URL || 'http://127.0.0.1:4173') + '/mission-control/nuclear-readiness/', { waitUntil: 'networkidle' })
     await page.getByRole('button', { name: 'Requirements / application' }).click()
     for (let i = 0; i < 14; i += 1) {
       await page.locator('textarea').first().fill(`Retained answer ${i}`)
@@ -166,7 +163,7 @@ test('customer-testable Mission Control workspace journeys', async () => {
     await page.setViewportSize({ width: 390, height: 844 })
     await page.goto('http://127.0.0.1:4173/mission-control/', { waitUntil: 'networkidle' })
     await page.keyboard.press('Tab')
-    assert.equal(await page.locator('.project-card').count(), 3)
+    assert.equal(await page.locator('[data-testid="gadget-cockpit"]').count(), 1)
     await mkdir('test-artifacts', { recursive: true })
     await page.screenshot({ path: 'test-artifacts/mission-control-mobile.png', fullPage: true })
 
