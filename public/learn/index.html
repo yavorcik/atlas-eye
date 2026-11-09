@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Build practical AI tools, workflows and systems with Atlas. Explore guided build-alongs, learning resources in development and scoped custom bot projects.">
+<meta name="description" content="Turn more customer inquiries into booked calls. Try the Atlas Learning lead follow-up demo and explore the free live build for service-business owners.">
 <link rel="canonical" href="https://atlaseye.ai/learn/">
 <meta name="theme-color" content="#050505">
 <title>Atlas Learning | Powered by AtlasEye</title>
@@ -11,23 +11,70 @@
 .portfolio-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin:32px 0 24px}.project{display:flex;flex-direction:column;padding:28px;border:1px solid var(--line);border-radius:10px;background:#111115}.project-number{font:500 48px/1 Georgia,serif;color:var(--accent);margin-bottom:25px}.project h3{font:500 29px/1.15 Georgia,serif;margin:18px 0 12px}.project p{font-size:16px;color:var(--muted)}.project a{margin-top:auto;padding-top:15px;font-size:15px;font-weight:650}.project .status{align-self:flex-start;font-size:11px}.portfolio-note{border-left:3px solid var(--accent);padding-left:20px}@media(max-width:850px){.portfolio-grid{grid-template-columns:1fr}.project{padding:25px}.project-number{margin-bottom:18px}}@media(max-width:700px){header{flex-direction:column}nav{justify-content:flex-start;gap:10px 18px}}
 .bot-track{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:32px;border-top:3px solid var(--accent)}.bot-track h3{margin-bottom:20px}@media(max-width:700px){.bot-track{grid-template-columns:1fr;gap:5px}}
 </style>
+<link rel="stylesheet" href="./acquisition.css">
+<script type="module" src="./acquisition.js"></script>
 </head>
 <body>
-<div class="review">Free introductory calls now booking · Scope and pricing agreed before paid work</div>
-<header><div class="brand-group"><a class="brand" href="#">ATLAS</a><span class="powered-by">Powered by <a href="https://atlaseye.ai/">AtlasEye</a></span></div><nav aria-label="Main navigation"><a href="#projects">What we’ve built</a><a href="#case-study">The case study</a><a href="#learn">Ways to work together</a><a href="#book">Book a free call</a></nav></header>
+<div class="review">Atlas Learning · Customer acquisition for service businesses</div>
+<header>
+  <div class="brand-group"><a class="brand" href="#">ATLAS</a><span class="powered-by">Powered by <a href="https://atlaseye.ai/">AtlasEye</a></span></div>
+  <nav aria-label="Main navigation">
+    <a href="#demo">Try the demo</a><a href="#workshop">Free live build</a><a href="#case-study">Case study</a><a href="#book">Book a free call</a>
+  </nav>
+</header>
 <main>
-<section class="hero"><p class="eyebrow">Practical AI. Built around your work.</p><h1>Less busywork.<br>Build what’s next.</h1><p class="lead">Bring a problem, a repetitive task or an idea. Have a practical AI tool, workflow or system built for you, or build it alongside us and learn how it works. A website is one possible interface, only if the work needs it.</p><a class="button" href="#book">Book a free 30-minute intro →</a> <a href="#case-study">Explore the case study</a></section>
-<section class="section" id="projects" aria-labelledby="projects-heading">
-<div class="intro"><p class="eyebrow">See the work</p><h2 id="projects-heading">Different ideas. Real builds.</h2><p>Explore four public examples from our work: a specialized platform site, a professional-services website, a project-development site and a business-concept demo. Each shows a different way to turn an idea into something you can visit and review.</p></div>
-<div class="portfolio-grid">
-<article class="project"><span class="project-number" aria-hidden="true">01</span><span class="status">Public website</span><h3>AtlasEye Nuclear</h3><p>A public site presenting nuclear project-readiness and evidence-control workflows.</p><p><strong>Explore:</strong> how a specialized platform introduces its purpose and organizes complex work.</p><a href="https://atlaseye.ai/" target="_blank" rel="noopener noreferrer">Visit AtlasEye Nuclear ↗</a></article>
-<article class="project"><span class="project-number" aria-hidden="true">02</span><span class="status">Professional services</span><h3>Yavorcik Law</h3><p>A professional-services website for Yavorcik Law, focused on advanced nuclear legal counsel.</p><p><strong>Explore:</strong> how a focused practice presents its expertise and services online.</p><a href="https://yavorciklaw.com/" target="_blank" rel="noopener noreferrer">Visit Yavorcik Law ↗</a></article>
-<article class="project"><span class="project-number" aria-hidden="true">03</span><span class="status">Project-development website</span><h3>Valley SMR</h3><p>A public website presenting advanced nuclear project development, feasibility work and site-readiness information.</p><p><strong>Explore:</strong> how project pages, development stages and evidence make a complex initiative easier to follow.</p><p>This website example does not imply regulatory approval, project financing or authorization to construct.</p><a href="https://valleysmr.com/" target="_blank" rel="noopener noreferrer">Visit Valley SMR ↗</a></article>
-<article class="project"><span class="project-number" aria-hidden="true">04</span><span class="status">Closed concept demo</span><h3>Valley Tote</h3><p>An AI-built moving-tote website, preserved as a proof of concept rather than an operating rental business.</p><p><strong>Explore:</strong> branding, a mascot and a customer journey, with the build timeline and test results below.</p><a href="https://totes.atlaseye.ai" target="_blank" rel="noopener noreferrer">Explore the Valley Tote demo ↗</a></article>
-</div>
-<p class="qualification portfolio-note">These are examples of website work, not claims of customer results or business success. The prototype timing and advertising figures below apply only to Valley Tote. Valley Tote reservations and new payments are closed.</p>
+<section class="hero" aria-labelledby="hero-heading">
+  <div>
+    <p class="eyebrow">Customer acquisition for service businesses</p>
+    <h1 id="hero-heading">Turn more inquiries into booked calls.</h1>
+    <p class="lead">When a quote request lands after hours, Atlas can help your team spot a good fit, draft a reply and offer the next step while the inquiry is still fresh.</p>
+    <div class="hero-actions">
+      <a class="button primary" href="#workshop">Explore the free live build</a>
+      <a href="#book">Talk about your inbox</a>
+    </div>
+  </div>
+  <section class="demo" id="demo" aria-labelledby="demo-heading">
+    <p class="eyebrow">Interactive demo · Sample data</p>
+    <h2 id="demo-heading">The after-hours inbox</h2>
+    <form id="sample-form">
+      <label for="sample">Pick an inquiry for a sample roofing company</label>
+      <select id="sample" name="sample">
+        <option value="qualified">The Friday-night roof leak</option>
+        <option value="clarify">The one-line quote request</option>
+        <option value="review">The request outside the service area</option>
+      </select>
+      <blockquote id="sample-message">“Water is coming in around a vent. We’re in Boardman, Ohio. Can someone come take a look next week?”</blockquote>
+      <button class="button primary" type="submit">Run sample inquiry</button>
+    </form>
+    <noscript><p>Enable JavaScript to run the sample. The workflow checks fit, drafts the next step and routes it for staff review.</p></noscript>
+    <p class="demo-note">Scripted preview. It uses fictional inquiries and runs in your browser.</p>
+    <div id="sample-result" class="demo-result" hidden>
+      <ol class="demo-steps" aria-label="Sample inquiry workflow">
+        <li>Received</li><li id="sample-status"></li><li>Draft ready</li>
+      </ol>
+      <dl>
+        <dt>What it found</dt><dd id="sample-found"></dd>
+        <dt>What happens next</dt><dd id="sample-next"></dd>
+        <dt id="sample-draft-label"></dt><dd id="sample-draft"></dd>
+      </dl>
+    </div>
+    <p id="sample-announcement" class="sr-only" role="status"></p>
+  </section>
 </section>
-<section class="section" id="case-study" aria-labelledby="case-heading"><div class="intro"><p class="eyebrow">The Valley Tote case study</p><h2 id="case-heading">A first prototype in minutes.<br>Early attention we could measure.</h2><p>We used AI to turn a moving-tote business concept into a website. The project developed into a public site with a mascot, inquiry forms and payment infrastructure. Here is the actual timeline and the early advertising snapshot.</p></div>
+<section class="section workshop" id="workshop" aria-labelledby="workshop-heading">
+  <div>
+    <p class="eyebrow">Free live workshop · 45 minutes</p>
+    <h2 id="workshop-heading">Build an AI agent that turns inquiries into booked calls.</h2>
+    <p>Bring a sample customer inquiry. We’ll build a workflow together that reads it, checks whether it fits the business, and drafts a reply for a person to review. No coding experience required.</p>
+    <p class="qualification">The date and registration link will be announced here.</p>
+  </div>
+  <ol class="workshop-agenda" aria-label="Workshop agenda">
+    <li><strong>Find the leak.</strong> Map what happens between a new inquiry and a booked call.</li>
+    <li><strong>Build the workflow.</strong> Turn a sample email into a qualification decision and a draft reply.</li>
+    <li><strong>Try to break it.</strong> See what happens when a request is vague or outside the service area.</li>
+  </ol>
+</section>
+<section class="section" id="case-study" aria-labelledby="case-heading"><div class="intro"><p class="eyebrow">The Valley Tote case study</p><h2 id="case-heading">The website was the easy part.<br>Getting a customer was harder.</h2><p>We used AI to turn a moving-tote business concept into a website. The project developed into a public site with a mascot, inquiry forms and payment infrastructure. The initial build was fast. The early test gave us a separate question to answer: would interested visitors take the next step?</p></div>
 <div class="metrics" aria-label="Build time and partial advertising results">
 <div class="metric"><strong>6m 43s</strong><span>Request to delivered private prototype</span><small>November 5, 2026</small></div>
 <div class="metric"><strong>1,135</strong><span>Paid-ad impressions</span><small>Partial Meta snapshot, Nov 6–8</small></div>
@@ -39,8 +86,37 @@
 <ol class="timeline" aria-label="Build chronology, Eastern Time"><li><time datetime="2026-11-05T08:55:21-05:00">NOV 5 · 8:55:21 A.M. ET</time><h3>The website request</h3><p>The starting point for the prototype timer. Research had already happened.</p></li><li><time datetime="2026-11-05T09:02:04-05:00">NOV 5 · 9:02:04 A.M. ET</time><h3>Private prototype delivered</h3><p>A first version to inspect and refine, 6 minutes and 43 seconds after the request.</p></li><li><time datetime="2026-11-05T11:05:31-05:00">NOV 5 · 11:05:31 A.M. ET</time><h3>Public launch confirmed</h3><p>Public launch followed the prototype. Payment infrastructure was added later, outside the prototype timer.</p></li></ol>
 <div class="example"><div><p class="eyebrow">A real example, including the lessons</p><h3>Meet Baxter. Then look behind the site.</h3><p>Branding and a memorable mascot made the concept tangible. The process also exposed a research mistake: a local competitor was missed initially. We use that lesson to show why AI outputs need independent checks before you invest.</p><a href="https://totes.atlaseye.ai" target="_blank" rel="noopener noreferrer">Explore the closed Valley Tote demo ↗</a><p class="qualification">Historical rental prices and service descriptions are demonstration content. Reservations and new payments are closed.</p></div><img src="https://totes.atlaseye.ai/baxter-mascot.png" alt="Baxter, the illustrated black-and-white dog mascot, beside a red moving tote." width="941" height="1672" loading="lazy"></div>
 </section>
-<section class="section" id="learn" aria-labelledby="learn-heading"><p class="eyebrow">Two ways to work together</p><h2 id="learn-heading">Done for you.<br>Or built together.</h2><div class="tracks"><article class="track featured" id="custom-bot"><span class="status">Scoped custom projects</span><h3>Done for you</h3><p>Bring the problem. We scope and build a practical AI tool, workflow or system for your needs, with testing and a clear handoff.</p><ul><li>Define the task, supported integrations and useful outputs.</li><li>Build a focused solution, including a custom behind-the-scenes bot where it fits.</li><li>Agree what is included, how it will be reviewed and how you will use it.</li></ul><p>Possible projects include draft reports, organized requests and repeatable handoffs between supported tools. Feasibility, data access and human approval points are checked first.</p><p><strong>Scope, pricing and delivery terms are agreed before paid work. No promise of unattended operation.</strong></p><a class="button" href="#book">Discuss a done-for-you project →</a></article><article class="track"><span class="status">One-on-one build-along</span><h3>Build it with me</h3><p>Work alongside us on your idea and learn as we build. Ask questions, see the decisions and understand how the pieces fit.</p><ul><li>Turn a practical problem into a focused first build.</li><li>Work through inputs, instructions, integrations and human review.</li><li>Test the result, learn how to improve it and understand its limits.</li></ul><p>Teaching happens through your project, with clear explanations and hands-on decisions along the way.</p><p><strong>Scope, session plan and pricing are agreed before paid work.</strong></p><a class="button" href="#book">Discuss a build-along →</a></article></div><p class="qualification">Prefer self-paced learning? A course is in development for the future. Enrollment is not open; no release date or price is announced.</p></section>
-<section class="section" id="book" aria-labelledby="book-heading"><p class="eyebrow">Start with a conversation</p><h2 id="book-heading">Your idea. A clear next step.</h2><p class="lead">Book a free 30-minute introductory call to discuss what you want to build or improve. We’ll explore whether a done-for-you project or a build-along where you learn as we go is a good fit.</p><p>We meet on Google Meet. Appointments are offered weekdays, 10 a.m.–4 p.m. Eastern, subject to availability, with at least 24 hours’ notice. The calendar shows available times in your selected time zone.</p><p class="qualification">This is an introductory conversation, not a paid build session or course enrollment. No payment is required.</p><p><a class="button" href="https://calendar.app.google/T6uKgFsHYE6okXn28" target="_blank" rel="noopener noreferrer">Open booking calendar ↗</a></p><iframe src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ0n0YDr7aqBfrDWq20iHpZeZWQwQNTiLqr85I9TKG1q341uouxZ1lBqpbo_oQaFpuuODD0i1dnx?gv=true" title="Book a free 30-minute Atlas introductory call" loading="lazy" style="border:0;width:100%;height:600px;background:#fff;border-radius:10px"></iframe><p class="qualification">Booking is handled by Google Calendar. If the calendar does not load, use the button above.</p></section>
-<section class="section end"><p class="eyebrow">Know what the numbers mean</p><h2>Learn the process, with the context intact.</h2><details><summary>Will my project be finished in seven minutes?</summary><p>No completion-time promise is being made. This timer describes one first prototype after earlier research. Your scope, starting materials, integrations, revisions and review requirements will affect the work.</p></details><details><summary>Did the ads produce paying customers?</summary><p>The reported snapshot showed 28 link clicks and zero genuine site requests or verified paid deposits as of noon Eastern on November 8. Paid-ad attention was measurable; sales and validated demand were not established.</p></details><details><summary>Is $9.36 the cost of building the site?</summary><p>No. It is the spend reported in a partial Meta advertising snapshot. It excludes other advertising, software, platform, payment-processing and time costs. It is not a complete project budget.</p></details><details><summary>Can I book or buy now?</summary><p>You can book a free 30-minute introductory call using the calendar above. For done-for-you projects and build-alongs, scope and pricing are agreed before paid work. Self-paced course enrollment is not open, and there is no checkout on this page.</p></details></section>
+<section class="section" id="learn" aria-labelledby="learn-heading">
+  <p class="eyebrow">Two ways to work together</p>
+  <h2 id="learn-heading">Put the workflow to work in your business.</h2>
+  <div class="tracks">
+    <article class="track featured" id="custom-bot">
+      <span class="status">Done for you</span>
+      <h3>Set up your first inbox workflow</h3>
+      <p>We’ll map where inquiries stall and scope a paid setup for one inbox and one booking flow. Start with qualification rules, reply drafts and a clear staff review step.</p>
+      <p>Measure response time, qualified inquiries that book, and appointments that take place.</p>
+      <a class="button" href="#book">Book a free inbox review</a>
+    </article>
+    <article class="track">
+      <span class="status">One-on-one build-along</span>
+      <h3>Build it with me</h3>
+      <p>Bring a sample inquiry and build alongside us. We’ll work through your rules, connect the pieces that fit your setup, and test the tricky cases together.</p>
+      <p>Scope and pricing are agreed before paid work.</p>
+      <a class="button" href="#book">Discuss a build-along</a>
+    </article>
+  </div>
+</section>
+<section class="section" id="projects" aria-labelledby="projects-heading">
+<div class="intro"><p class="eyebrow">See the work</p><h2 id="projects-heading">Different ideas. Real builds.</h2><p>Explore four public examples from our work: a specialized platform site, a professional-services website, a project-development site and a business-concept demo. Each shows a different way to turn an idea into something you can visit and review.</p></div>
+<div class="portfolio-grid">
+<article class="project"><span class="project-number" aria-hidden="true">01</span><span class="status">Public website</span><h3>AtlasEye Nuclear</h3><p>A public site presenting nuclear project-readiness and evidence-control workflows.</p><p><strong>Explore:</strong> how a specialized platform introduces its purpose and organizes complex work.</p><a href="https://atlaseye.ai/" target="_blank" rel="noopener noreferrer">Visit AtlasEye Nuclear ↗</a></article>
+<article class="project"><span class="project-number" aria-hidden="true">02</span><span class="status">Professional services</span><h3>Yavorcik Law</h3><p>A professional-services website for Yavorcik Law, focused on advanced nuclear legal counsel.</p><p><strong>Explore:</strong> how a focused practice presents its expertise and services online.</p><a href="https://yavorciklaw.com/" target="_blank" rel="noopener noreferrer">Visit Yavorcik Law ↗</a></article>
+<article class="project"><span class="project-number" aria-hidden="true">03</span><span class="status">Project-development website</span><h3>Valley SMR</h3><p>A public website presenting advanced nuclear project development, feasibility work and site-readiness information.</p><p><strong>Explore:</strong> how project pages, development stages and evidence make a complex initiative easier to follow.</p><p>This website example does not imply regulatory approval, project financing or authorization to construct.</p><a href="https://valleysmr.com/" target="_blank" rel="noopener noreferrer">Visit Valley SMR ↗</a></article>
+<article class="project"><span class="project-number" aria-hidden="true">04</span><span class="status">Closed concept demo</span><h3>Valley Tote</h3><p>An AI-built moving-tote website, preserved as a proof of concept rather than an operating rental business.</p><p><strong>Explore:</strong> branding, a mascot and a customer journey, with a build timeline and early test results.</p><a href="https://totes.atlaseye.ai" target="_blank" rel="noopener noreferrer">Explore the Valley Tote demo ↗</a></article>
+</div>
+<p class="qualification portfolio-note">These are examples of website work, not claims of customer results or business success. The case-study figures apply only to Valley Tote. Valley Tote reservations and new payments are closed.</p>
+</section>
+<section class="section" id="book" aria-labelledby="book-heading"><p class="eyebrow">Start with a conversation</p><h2 id="book-heading">Where do your inquiries get stuck?</h2><p class="lead">Book a free 30-minute call to walk through how your business handles new inquiries. Bring a redacted example if you have one. We’ll identify what a first workflow could handle and where your team needs to stay involved.</p><p>We meet on Google Meet. Appointments are offered weekdays, 10 a.m.–4 p.m. Eastern, subject to availability, with at least 24 hours’ notice. The calendar shows available times in your selected time zone.</p><p class="qualification">The introductory call is free. We agree on scope and pricing before any paid work.</p><p><a class="button" href="https://calendar.app.google/T6uKgFsHYE6okXn28" target="_blank" rel="noopener noreferrer">Open booking calendar ↗</a></p><iframe src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ0n0YDr7aqBfrDWq20iHpZeZWQwQNTiLqr85I9TKG1q341uouxZ1lBqpbo_oQaFpuuODD0i1dnx?gv=true" title="Book a free 30-minute Atlas introductory call" loading="lazy" style="border:0;width:100%;height:600px;background:#fff;border-radius:10px"></iframe><p class="qualification">Booking is handled by Google Calendar. If the calendar does not load, use the button above.</p></section>
+<section class="section end"><p class="eyebrow">Know what the numbers mean</p><h2>Learn the process, with the context intact.</h2><details><summary>Will my project be finished in seven minutes?</summary><p>No completion-time promise is being made. This timer describes one first prototype after earlier research. Your scope, starting materials, integrations, revisions and review requirements will affect the work.</p></details><details><summary>Did the ads produce paying customers?</summary><p>The reported snapshot showed 28 link clicks and zero genuine site requests or verified paid deposits as of noon Eastern on November 8. Paid-ad attention was measurable; sales and validated demand were not established.</p></details><details><summary>Is $9.36 the cost of building the site?</summary><p>No. It is the spend reported in a partial Meta advertising snapshot. It excludes other advertising, software, platform, payment-processing and time costs. It is not a complete project budget.</p></details><details><summary>Can I book or buy now?</summary><p>You can book a free 30-minute introductory call using the calendar above. For done-for-you projects and build-alongs, scope and pricing are agreed before paid work. The group workshop will have a separate registration link once a date is set.</p></details></section>
 </main><footer>Atlas Learning · Powered by <a href="https://atlaseye.ai/">AtlasEye</a> · Case-study figures supplied from November 2026 project records. Individual results vary. Free introductory calls are available to book. Project scope and pricing are agreed before paid work; no purchases are accepted on this page.</footer>
 </body></html>
