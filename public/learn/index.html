@@ -70,10 +70,10 @@
   </div>
   <div class="agent-video-grid">
     <article class="agent-video">
-      <video controls playsinline preload="none" width="1080" height="1920" poster="./videos/business-agent.webp" aria-labelledby="business-video-title" aria-describedby="business-video-summary">
-        <source src="./videos/business-agent.mp4" type="video/mp4">
-        <a href="./videos/business-agent.mp4">Open the business agent video</a>
-      </video>
+      <button class="agent-video-preview" type="button" data-video-src="./videos/business-agent.mp4" data-video-poster="./videos/business-agent.webp" aria-label="Play the business agent video larger">
+        <img src="./videos/business-agent.webp" alt="Preview of the business agent video" width="1080" height="1920">
+        <span class="agent-video-play" aria-hidden="true">▶</span>
+      </button>
       <div>
         <p class="eyebrow">Business · 20 seconds</p>
         <h3 id="business-video-title">A quote request comes in after hours.</h3>
@@ -81,10 +81,10 @@
       </div>
     </article>
     <article class="agent-video">
-      <video controls playsinline preload="none" width="1080" height="1920" poster="./videos/personal-agent.webp" aria-labelledby="personal-video-title" aria-describedby="personal-video-summary">
-        <source src="./videos/personal-agent.mp4" type="video/mp4">
-        <a href="./videos/personal-agent.mp4">Open the personal agent video</a>
-      </video>
+      <button class="agent-video-preview" type="button" data-video-src="./videos/personal-agent.mp4" data-video-poster="./videos/personal-agent.webp" aria-label="Play the personal agent video larger">
+        <img src="./videos/personal-agent.webp" alt="Preview of the personal agent video" width="1080" height="1920">
+        <span class="agent-video-play" aria-hidden="true">▶</span>
+      </button>
       <div>
         <p class="eyebrow">Personal · 15 seconds</p>
         <h3 id="personal-video-title">“You’ll be there, right?”</h3>
@@ -95,6 +95,12 @@
   <p class="qualification">Both videos use sample data to show how the workflows would work.</p>
   <a class="button primary" href="#workshop">Build one with us</a>
 </section>
+<dialog class="agent-video-dialog" id="agent-video-dialog" aria-label="Video player">
+  <div class="agent-video-dialog-inner">
+    <button class="agent-video-close" type="button" aria-label="Close video">×</button>
+    <video id="agent-video-player" controls playsinline></video>
+  </div>
+</dialog>
 <section class="section workshop" id="workshop" aria-labelledby="workshop-heading">
   <div>
     <p class="eyebrow">Free live workshop · 45 minutes</p>

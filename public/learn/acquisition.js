@@ -29,6 +29,32 @@ const form = document.getElementById('sample-form')
 const sample = document.getElementById('sample')
 const result = document.getElementById('sample-result')
 const announcement = document.getElementById('sample-announcement')
+const videoDialog = document.getElementById('agent-video-dialog')
+const videoPlayer = document.getElementById('agent-video-player')
+
+document.querySelectorAll('.agent-video-preview').forEach((preview) => {
+  preview.addEventListener('click', () => {
+    videoPlayer.src = preview.dataset.videoSrc
+    videoPlayer.poster = preview.dataset.videoPoster
+    videoDialog.showModal()
+    videoPlayer.play().catch(() => {})
+  })
+})
+
+document.querySelector('.agent-video-close').addEventListener('click', () => {
+  videoDialog.close()
+})
+
+videoDialog.addEventListener('click', (event) => {
+  if (event.target === videoDialog) videoDialog.close()
+})
+
+videoDialog.addEventListener('close', () => {
+  videoPlayer.pause()
+  videoPlayer.removeAttribute('src')
+  videoPlayer.load()
+})
+
 
 sample.addEventListener('change', () => {
   document.getElementById('sample-message').textContent = samples[sample.value].message
