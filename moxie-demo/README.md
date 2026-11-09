@@ -1,0 +1,37 @@
+# Moxie local demo
+
+Moxie is a small Atlas Learning demo that reviews a fictional or redacted service-business inquiry with a local Ollama model. It can classify the inquiry, ask for missing details, draft a reply, or route it to a person. It never sends replies, stores inquiries, or calls third-party services.
+
+## Start it
+
+Requirements: Node.js 20+ and Ollama running locally with `qwen3.5:9b` installed. If available, `qwen3:4b` appears as the faster live-demo option.
+
+```sh
+ollama serve
+ollama pull qwen3.5:9b
+ollama pull qwen3:4b
+./moxie-demo/start.sh
+```
+
+If the Ollama service is already running, skip `ollama serve`. Moxie selects `qwen3:4b` for speed when installed and keeps `qwen3.5:9b` available for more detailed answers. To change either configured model, set `MOXIE_FAST_MODEL` or `MOXIE_MODEL` before starting.
+
+Open <http://127.0.0.1:4174>. The server binds to loopback and calls only Ollama on this computer. To use another installed model, set `MOXIE_MODEL` when starting the server. Do not expose the Ollama port to the public internet.
+
+## What the pieces do
+
+- **ChatGPT** helps turn the workflow into a clear specification.
+- **Codex** edits the source files in the terminal.
+- **Browser** is Moxie's user interface.
+- **Node.js** serves the interface, validates the request, and calls the local model.
+- **Ollama** runs the model at `127.0.0.1:11434`.
+- **GitHub and hosting** are later steps to save and publish a reviewed version.
+
+The browser never calls Ollama directly. The local Node server proxies the request, enforces size limits, and validates the structured answer. Inference runs through the local Ollama service. ChatGPT and Codex are separate tools and may use cloud services.
+
+## Rehearsal boundaries
+
+Use fictional or redacted inquiries. Moxie is a demonstration, not an autonomous customer-service system. It creates drafts for a person to review; it has no email, CRM, calendar, or customer-record connection. No submitted text is written to disk or logged by this app.
+
+The chosen model stays loaded for 15 minutes between requests, which avoids repeated reload delays during a demo. Quick mode disables Qwen3's extra reasoning for this short structured task and allows enough output tokens to finish its JSON. Smaller models generally trade some answer depth for response speed; compare both on the actual machine before presenting.
+
+See [`recording-script.md`](./recording-script.md) for the screen-recording walkthrough.

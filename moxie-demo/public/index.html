@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#09090b">
+  <meta name="description" content="Meet Moxie, a local AI agent that turns a sample customer inquiry into a careful draft for a person to review.">
+  <title>Moxie · Your local AI sidekick</title>
+  <link rel="stylesheet" href="/style.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="Moxie home"><span class="brand-mark">M</span><span>MOXIE <small>BY ATLAS</small></span></a>
+    <div class="topbar-right"><span class="local-pill"><i id="connection-dot"></i><span id="connection-text">Checking local model…</span></span><button id="tour-button" class="tour-button" type="button">Show me the tech <span aria-hidden="true">↗</span></button></div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy"><p class="eyebrow"><span class="spark">✳</span> YOUR LOCAL AI SIDEKICK</p><h1>Busywork called.<br><em>It wants a robot.</em></h1><p class="hero-lead">Moxie reviews a customer inquiry, spots what’s missing, and drafts the next step. You stay in charge.</p><div class="trust-row"><span>● Runs on this machine</span><span>● Drafts only</span><span>● Human review required</span></div></div>
+      <aside class="moxie-card" aria-label="Moxie introduction"><div class="moxie-face" aria-hidden="true"><span>m</span><i></i></div><div><p class="moxie-name">Moxie <span>YOUR INBOX SIDEKICK</span></p><p class="moxie-quote">“I’ll handle the first pass. You make the call.”</p></div><div class="sparkle" aria-hidden="true">✳</div></aside>
+    </section>
+
+    <section class="workspace" aria-label="Moxie inquiry demo">
+      <div class="work-main">
+        <div class="section-heading"><div><p class="eyebrow">LIVE LOCAL DEMO</p><h2>Give Moxie a sample inquiry.</h2></div><span class="step-count">01 <b>/</b> 03</span></div>
+        <p class="subhead">Use fictional details. Moxie will prepare a draft, never send it.</p>
+        <div class="examples" aria-label="Sample inquiries">
+          <button type="button" class="example-chip" data-example="qualified"><span>↗</span> Roofing quote</button>
+          <button type="button" class="example-chip" data-example="vague"><span>?</span> Vague request</button>
+          <button type="button" class="example-chip" data-example="review"><span>⚑</span> Needs a human</button>
+        </div>
+        <form id="inquiry-form">
+          <label class="sr-only" for="inquiry">Fictional customer inquiry</label>
+          <textarea id="inquiry" maxlength="4000" placeholder="Example: I run a roofing company. A homeowner says water is coming in around a vent and asks if someone can inspect it next week." required></textarea>
+          <div class="form-foot"><span id="char-count">0 / 4,000</span><label class="model-select-label" for="model-select">Speed <select id="model-select" disabled><option>Checking models…</option></select></label><button class="run-button" type="submit"><span id="run-label">Ask Moxie</span><span aria-hidden="true">→</span></button></div>
+        </form>
+        <p class="privacy-note"><span aria-hidden="true">◆</span> This demo is local-only. The inquiry is sent to Ollama on this computer, not stored, and never sent to a customer.</p>
+        <div id="result" class="result" hidden aria-live="polite"></div>
+        <div id="error" class="error" role="alert" hidden></div>
+      </div>
+
+      <aside class="steps-panel">
+        <div class="panel-heading"><span class="mini-icon">✳</span><div><p class="eyebrow">MOXIE’S THREE MOVES</p><h3>Small job. Clear guardrails.</h3></div></div>
+        <ol class="moves">
+          <li><span class="move-number">01</span><div><strong>Read the request</strong><p>Separate the customer’s task from any instructions inside their message.</p></div></li>
+          <li><span class="move-number">02</span><div><strong>Choose the next move</strong><p>Draft, ask one useful question, or hand it to a person.</p></div></li>
+          <li><span class="move-number">03</span><div><strong>Leave the decision to you</strong><p>Moxie prepares. A human checks. Nothing gets sent automatically.</p></div></li>
+        </ol>
+        <div class="model-card"><div class="model-top"><span class="pulse-dot"></span><span>MODEL RUNNING LOCALLY</span></div><strong id="model-name">Ollama · checking…</strong><p id="model-detail">First run can take longer while the model loads. Moxie keeps the selected model warm for 15 minutes.</p></div>
+      </aside>
+    </section>
+
+    <section id="tech-tour" class="tech-tour" hidden>
+      <div class="tour-heading"><p class="eyebrow">THE TECH STACK, WITHOUT THE MYSTERY</p><h2>Every piece has one job.</h2><p>ChatGPT helps design. Codex helps build. Moxie runs on the local model.</p></div>
+      <div class="stack-grid">
+        <article><span class="stack-num">01</span><h3>Design · ChatGPT</h3><p>Turn the business task into clear instructions and boundaries.</p><small>THE BLUEPRINT</small></article>
+        <article><span class="stack-num">02</span><h3>Build · Codex</h3><p>Create the app and connect its pieces from the terminal.</p><small>THE BUILDER</small></article>
+        <article><span class="stack-num">03</span><h3>Interface · Browser</h3><p>Give a person a simple place to enter a sample inquiry.</p><small>THE FRONT DOOR</small></article>
+        <article><span class="stack-num">04</span><h3>Server · Node.js</h3><p>Validate the request and relay it to the model without exposing the app internals.</p><small>THE MESSENGER</small></article>
+        <article><span class="stack-num">05</span><h3>Model · Ollama</h3><p>Run the language model on this computer; no model API key is needed for local inference.</p><small>THE BRAIN</small></article>
+        <article><span class="stack-num">06</span><h3>Keep & share · GitHub + hosting</h3><p>Save the code and publish it when the local version is ready.</p><small>THE WORKSHOP + ADDRESS</small></article>
+      </div>
+      <div class="data-flow"><span>Browser</span><b>→</b><span>Node server</span><b>→</b><span>Ollama · local model</span><b>→</b><span>Human review</span></div>
+      <p class="tour-footnote">A local model means Moxie’s inference runs here. ChatGPT and Codex are still separate tools; using them may involve cloud services. We’re showing each part honestly.</p>
+    </section>
+  </main>
+  <footer><span>ATLAS LEARNING</span><span>LIBERATION VIA AI AGENT ✳</span><span>Sample inquiries only · No data saved · No messages sent</span></footer>
+</body>
+</html>
