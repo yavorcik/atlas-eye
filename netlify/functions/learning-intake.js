@@ -78,7 +78,7 @@ async function reserveWorkshopRegistration(store, emailKey, record) {
         return { saved: true }
       }
       return { saved: true }
-    } catch {
+    } catch (error) {
       await store.delete(seatKey).catch(() => {})
       throw error
     }
