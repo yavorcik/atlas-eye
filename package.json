@@ -25,6 +25,7 @@
     "test:transportation": "node --test tests/transportation-production-demo.test.mjs"
   },
   "dependencies": {
+    "@netlify/blobs": "^11.1.8",
     "@supabase/supabase-js": "^2.110.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"

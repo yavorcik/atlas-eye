@@ -13,6 +13,7 @@
 </style>
 <link rel="stylesheet" href="./acquisition.css">
 <script type="module" src="./acquisition.js"></script>
+<script type="module" src="./intake.js"></script>
 </head>
 <body>
 <div class="review">Atlas Learning · Customer acquisition for service businesses</div>
@@ -29,7 +30,7 @@
     <h1 id="hero-heading">Turn more inquiries into booked calls.</h1>
     <p class="lead">When a quote request lands after hours, Atlas can help your team spot a good fit, draft a reply and offer the next step while the inquiry is still fresh.</p>
     <div class="hero-actions">
-      <a class="button primary" href="#workshop">Explore the free live build</a>
+      <a class="button primary" href="#workshop">Join the free workshop list</a>
       <a href="#book">Talk about your inbox</a>
     </div>
   </div>
@@ -66,7 +67,18 @@
     <p class="eyebrow">Free live workshop · 45 minutes</p>
     <h2 id="workshop-heading">Build an AI agent that turns inquiries into booked calls.</h2>
     <p>Bring a sample customer inquiry. We’ll build a workflow together that reads it, checks whether it fits the business, and drafts a reply for a person to review. No coding experience required.</p>
-    <p class="qualification">The date and registration link will be announced here.</p>
+    <p class="qualification">Join the list for the first session. We’ll share the date and joining details once confirmed.</p>
+    <form class="intake-form" method="post" action="/learn/intake" data-intake="workshop">
+      <div class="intake-fields">
+        <label>Name <input name="name" required maxlength="100" autocomplete="name"></label>
+        <label>Email <input name="email" type="email" required maxlength="254" autocomplete="email"></label>
+      </div>
+
+      <div class="intake-trap" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off"></label></div>
+      <label class="intake-consent"><input type="checkbox" name="consent" value="yes" required> Atlas Learning may email me about this workshop.</label>
+      <button class="button primary" type="submit">Join the workshop list</button>
+      <p class="intake-status" role="status"></p>
+    </form>
   </div>
   <ol class="workshop-agenda" aria-label="Workshop agenda">
     <li><strong>Find the leak.</strong> Map what happens between a new inquiry and a booked call.</li>
@@ -116,7 +128,33 @@
 </div>
 <p class="qualification portfolio-note">These are examples of website work, not claims of customer results or business success. The case-study figures apply only to Valley Tote. Valley Tote reservations and new payments are closed.</p>
 </section>
-<section class="section" id="book" aria-labelledby="book-heading"><p class="eyebrow">Start with a conversation</p><h2 id="book-heading">Where do your inquiries get stuck?</h2><p class="lead">Book a free 30-minute call to walk through how your business handles new inquiries. Bring a redacted example if you have one. We’ll identify what a first workflow could handle and where your team needs to stay involved.</p><p>We meet on Google Meet. Appointments are offered weekdays, 10 a.m.–4 p.m. Eastern, subject to availability, with at least 24 hours’ notice. The calendar shows available times in your selected time zone.</p><p class="qualification">The introductory call is free. We agree on scope and pricing before any paid work.</p><p><a class="button" href="https://calendar.app.google/T6uKgFsHYE6okXn28" target="_blank" rel="noopener noreferrer">Open booking calendar ↗</a></p><iframe src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ0n0YDr7aqBfrDWq20iHpZeZWQwQNTiLqr85I9TKG1q341uouxZ1lBqpbo_oQaFpuuODD0i1dnx?gv=true" title="Book a free 30-minute Atlas introductory call" loading="lazy" style="border:0;width:100%;height:600px;background:#fff;border-radius:10px"></iframe><p class="qualification">Booking is handled by Google Calendar. If the calendar does not load, use the button above.</p></section>
-<section class="section end"><p class="eyebrow">Know what the numbers mean</p><h2>Learn the process, with the context intact.</h2><details><summary>Will my project be finished in seven minutes?</summary><p>No completion-time promise is being made. This timer describes one first prototype after earlier research. Your scope, starting materials, integrations, revisions and review requirements will affect the work.</p></details><details><summary>Did the ads produce paying customers?</summary><p>The reported snapshot showed 28 link clicks and zero genuine site requests or verified paid deposits as of noon Eastern on November 8. Paid-ad attention was measurable; sales and validated demand were not established.</p></details><details><summary>Is $9.36 the cost of building the site?</summary><p>No. It is the spend reported in a partial Meta advertising snapshot. It excludes other advertising, software, platform, payment-processing and time costs. It is not a complete project budget.</p></details><details><summary>Can I book or buy now?</summary><p>You can book a free 30-minute introductory call using the calendar above. For done-for-you projects and build-alongs, scope and pricing are agreed before paid work. The group workshop will have a separate registration link once a date is set.</p></details></section>
+<section class="section" id="book" aria-labelledby="book-heading"><p class="eyebrow">Start with a conversation</p><h2 id="book-heading">Where do your inquiries get stuck?</h2><p class="lead">Book a free 30-minute call to walk through how your business handles new inquiries. Bring a redacted example if you have one. We’ll identify what a first workflow could handle and where your team needs to stay involved.</p><form class="intake-form" method="post" action="/learn/intake" data-intake="inquiry">
+      <div class="intake-fields">
+        <label>Name <input name="name" required maxlength="100" autocomplete="name"></label>
+        <label>Email <input name="email" type="email" required maxlength="254" autocomplete="email"></label>
+      </div>
+      <label>What does your business do? <input name="business" maxlength="150" autocomplete="organization-title"></label>
+      <div class="intake-fields">
+        <label>New inquiries per month
+          <select name="volume">
+            <option value="">Choose a range</option><option value="none">None yet</option><option>1–10</option><option>11–50</option><option>51+</option>
+          </select>
+        </label>
+        <label>What needs to improve?
+          <select name="goal">
+            <option value="">Choose a goal</option><option value="missed">Inquiries get missed</option><option value="slow">Replies take too long</option><option value="qualification">It takes time to qualify requests</option><option value="other">Something else</option>
+          </select>
+        </label>
+      </div>
+      <label>Tell us a little more <span class="qualification">(optional)</span>
+        <textarea name="details" rows="4" maxlength="1200" placeholder="Describe the process in your own words. Leave out customer names and private details."></textarea>
+      </label>
+      <div class="intake-trap" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off"></label></div>
+      <label class="intake-consent"><input type="checkbox" name="consent" value="yes" required> Atlas Learning may email me about this inquiry.</label>
+      <button class="button primary" type="submit">Send my inquiry</button>
+      <p class="intake-status" role="status"></p>
+    </form>
+<p>We meet on Google Meet. Appointments are offered weekdays, 10 a.m.–4 p.m. Eastern, subject to availability, with at least 24 hours’ notice. The calendar shows available times in your selected time zone.</p><p class="qualification">The introductory call is free. We agree on scope and pricing before any paid work.</p><p><a class="button" href="https://calendar.app.google/T6uKgFsHYE6okXn28" target="_blank" rel="noopener noreferrer">Open booking calendar ↗</a></p><iframe src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ0n0YDr7aqBfrDWq20iHpZeZWQwQNTiLqr85I9TKG1q341uouxZ1lBqpbo_oQaFpuuODD0i1dnx?gv=true" title="Book a free 30-minute Atlas introductory call" loading="lazy" style="border:0;width:100%;height:600px;background:#fff;border-radius:10px"></iframe><p class="qualification">Booking is handled by Google Calendar. If the calendar does not load, use the button above.</p></section>
+<section class="section end"><p class="eyebrow">Know what the numbers mean</p><h2>Learn the process, with the context intact.</h2><details><summary>Will my project be finished in seven minutes?</summary><p>No completion-time promise is being made. This timer describes one first prototype after earlier research. Your scope, starting materials, integrations, revisions and review requirements will affect the work.</p></details><details><summary>Did the ads produce paying customers?</summary><p>The reported snapshot showed 28 link clicks and zero genuine site requests or verified paid deposits as of noon Eastern on November 8. Paid-ad attention was measurable; sales and validated demand were not established.</p></details><details><summary>Is $9.36 the cost of building the site?</summary><p>No. It is the spend reported in a partial Meta advertising snapshot. It excludes other advertising, software, platform, payment-processing and time costs. It is not a complete project budget.</p></details><details><summary>Can I book or buy now?</summary><p>You can book a free 30-minute introductory call using the calendar above. For done-for-you projects and build-alongs, scope and pricing are agreed before paid work. Join the workshop list above to get the details when a date is set.</p></details></section>
 </main><footer>Atlas Learning · Powered by <a href="https://atlaseye.ai/">AtlasEye</a> · Case-study figures supplied from November 2026 project records. Individual results vary. Free introductory calls are available to book. Project scope and pricing are agreed before paid work; no purchases are accepted on this page.</footer>
 </body></html>

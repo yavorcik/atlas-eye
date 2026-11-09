@@ -164,3 +164,72 @@ select:focus-visible {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+.intake-form {
+  display: grid;
+  gap: 12px;
+  max-width: 680px;
+  padding: 20px;
+  margin: 20px 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #141418;
+  font-size: 15px;
+}
+
+.intake-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.intake-form input:not([type="checkbox"]),
+.intake-form select,
+.intake-form textarea {
+  display: block;
+  width: 100%;
+  padding: 9px 10px;
+  margin-top: 5px;
+  border: 1px solid #74747f;
+  border-radius: 5px;
+  color: var(--ink);
+  background: #08080b;
+  color-scheme: dark;
+  font: inherit;
+}
+
+.intake-form :is(input, textarea):focus-visible {
+  outline: 3px solid #ff6069;
+  outline-offset: 3px;
+}
+
+.intake-form .button {
+  justify-self: start;
+}
+
+.intake-form .button:disabled {
+  opacity: .65;
+  cursor: wait;
+}
+
+.intake-trap {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  clip-path: inset(50%);
+  overflow: hidden;
+}
+
+.intake-status {
+  margin: 0;
+}
+
+.intake-status:empty {
+  display: none;
+}
+
+@media (max-width: 550px) {
+  .intake-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
