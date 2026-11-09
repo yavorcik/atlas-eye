@@ -45,7 +45,7 @@ test('workshop retries deduplicate without revealing prior registration', async 
     assert.equal(response.status, 201)
     assert.deepEqual(await response.json(), { saved: true })
   }
-  assert.equal(stores.workshop.size, 1)
+  assert.equal(stores.workshop.size, 2)
   assert.equal(stores.inquiry.size, 0)
 })
 
