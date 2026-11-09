@@ -20,7 +20,7 @@
 <header>
   <div class="brand-group"><a class="brand" href="#">ATLAS</a><span class="powered-by">Powered by <a href="https://atlaseye.ai/">AtlasEye</a></span></div>
   <nav aria-label="Main navigation">
-    <a href="#demo">Try the demo</a><a href="#workshop">Free live build</a><a href="#case-study">Case study</a><a href="#book">Book a free call</a>
+    <a href="#videos">Watch the agents</a><a href="#demo">Try the demo</a><a href="#workshop">Free live build</a><a href="#case-study">Case study</a><a href="#book">Book a free call</a>
   </nav>
 </header>
 <main>
@@ -63,11 +63,43 @@
     <p id="sample-announcement" class="sr-only" role="status"></p>
   </section>
 </section>
+<section class="section agent-videos" id="videos" aria-labelledby="videos-heading">
+  <div class="intro">
+    <p class="eyebrow">See what an agent can do</p>
+    <h2 id="videos-heading">One job for your business. One for your life.</h2>
+  </div>
+  <div class="agent-video-grid">
+    <article class="agent-video">
+      <video controls playsinline preload="none" width="1080" height="1920" poster="./videos/business-agent.webp" aria-labelledby="business-video-title" aria-describedby="business-video-summary">
+        <source src="./videos/business-agent.mp4" type="video/mp4">
+        <a href="./videos/business-agent.mp4">Open the business agent video</a>
+      </video>
+      <div>
+        <p class="eyebrow">Business · 20 seconds</p>
+        <h3 id="business-video-title">A quote request comes in after hours.</h3>
+        <p id="business-video-summary">Roofie texts back for the property address, a photo, and a time someone can let the roofer in. The owner gets one complete inspection brief to review.</p>
+      </div>
+    </article>
+    <article class="agent-video">
+      <video controls playsinline preload="none" width="1080" height="1920" poster="./videos/personal-agent.webp" aria-labelledby="personal-video-title" aria-describedby="personal-video-summary">
+        <source src="./videos/personal-agent.mp4" type="video/mp4">
+        <a href="./videos/personal-agent.mp4">Open the personal agent video</a>
+      </video>
+      <div>
+        <p class="eyebrow">Personal · 15 seconds</p>
+        <h3 id="personal-video-title">“You’ll be there, right?”</h3>
+        <p id="personal-video-summary">The calendar looks clear until the agent checks the drive to the school play. It finds an earlier meeting slot and drafts a text for you to approve.</p>
+      </div>
+    </article>
+  </div>
+  <p class="qualification">Both videos use sample data to show how the workflows would work.</p>
+  <a class="button primary" href="#workshop">Build one with us</a>
+</section>
 <section class="section workshop" id="workshop" aria-labelledby="workshop-heading">
   <div>
     <p class="eyebrow">Free live workshop · 45 minutes</p>
     <h2 id="workshop-heading">Build an AI agent that turns inquiries into booked calls.</h2>
-    <p>Bring a sample customer inquiry. We’ll build a workflow together that reads it, checks whether it fits the business, and drafts a reply for a person to review. No coding experience required.</p>
+    <p>Bring a sample customer inquiry. We’ll build a workflow that checks whether it fits the business and drafts a reply for review. Then we’ll show how the same steps apply to a personal calendar agent. No coding experience required.</p>
     <p><strong><time id="workshop-start" datetime="2026-11-19T16:00:00-05:00">Thursday, November 19, 2026</time> · 4:00–4:45 p.m. Eastern · Google Meet</strong></p>
     <p class="qualification">Register free below. We’ll share the joining instructions with registered attendees by email.</p>
     <p id="workshop-closed" class="qualification" hidden>Registration for this session has closed.</p>
@@ -86,7 +118,7 @@
   <ol class="workshop-agenda" aria-label="Workshop agenda">
     <li><strong>Find the leak.</strong> Map what happens between a new inquiry and a booked call.</li>
     <li><strong>Build the workflow.</strong> Turn a sample email into a qualification decision and a draft reply.</li>
-    <li><strong>Try to break it.</strong> See what happens when a request is vague or outside the service area.</li>
+    <li><strong>Take it home.</strong> See how a calendar agent catches a conflict that only shows up when you account for the drive.</li>
   </ol>
 </section>
 <section class="section" id="case-study" aria-labelledby="case-heading"><div class="intro"><p class="eyebrow">The Valley Tote case study</p><h2 id="case-heading">The website was the easy part.<br>Getting a customer was harder.</h2><p>We used AI to turn a moving-tote business concept into a website. The project developed into a public site with a mascot, inquiry forms and payment infrastructure. The initial build was fast. The early test gave us a separate question to answer: would interested visitors take the next step?</p></div>
