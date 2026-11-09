@@ -37,7 +37,11 @@ document.querySelectorAll('.agent-video-preview').forEach((preview) => {
     videoPlayer.src = preview.dataset.videoSrc
     videoPlayer.poster = preview.dataset.videoPoster
     videoDialog.showModal()
-    videoPlayer.play().catch(() => {})
+    videoPlayer.muted = false
+    videoPlayer.play().catch(() => {
+      videoPlayer.muted = true
+      videoPlayer.play().catch(() => {})
+    })
   })
 })
 
@@ -51,6 +55,7 @@ videoDialog.addEventListener('click', (event) => {
 
 videoDialog.addEventListener('close', () => {
   videoPlayer.pause()
+  videoPlayer.muted = false
   videoPlayer.removeAttribute('src')
   videoPlayer.load()
 })
