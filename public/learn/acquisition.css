@@ -295,9 +295,9 @@ select:focus-visible {
 }
 
 .agent-video-dialog {
-  width: min(96vw, 900px);
-  max-width: none;
-  max-height: 94dvh;
+  width: fit-content;
+  max-width: 90vw;
+  max-height: 82dvh;
   padding: 0;
   overflow: visible;
   color: white;
@@ -313,17 +313,18 @@ select:focus-visible {
   position: relative;
   display: flex;
   justify-content: center;
-  width: 100%;
-  max-height: 94dvh;
+  width: fit-content;
+  max-height: 82dvh;
 }
 
 .agent-video-dialog video {
   display: block;
-  width: auto;
-  height: auto;
-  max-width: 94vw;
-  max-height: 90dvh;
+  width: min(80vw, 380px);
+  height: min(72dvh, 680px);
+  max-width: 90vw;
+  max-height: 72dvh;
   aspect-ratio: 9 / 16;
+  object-fit: contain;
   background: #08080b;
   border-radius: 8px;
 }
