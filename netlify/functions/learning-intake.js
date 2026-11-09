@@ -3,7 +3,7 @@ import { getDeployStore, getStore } from '@netlify/blobs'
 
 const consultationUrl = 'https://calendar.app.google/T6uKgFsHYE6okXn28'
 const workshopStart = Date.parse('2026-11-20T16:00:00-05:00')
-const workshopCapacity = 50
+const workshopCapacity = 25
 const maxBytes = 8192
 const validVolume = ['none', '1–10', '11–50', '51+']
 const validGoal = ['missed', 'slow', 'qualification', 'other']
@@ -173,7 +173,7 @@ export function createIntakeHandler(openStore, now = Date.now) {
       if (kind === 'workshop') {
         const registration = await reserveWorkshopRegistration(store, key, record)
         if (registration.full) {
-          return reply({ error: 'This workshop has reached its 50-person limit. Registration is closed.' }, 409)
+          return reply({ error: 'This workshop has reached its 25-person limit. Registration is closed.' }, 409)
         }
       } else {
         const write = await store.setJSON(key, record, { onlyIfNew: true })
