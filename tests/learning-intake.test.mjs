@@ -31,6 +31,9 @@ function setup() {
     async list() {
       return { blobs: [...stores[kind].keys()].map((key) => ({ key })) }
     },
+    async delete(key) {
+      return stores[kind].delete(key)
+    },
   }), beforeWorkshop)
   return { handle, stores }
 }
@@ -98,6 +101,6 @@ test('bad requests and failed writes cannot produce a saved response', async () 
 test('workshop registration closes when the session begins', async () => {
   const closed = createIntakeHandler(() => {
     assert.fail('Closed registration must never access the store.')
-  }, () => Date.parse('2026-11-19T16:00:00-05:00'))
+  }, () => Date.parse('2026-11-20T16:00:00-05:00'))
   assert.equal((await closed(request(workshop))).status, 410)
 })
