@@ -5,6 +5,15 @@ const source = allowedSources.includes(incomingSource) ? incomingSource : incomi
 const campaign = query.get('utm_campaign') || ''
 
 for (const form of document.querySelectorAll('[data-intake]')) {
+  if (form.dataset.intake === 'workshop') {
+    const start = document.getElementById('workshop-start')
+    if (start && Date.now() >= Date.parse(start.dateTime)) {
+      form.hidden = true
+      document.getElementById('workshop-closed').hidden = false
+      continue
+    }
+  }
+
   const status = form.querySelector('[role="status"]')
   const submit = form.querySelector('button[type="submit"]')
   const buttonText = submit.textContent
@@ -50,7 +59,7 @@ for (const form of document.querySelectorAll('[data-intake]')) {
       submittedData = undefined
       requestId = undefined
       status.textContent = form.dataset.intake === 'workshop'
-        ? 'Your request is saved. We’ll use this email to share the workshop details when the date is set.'
+        ? 'Your registration is saved for November 19. We’ll share the Google Meet joining instructions using the email you provided.'
         : 'Your inquiry is saved for review. If you’d like to talk sooner, you can book a free call below.'
     } catch {
       status.textContent = 'We could not confirm the submission. Please try again.'

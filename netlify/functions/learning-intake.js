@@ -2,6 +2,7 @@ import { createHash, randomUUID } from 'node:crypto'
 import { getDeployStore, getStore } from '@netlify/blobs'
 
 const consultationUrl = 'https://calendar.app.google/T6uKgFsHYE6okXn28'
+const workshopStart = Date.parse('2026-11-19T16:00:00-05:00')
 const maxBytes = 8192
 const validVolume = ['none', '1–10', '11–50', '51+']
 const validGoal = ['missed', 'slow', 'qualification', 'other']
@@ -52,7 +53,7 @@ function reviewLead({ volume, goal, business, details }) {
   }
 }
 
-export function createIntakeHandler(openStore) {
+export function createIntakeHandler(openStore, now = Date.now) {
   return async function handleIntake(request, context) {
     if (request.method !== 'POST') return reply({ error: 'Method not allowed.' }, 405)
     if (request.headers.get('origin') !== new URL(request.url).origin) {
@@ -96,6 +97,10 @@ export function createIntakeHandler(openStore) {
         email.length > 254 || !/^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/u.test(email) ||
         input.consent !== true) {
       return reply({ error: 'Enter your name and a valid email, and confirm the contact permission.' }, 400)
+    }
+
+    if (kind === 'workshop' && now() >= workshopStart) {
+      return reply({ error: 'Registration for this workshop has closed.' }, 410)
     }
 
     const record = {

@@ -1,14 +1,14 @@
 # Atlas Learning live build
 
-Free 45-minute workshop for owner-led service businesses that already receive quote or appointment requests. Participants can bring a fictional or redacted inquiry.
+Thursday, November 19, 2026, from 4:00 to 4:45 p.m. Eastern on Google Meet. Free 45-minute workshop for owner-led service businesses that already receive quote or appointment requests. Participants can bring a fictional or redacted inquiry.
 
 ## Operate the signup and inquiry flows
 
-The Learn page collects permission-based workshop signups and consulting inquiries. The workshop list stays open while the date is pending. The forms show a confirmation only after storage succeeds. They do not send email.
+The Learn page collects permission-based workshop signups and consulting inquiries. Workshop registration closes when the session starts. People who signed up before the date was announced remain on the same list. The forms show a confirmation only after storage succeeds. They do not send email.
 
 In the Atlas Eye Netlify project, open **Blobs** and choose **learning-workshop-signups** or **learning-inquiry-review**. Each signup is deduplicated by email. Each inquiry has a timestamp, a source, its intake fields, a routing status and a draft for staff to review. Use the draft and the existing booking calendar to handle the inquiry. Download only the record you need, keep it private, and remove test records and stale personal data. Preview deploys use separate per-deploy stores.
 
-When the host confirms the workshop date and time, create the host meeting and publish the time and time zone. Update the confirmation copy and share the joining instructions with the people who opted into that workshop. Keep the joining link out of the public repository. Use separate campaign tags for referrals, email and partner events.
+Open the private host event in Google Calendar and share the joining instructions individually with people who opted into this workshop. Keep the joining link out of the public repository. Use separate campaign tags for referrals, email and partner events.
 
 ## Run of show
 

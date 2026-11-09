@@ -4,6 +4,7 @@ import { test } from 'node:test'
 import { createIntakeHandler } from '../netlify/functions/learning-intake.js'
 
 const origin = 'https://atlaseye.ai'
+const beforeWorkshop = () => Date.parse('2026-11-18T16:00:00-05:00')
 const workshop = { kind: 'workshop', name: 'Test attendee', email: 'sample@example.com', consent: true }
 const lead = { ...workshop, kind: 'inquiry', requestId: randomUUID(), business: 'Roofing', volume: '11–50', goal: 'missed' }
 
@@ -27,7 +28,7 @@ function setup() {
     async get(key) {
       return stores[kind].get(key)
     },
-  }))
+  }), beforeWorkshop)
   return { handle, stores }
 }
 
@@ -66,8 +67,15 @@ test('bad requests and failed writes cannot produce a saved response', async () 
   assert.equal((await handle(request(workshop, { origin: 'https://example.com' }))).status, 403)
   assert.equal((await handle(request({ ...workshop, name: 'X'.repeat(9000) }))).status, 413)
   assert.equal(stores.workshop.size, 0)
-  const broken = createIntakeHandler(() => ({ setJSON() { throw new Error('test failure') } }))
+  const broken = createIntakeHandler(() => ({ setJSON() { throw new Error('test failure') } }), beforeWorkshop)
   const response = await broken(request(workshop))
   assert.equal(response.status, 503)
   assert.equal((await response.json()).saved, undefined)
+})
+
+test('workshop registration closes when the session begins', async () => {
+  const closed = createIntakeHandler(() => {
+    assert.fail('Closed registration must never access the store.')
+  }, () => Date.parse('2026-11-19T16:00:00-05:00'))
+  assert.equal((await closed(request(workshop))).status, 410)
 })
