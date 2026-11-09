@@ -165,7 +165,7 @@ select:focus-visible {
   }
 }
 
-.intake-form {
+.intake-form:not([hidden]) {
   display: grid;
   gap: 12px;
   max-width: 680px;
