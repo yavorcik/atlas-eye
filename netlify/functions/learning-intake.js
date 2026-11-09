@@ -128,7 +128,7 @@ export function createIntakeHandler(openStore, now = Date.now) {
     const name = field(input, 'name', 100)
     const source = validSource.includes(input.source) ? input.source : 'other'
     const campaign = field(input, 'campaign', 80)
-    if (!['workshop', 'inquiry'].includes(kind) || !name || name.length > 100 ||
+    if (!['workshop', 'waitlist', 'inquiry'].includes(kind) || !name || name.length > 100 ||
         email.length > 254 || !/^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/u.test(email) ||
         input.consent !== true) {
       return reply({ error: 'Enter your name and a valid email, and confirm the contact permission.' }, 400)
@@ -138,13 +138,17 @@ export function createIntakeHandler(openStore, now = Date.now) {
       return reply({ error: 'Registration for this workshop has closed.' }, 410)
     }
 
+    const receivedAt = new Date().toISOString()
+    const consentPurpose = kind === 'waitlist' ? 'next free live workshop notifications' : kind === 'workshop' ? 'November 20 workshop updates' : 'inquiry follow-up'
     const record = {
       id: randomUUID(),
       name,
       email,
       source,
       campaign: /^[a-z0-9_.-]{1,80}$/i.test(campaign) ? campaign : '',
-      receivedAt: new Date().toISOString(),
+      receivedAt,
+      consentedAt: receivedAt,
+      consentPurpose,
     }
     let key = createHash('sha256').update(email).digest('hex')
 
@@ -173,7 +177,7 @@ export function createIntakeHandler(openStore, now = Date.now) {
       if (kind === 'workshop') {
         const registration = await reserveWorkshopRegistration(store, key, record)
         if (registration.full) {
-          return reply({ error: 'This workshop has reached its 25-person limit. Registration is closed.' }, 409)
+          return reply({ error: 'This workshop has reached its 25-person limit. Join the next-session list below.' }, 409)
         }
       } else {
         const write = await store.setJSON(key, record, { onlyIfNew: true })
@@ -189,7 +193,11 @@ export function createIntakeHandler(openStore, now = Date.now) {
 }
 
 export default createIntakeHandler((kind, context) => {
-  const name = kind === 'workshop' ? 'learning-workshop-signups' : 'learning-inquiry-review'
+  const name = kind === 'workshop'
+    ? 'learning-workshop-signups'
+    : kind === 'waitlist'
+      ? 'learning-workshop-waitlist'
+      : 'learning-inquiry-review'
   return context?.deploy?.context === 'production' ? getStore(name) : getDeployStore(name)
 })
 
