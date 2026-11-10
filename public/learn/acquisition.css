@@ -469,3 +469,48 @@ select:focus-visible {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* The agent service is the primary offer; examples and teaching support it. */
+.hero.agent-offer {
+  display: block;
+  max-width: 990px;
+  padding-bottom: 52px;
+}
+
+.agent-offer h1 { max-width: 980px; }
+.agent-offer .lead { max-width: 760px; }
+.headless-explainer { max-width: 760px; font-size: 17px; color: var(--muted); }
+.hero-actions .button { min-width: 182px; text-align: center; }
+.service-tracks { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.service-path { display: flex; flex-direction: column; border-top: 3px solid var(--accent); }
+.service-path .status { align-self: flex-start; }
+.service-path h3 { margin-bottom: 10px; }
+.service-path .service-price { font-size: 25px; margin-top: 0; }
+.service-price span { display: block; font-size: 14px; color: var(--muted); }
+.service-path .button { align-self: flex-start; margin-top: auto; }
+.anchor-alias { display: block; }
+section[id], article[id] { scroll-margin-top: 24px; }
+.build-process { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; padding: 0; list-style: none; margin: 34px 0; }
+.build-process li { border-top: 1px solid #74747f; padding-top: 18px; }
+.build-process li > span { color: #ff6069; font-size: 14px; font-weight: 700; }
+.build-process h3 { font-size: 21px; line-height: 1.3; }
+.build-process p { font-size: 16px; color: var(--muted); }
+.delivery-details { max-width: 900px; border: 1px solid var(--line); padding: 20px 24px; border-radius: 10px; background: #111115; }
+.proof-intro { padding-bottom: 15px; }
+.proof-intro + .agent-videos { border-top: 0; padding-top: 18px; }
+.sample-showcase { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(24px, 5vw, 64px); align-items: start; }
+@media (max-width: 850px) {
+  .build-process { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sample-showcase { grid-template-columns: minmax(0, 1fr); }
+  header { flex-direction: column; align-items: flex-start; gap: 20px; }
+  nav { flex-wrap: wrap; justify-content: flex-start; gap: 12px 20px; }
+}
+@media (max-width: 700px) {
+  .service-tracks { grid-template-columns: minmax(0, 1fr); }
+  .hero.agent-offer { padding: 44px 0; }
+  .hero.agent-offer h1 { font-size: clamp(42px, 10vw, 58px); }
+}
+@media (max-width: 420px) {
+  .build-process { grid-template-columns: minmax(0, 1fr); }
+  .hero-actions .button { width: 100%; }
+}

@@ -84,3 +84,11 @@ for (const form of document.querySelectorAll('[data-intake]')) {
     }
   })
 }
+
+// Keep the two service paths connected to the same inquiry and booking flow.
+for (const link of document.querySelectorAll('[data-build-preference]')) {
+  link.addEventListener('click', () => {
+    const preference = document.querySelector('[data-intake="inquiry"] select[name="buildPreference"]')
+    if (preference) preference.value = link.dataset.buildPreference
+  })
+}

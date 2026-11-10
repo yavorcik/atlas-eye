@@ -6,6 +6,8 @@ const workshopStart = Date.parse('2026-11-20T16:00:00-05:00')
 const workshopCapacity = 25
 const maxBytes = 8192
 const validVolume = ['none', '1–10', '11–50', '51+']
+const validContext = ['work', 'life', 'both']
+const validBuildPreference = ['for-me', 'with-me', 'not-sure']
 const validGoal = ['missed', 'slow', 'qualification', 'other']
 const validSource = ['direct', 'referral', 'linkedin', 'tiktok', 'email', 'event', 'other']
 
@@ -24,6 +26,21 @@ function field(input, name, limit) {
   const value = input[name]
   if (typeof value !== 'string') return ''
   return value.trim().slice(0, limit + 1)
+}
+
+function reviewGeneralInquiry({ context, buildPreference }) {
+  const contextLabels = { work: 'work', life: 'everyday life', both: 'work and everyday life' }
+  const buildLabels = {
+    'for-me': 'having an agent built for them',
+    'with-me': 'building an agent together with guidance',
+    'not-sure': 'discussing which build approach fits',
+  }
+  // Only fixed labels enter the private draft. Submitted text is untrusted data,
+  // not instructions or evidence of feasibility, qualification, or a commitment.
+  return {
+    status: 'owner_review',
+    draft: `This person is asking about a recurring task in ${contextLabels[context]} and prefers ${buildLabels[buildPreference]}. Review their task and any details, then discuss scope, access, feasibility, and appropriate human review before proposing a build. Fit and next steps have not been confirmed.`,
+  }
 }
 
 function reviewLead({ volume, goal, business, details }) {
@@ -163,8 +180,23 @@ export function createIntakeHandler(openStore, now = Date.now) {
           !/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(requestId)) {
         return reply({ error: 'Check the inquiry fields and try again.' }, 400)
       }
-      const lead = { business, volume, goal, details }
-      const review = reviewLead(lead)
+      // Older clients omit all three new fields. Presence, even if blank or
+      // invalid, selects the new schema so malformed forms cannot fall back.
+      const generalInquiry = ['context', 'buildPreference', 'task'].some((name) => Object.hasOwn(input, name))
+      const inquiryContext = field(input, 'context', 20)
+      const buildPreference = field(input, 'buildPreference', 20)
+      const task = field(input, 'task', 1200)
+      if (generalInquiry && (
+        !validContext.includes(input.context) || !validBuildPreference.includes(input.buildPreference) ||
+        !task || task.length > 1200 ||
+        (Object.hasOwn(input, 'details') && typeof input.details !== 'string')
+      )) {
+        return reply({ error: 'Choose a context and build preference, and describe your task in 1–1200 characters.' }, 400)
+      }
+      const lead = generalInquiry
+        ? { context: inquiryContext, buildPreference, task, details, business, volume, goal }
+        : { business, volume, goal, details }
+      const review = generalInquiry ? reviewGeneralInquiry(lead) : reviewLead(lead)
       Object.assign(record, lead, review, {
         reviewState: 'pending',
         draftType: review.status === 'owner_review' ? 'internal note' : 'customer reply',
