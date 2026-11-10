@@ -1,5 +1,6 @@
 import { createHash, randomUUID } from 'node:crypto'
 import { getDeployStore, getStore } from '@netlify/blobs'
+import { createOwnerRegistration } from '../lib/workshop-owner-registration.mjs'
 import { createWorkshopConfirmation } from '../lib/workshop-confirmation.mjs'
 import { createSmtpDiagnostic, createOwnerEmailTest } from '../lib/workshop-smtp-diagnostic.mjs'
 
@@ -110,8 +111,9 @@ async function reserveWorkshopRegistration(store, emailKey, record) {
   return { full: true }
 }
 
-export function createIntakeHandler(openStore, now = Date.now, confirmWorkshop = createWorkshopConfirmation(), diagnose = createSmtpDiagnostic(openStore), testOwnerEmail = createOwnerEmailTest(openStore)) {
+export function createIntakeHandler(openStore, now = Date.now, confirmWorkshop = createWorkshopConfirmation(), diagnose = createSmtpDiagnostic(openStore), testOwnerEmail = createOwnerEmailTest(openStore), registerOwner = createOwnerRegistration(openStore, reserveWorkshopRegistration, { now })) {
   return async function handleIntake(request, context) {
+    if (request.headers.has('x-workshop-owner-registration')) return registerOwner(request, context)
     if (request.headers.get('x-workshop-diagnostic') === 'send-owner-test') return testOwnerEmail(request, context)
     if (request.headers.has('x-workshop-diagnostic')) return diagnose(request, context)
     if (request.method !== 'POST') return reply({ error: 'Method not allowed.' }, 405)
