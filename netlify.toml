@@ -137,3 +137,12 @@
     Cache-Control = "public, max-age=0, must-revalidate"
     Cloudflare-CDN-Cache-Control = "no-store"
     Content-Disposition = 'inline; filename="AtlasEye_Nuclear_JumpStart_Deck.pdf"'
+
+# Operator actions must use the current deployment, never a cached action handler.
+[[headers]]
+  for = "/learn/connection-check*"
+  [headers.values]
+    Cache-Control = "no-store"
+    CDN-Cache-Control = "no-store"
+    Cloudflare-CDN-Cache-Control = "no-store"
+    X-Robots-Tag = "noindex, nofollow, noarchive"
