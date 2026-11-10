@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'">
+  <title>Connection check | Atlas Learning</title>
+  <link rel="stylesheet" href="./connection-check.css">
+  <script type="module" src="./connection-check.js"></script>
+</head>
+<body>
+  <main>
+    <p>Atlas Learning · Operator access</p>
+    <h1>Connection check</h1>
+    <p>For an authorized operator with a temporary verification key. This check does not send email or register an attendee.</p>
+    <form id="connection-check" autocomplete="off">
+      <label for="verification-key">One-use verification key</label>
+      <input id="verification-key" type="password" required minlength="64" maxlength="64" pattern="[a-f0-9]{64}" autocomplete="off" autocapitalize="none" spellcheck="false" aria-describedby="key-help">
+      <p id="key-help">Enter only the temporary key, never an email account password. The key is cleared when you start the check.</p>
+      <button type="submit" disabled>Run connection check</button>
+    </form>
+    <p id="check-status" role="status" aria-live="polite"></p>
+    <noscript>JavaScript is required. No check has been run.</noscript>
+    <p>Results are available only in the private operator records. There are no automatic retries.</p>
+  </main>
+</body>
+</html>

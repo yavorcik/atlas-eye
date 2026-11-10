@@ -23,7 +23,7 @@
     "test:active-eye": "node --test tests/active-eye-homepage.test.mjs",
     "test:historical-eye": "node --test tests/historical-atlas-eye-homepage.test.mjs",
     "test:transportation": "node --test tests/transportation-production-demo.test.mjs",
-    "test:workshop": "node --test tests/learning-intake.test.mjs tests/workshop-confirmation.test.mjs tests/learning-offer.test.mjs"
+    "test:workshop": "node --test tests/learning-intake.test.mjs tests/workshop-confirmation.test.mjs tests/learning-offer.test.mjs tests/workshop-connection-check.test.mjs"
   },
   "dependencies": {
     "@netlify/blobs": "^11.1.8",
