@@ -27,19 +27,21 @@ export function confirmationConfig(env, context) {
 
 // No queue or automatic retry: SMTP can accept a message before a timeout.
 // An immutable claim survives crashes, and a separate immutable outcome is private.
-export function createWorkshopConfirmation({ env = process.env, createTransport = nodemailer.createTransport } = {}) {
+export function createWorkshopConfirmation({ env = process.env, createTransport = nodemailer.createTransport, testRunId } = {}) {
   return async function confirm(store, key, context) {
     let transport
     let deadline
     try {
-      const resultKey = `_confirmation/${key}/result`
+      if (testRunId !== undefined && !/^[a-f0-9]{32}$/.test(testRunId)) return 'unconfirmed'
+      const prefix = testRunId ? `_confirmation_test/${testRunId}/${key}` : `_confirmation/${key}`
+      const resultKey = `${prefix}/result`
       const previous = await store.get(resultKey, { type: 'json', consistency: 'strong' })
       if (previous) return previous.status === 'accepted' ? 'accepted' : 'unconfirmed'
       const config = confirmationConfig(env, context)
       if (!config) return 'unconfirmed'
       const registration = await store.get(key, { type: 'json', consistency: 'strong' })
       if (!registration || !mailbox.test(registration.email || '') || typeof registration.name !== 'string') return 'unconfirmed'
-      const claim = await store.setJSON(`_confirmation/${key}/claim`, {
+      const claim = await store.setJSON(`${prefix}/claim`, {
         status: 'attempting', claimedAt: new Date().toISOString(), registrationId: registration.id,
       }, { onlyIfNew: true })
       if (!claim.modified) return 'unconfirmed'
@@ -51,7 +53,7 @@ export function createWorkshopConfirmation({ env = process.env, createTransport 
         const result = await Promise.race([transport.sendMail({
           from: { name: 'Atlas Learning', address: config.from },
           to: { address: registration.email },
-          subject: 'Your Atlas Learning workshop registration: November 20',
+          subject: `${testRunId ? '[TEST] ' : ''}Your Atlas Learning workshop registration: November 20`,
           text: `Hi ${registration.name.replace(/[\r\n]/g, ' ')},\n\nYour registration is saved for the free Atlas Learning live workshop.\n\nFriday, November 20, 2026\n4:00–4:45 p.m. Eastern (21:00–21:45 UTC)\n\nJoin on Google Meet: ${config.meetUrl}\n\nKeep this email for the joining link. If you need help, visit https://atlaseye.ai/learn/#book.\n\nAtlas Learning`,
           disableFileAccess: true, disableUrlAccess: true, signal: controller.signal,
         }), new Promise((_, reject) => {

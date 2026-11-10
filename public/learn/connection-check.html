@@ -14,12 +14,14 @@
   <main>
     <p>Atlas Learning · Operator access</p>
     <h1>Connection check</h1>
-    <p>For an authorized operator with a temporary verification key. This check does not send email or register an attendee.</p>
+    <p>For an authorized operator with a temporary verification key. The connection check does not send email. The separate, explicitly enabled owner test sends one marked test email to the configured owner; neither action registers an attendee.</p>
     <form id="connection-check" autocomplete="off">
+      <label for="operator-action">Action</label>
+      <select id="operator-action"><option value="verify-smtp">Check connection (no email)</option><option value="send-owner-test">Send one [TEST] email to the configured owner</option></select>
       <label for="verification-key">One-use verification key</label>
       <input id="verification-key" type="password" required minlength="64" maxlength="64" pattern="[a-f0-9]{64}" autocomplete="off" autocapitalize="none" spellcheck="false" aria-describedby="key-help">
       <p id="key-help">Enter only the temporary key, never an email account password. The key is cleared when you start the check.</p>
-      <button type="submit" disabled>Run connection check</button>
+      <button type="submit" disabled>Run selected action</button>
     </form>
     <p id="check-status" role="status" aria-live="polite"></p>
     <noscript>JavaScript is required. No check has been run.</noscript>

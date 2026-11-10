@@ -60,3 +60,13 @@ Inspect private `learning-workshop-signups` Blobs under `_smtp_diagnostic/<ID>/c
 The diagnostic response has a 20-second watchdog plus SMTP connection/greeting/socket timeouts. Nodemailer's `verify()` has no per-call abort signal; after a watchdog timeout its bounded transport operation may finish later, but it cannot send a message. Normal confirmation **sending** now passes an AbortSignal at its 20-second deadline so the in-flight SMTP send is cancelled, not merely abandoned by the response handler. Cancellation still cannot retract a message already accepted by the provider.
 
 After inspection, disable the diagnostic flag and remove its token. Keep private diagnostic and send claims for audit. Do not infer approval for a new message from a successful verification.
+
+## Separately approved one-time owner email test
+
+Only after SMTP verification succeeds and the owner has authorized a test message, an operator may enable `WORKSHOP_OWNER_TEST_ENABLED=true` and provide a temporary `WORKSHOP_SMTP_DIAGNOSTIC_TOKEN` for the protected owner-test action. The no-email diagnostic flag can and should remain false after diagnosis. Keep `WORKSHOP_EMAIL_ENABLED=false` so ordinary registration emails remain paused during the test.
+
+Retain the existing verified `WORKSHOP_SMTP_DIAGNOSTIC_ID` and configured owner email. The owner-test handler requires that ID's private diagnostic result to be `verified`, uses only the existing saved owner's name/email, and accepts no recipient or message content from the browser. SMTP configuration must remain the configuration that was verified. In `/learn/connection-check.html`, deliberately select **Send one [TEST] email to the configured owner**, enter the temporary key and run the selected action. The default action remains the no-email connection check.
+
+The test reuses the production message/SMTP code with a `[TEST]` subject and separate immutable `_confirmation_test/<diagnostic-ID>/<owner-email-hash>/claim` and `/result` records. It does not create a registration, consume a seat, alter the original send claim/result, or automatically retry. Repeated clicks or requests with the same ID cannot send another test. Do not rotate the ID or remove claims to retry an uncertain test: review provider activity and obtain fresh authorization first.
+
+After the attempt, inspect private provider-acceptance status and verify actual inbox/spam receipt separately. Then disable `WORKSHOP_OWNER_TEST_ENABLED` and remove the temporary token. Keep the verified diagnostic ID and all claims for audit. Enabling ordinary workshop emails is a separate operator decision; this test does not enable them.
