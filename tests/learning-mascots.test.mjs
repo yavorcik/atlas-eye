@@ -24,5 +24,19 @@ test('each character stays with its own labeled example and has accessible dimen
 test('characters remain responsive and add no animation or external requests', () => {
   assert.match(css, /\.agent-character img\s*\{[^}]*max-width: 100%;[^}]*height: auto;/)
   assert.match(css, /@media \(max-width: 700px\)\s*\{\s*\.moxie-intro\s*\{\s*grid-template-columns: minmax\(0, 1fr\)/)
-  assert.match(page, /acquisition.css\?v=20261110-mascots/)
+  assert.match(page, /acquisition.css\?v=20261110-flagship/)
+})
+
+
+test('Scout explains U.S. Chapter 7 bankruptcy intake and its human review boundary', () => {
+  const start = page.indexOf('id="scout"')
+  const section = page.slice(start, page.indexOf('</section>', start))
+  assert.match(section, /Meet Scout, a U\.S\. Chapter 7 bankruptcy intake assistant/)
+  assert.match(section, /help law firms collect and organize client information/)
+  assert.match(section, /guides clients through intake questions/)
+  assert.match(section, /organizes supporting documents/)
+  assert.match(section, /checklist for attorneys and staff to review/)
+  assert.match(section, /fictional example of that workflow, not a live intake service/)
+  assert.match(section, /does not decide eligibility, provide legal advice or file a bankruptcy case/)
+  assert.match(section, /no live intake or document uploads on this page/)
 })

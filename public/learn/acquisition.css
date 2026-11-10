@@ -533,3 +533,26 @@ section[id], article[id] { scroll-margin-top: 24px; }
   .moxie-character img { width: 230px; }
   .scout-character img { width: 185px; }
 }
+
+/* Lead the examples with the flagship platform and a current public website. */
+.flagship-feature { border-top: 3px solid var(--accent); }
+.flagship-layout { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); align-items: center; gap: clamp(24px, 4vw, 52px); }
+.flagship-feature h2 { font-size: clamp(44px, 6vw, 68px); margin-bottom: 14px; }
+.flagship-feature .lead { color: white; font-size: 24px; line-height: 1.4; margin-top: 0; }
+.flagship-layout > div > p:not(.eyebrow):not(.lead) { color: var(--muted); font-size: 17px; }
+.flagship-capabilities { padding-left: 20px; font-size: 16px; color: var(--muted); }
+.flagship-capabilities li { margin: 14px 0; padding-left: 3px; }
+.flagship-capabilities strong { color: white; }
+.flagship-art { margin: 0; text-align: center; }
+.flagship-art img { display: block; width: 100%; height: auto; }
+.flagship-art figcaption { margin-top: 12px; color: var(--muted); font-size: 12px; letter-spacing: .04em; }
+.flagship-limit { max-width: none; margin: 30px 0 0; padding: 20px 24px; border: 1px solid var(--line); border-radius: 8px; background: #111115; }
+.valley-feature { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: clamp(24px, 5vw, 64px); align-items: center; }
+.valley-feature > div > p:not(.eyebrow):not(.qualification) { color: var(--muted); }
+.valley-feature-link { padding: 28px; border: 1px solid var(--line); border-radius: 10px; background: #111115; }
+.valley-feature-link p { font-size: 17px; }
+@media (max-width: 850px) {
+  .flagship-layout, .valley-feature { grid-template-columns: minmax(0, 1fr); }
+  .flagship-art { grid-row: 1; width: min(100%, 340px); margin: 0 auto; }
+  .flagship-limit { padding: 20px; }
+}

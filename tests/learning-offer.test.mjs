@@ -54,3 +54,26 @@ test('page IDs are unique and every local anchor resolves', () => {
   for (const [, target] of page.matchAll(/aria-labelledby="([^"]+)"/g)) assert.ok(ids.includes(target), `Missing label ${target}`)
   for (const id of ['learn', 'custom-bot', 'projects', 'videos', 'demo', 'scout', 'moxie', 'workshop', 'book']) assert.ok(ids.includes(id), `Old anchor ${id}`)
 })
+
+test('Atlas Nuclear leads the examples as the flagship with verified public-demo boundaries', () => {
+  const exampleStart = page.indexOf('id="examples"')
+  const flagshipStart = page.indexOf('id="atlas-nuclear"')
+  const valleyStart = page.indexOf('id="valley-smr"')
+  const videoStart = page.indexOf('id="videos"')
+  assert.ok(exampleStart < flagshipStart && flagshipStart < valleyStart && valleyStart < videoStart)
+  const flagship = section('atlas-nuclear')
+  assert.match(flagship, /Our flagship agent project/)
+  assert.match(flagship, /Atlas Nuclear\./)
+  assert.match(flagship, /src="\/brand\/atlas-nuclear-logo.png"/)
+  assert.match(flagship, /href="https:\/\/atlaseye.ai\/mission-control\/"/)
+  for (const claim of ['Application preparation.', 'Transportation readiness.', 'Evidence control.', 'browser-local storage and simulated review', 'does not submit regulatory applications, authorize shipments or establish supplier qualification']) assert.ok(flagship.includes(claim), claim)
+})
+
+test('Valley SMR has a visible main example with the verified address and development caveat', () => {
+  const valley = section('valley-smr')
+  assert.match(valley, /Website example · Advanced nuclear project development/)
+  assert.match(valley, /Youngstown Advanced District Energy/)
+  assert.match(valley, /href="https:\/\/valleysmr.com\/"/)
+  assert.match(valley, /does not establish regulatory approval, financing or authorization to construct/)
+  assert.doesNotMatch(page, /vaslleysmr\.com/)
+})
