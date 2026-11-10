@@ -37,10 +37,13 @@ export function createWorkshopConfirmation({ env = process.env, createTransport 
       const resultKey = `${prefix}/result`
       const previous = await store.get(resultKey, { type: 'json', consistency: 'strong' })
       if (previous) return previous.status === 'accepted' ? 'accepted' : 'unconfirmed'
-      const config = confirmationConfig(env, context)
-      if (!config) return 'unconfirmed'
       const registration = await store.get(key, { type: 'json', consistency: 'strong' })
       if (!registration || !mailbox.test(registration.email || '') || typeof registration.name !== 'string') return 'unconfirmed'
+      // Owner-managed registrations must never trigger SMTP, including public retries
+      // and diagnostic test sends. The flag is saved atomically with the registration.
+      if (registration.confirmationDelivery?.mode === 'manual') return registration.confirmationDelivery.status === 'accepted' ? 'accepted' : 'unconfirmed'
+      const config = confirmationConfig(env, context)
+      if (!config) return 'unconfirmed'
       const claim = await store.setJSON(`${prefix}/claim`, {
         status: 'attempting', claimedAt: new Date().toISOString(), registrationId: registration.id,
       }, { onlyIfNew: true })
