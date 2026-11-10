@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 190 155" role="img" aria-labelledby="title desc">
+  <title id="title">Moxie the liver</title>
+  <desc id="desc">A smiling liver sidekick with a red cape, sneakers and a checklist.</desc>
+  <defs>
+    <linearGradient id="liver" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ef6871"/>
+      <stop offset=".55" stop-color="#b52f46"/>
+      <stop offset="1" stop-color="#702039"/>
+    </linearGradient>
+  </defs>
+
+  <!-- tiny cape -->
+  <path d="M48 53 15 45 31 91 57 82Z" fill="#ed1c24" stroke="#761d31" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M29 52 42 56" stroke="#ffb3b6" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- waving arm -->
+  <g>
+    <path d="M53 77 31 57" fill="none" stroke="#8f293e" stroke-width="11" stroke-linecap="round"/>
+    <path d="M31 57 24 47" fill="none" stroke="#fff0e8" stroke-width="9" stroke-linecap="round"/>
+    <path d="M24 48 19 39m8 8 1-12m1 14 7-9" fill="none" stroke="#fff0e8" stroke-width="5" stroke-linecap="round"/>
+  </g>
+
+  <!-- liver-shaped body -->
+  <path d="M31 52C34 32 55 25 75 31c14 4 24 13 39 8 20-7 42 2 47 20 7 21-7 37-28 45-18 7-29 7-40 22-11 15-31 16-43 3-9-10-12-22-26-30C10 86 18 64 31 52Z"
+    fill="url(#liver)" stroke="#571b2c" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M43 48c10-10 23-12 36-7" fill="none" stroke="#ff9ba0" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- expressive face -->
+  <g class="brow" fill="none" stroke="#541725" stroke-width="4" stroke-linecap="round">
+    <path d="m66 53 15-2"/>
+  </g>
+  <g class="eyes">
+    <ellipse cx="75" cy="67" rx="9" ry="11" fill="#fff8ec"/>
+    <ellipse cx="108" cy="66" rx="9" ry="11" fill="#fff8ec"/>
+    <circle cx="78" cy="69" r="4" fill="#29121a"/>
+    <circle cx="111" cy="68" r="4" fill="#29121a"/>
+    <circle cx="79" cy="67" r="1.4" fill="white"/>
+    <circle cx="112" cy="66" r="1.4" fill="white"/>
+  </g>
+  <path d="M82 83c9 10 22 9 31-2" fill="none" stroke="#4d1422" stroke-width="5" stroke-linecap="round"/>
+  <path d="M88 84c4 3 9 4 13 2" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="60" cy="81" r="5" fill="#f78b91" opacity=".75"/>
+  <circle cx="126" cy="80" r="5" fill="#f78b91" opacity=".75"/>
+
+  <!-- clipboard arm -->
+  <path d="M143 78 160 72" fill="none" stroke="#8f293e" stroke-width="10" stroke-linecap="round"/>
+  <rect x="151" y="42" width="27" height="38" rx="5" fill="#fff4e7" stroke="#542134" stroke-width="3" transform="rotate(8 164 61)"/>
+  <path d="m158 57 4 4 8-10m-11 17 12 2" fill="none" stroke="#36a982" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- sneakers -->
+  <path d="M65 122 61 139c-1 4 3 7 8 7h19c4 0 5-5 1-8l-13-10Z" fill="#2b354d" stroke="#171a27" stroke-width="3"/>
+  <path d="m108 118 8 17c2 4 7 5 11 3l14-7c4-2 2-7-2-8l-17-8Z" fill="#2b354d" stroke="#171a27" stroke-width="3"/>
+  <path d="m66 140 20-1m29-1 18-7" stroke="#fff1df" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- attitude sparkle -->
+  <path class="spark" d="m178 19 3 8 8 3-8 3-3 8-3-8-8-3 8-3Z" fill="#ffd166"/>
+  <path d="m43 20 2 5 5 2-5 2-2 5-2-5-5-2 5-2Z" fill="#ffd166"/>
+</svg>
+

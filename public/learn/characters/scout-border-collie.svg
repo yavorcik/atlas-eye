@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="title desc">
+  <title id="title">Scout the border collie</title>
+  <desc id="desc">An alert black-and-white border collie with a red bandana and a checklist.</desc>
+  <defs>
+    <linearGradient id="coat" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#414655"/><stop offset="1" stop-color="#171a27"/>
+    </linearGradient>
+    <linearGradient id="white" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#fff8ec"/><stop offset="1" stop-color="#dddde6"/>
+    </linearGradient>
+  </defs>
+  <!-- A plumed tail, seated body and white chest. -->
+  <path d="M157 185c32 9 42-10 45-33 17 27 7 58-30 58h-27" fill="url(#coat)" stroke="#11131e" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M199 164c4 14 1 28-9 36l-9-7 9-4-3-7 8-4Z" fill="#fff8ec"/>
+  <path d="M89 121c-20 20-27 50-22 82h97c8-35-7-68-25-83Z" fill="url(#coat)" stroke="#11131e" stroke-width="4"/>
+  <path d="m95 133 23 7 23-8-2 23-8-3 4 15-11-5-5 17-9-14-10 7 1-17-12 2Z" fill="url(#white)"/>
+  <path d="M88 171 83 209m57-39 6 39" fill="none" stroke="#fff8ec" stroke-width="15" stroke-linecap="round"/>
+  <path d="M82 202c-11 0-17 7-14 13h31v-8c-5-4-10-5-17-5Zm64 0c-9 0-15 3-18 7v6h34c1-7-5-13-16-13Z" fill="#fff8ec" stroke="#171a27" stroke-width="3"/>
+  <path d="m80 209-1 5m10-5v5m54-5v5m10-5 1 5" stroke="#9a9ca8" stroke-width="2" stroke-linecap="round"/>
+  <!-- Upright, slightly tipped ears and a classic collie blaze. -->
+  <path d="M65 83 56 28c-1-9 7-11 13-5l30 26m37-1 23-30c6-7 12-3 13 5l5 60" fill="url(#coat)" stroke="#11131e" stroke-width="4" stroke-linejoin="round"/>
+  <path d="m66 35 7 35 15-13Z" fill="#a98191"/>
+  <path d="m161 31-17 26 22 11Z" fill="#a98191"/>
+  <path d="M61 79c2-24 24-40 55-40 32 0 53 18 58 44l8 18-12-2 4 16-13-3c-9 25-28 33-47 33s-39-10-47-30l-12 2 5-17-11 3Z" fill="url(#coat)" stroke="#11131e" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M112 42c-7 21-2 36-12 49-9 10-24 14-29 28 12 18 27 26 43 26 21 0 36-11 46-27-6-16-22-18-32-29-9-10-4-28-9-47Z" fill="url(#white)"/>
+  <path d="m85 73 11-2m40 0 12 3" fill="none" stroke="#e8e3df" stroke-width="3" stroke-linecap="round"/>
+  <ellipse cx="91" cy="87" rx="9" ry="11" fill="#fff8ec"/>
+  <ellipse cx="141" cy="87" rx="9" ry="11" fill="#fff8ec"/>
+  <ellipse cx="94" cy="89" rx="4.5" ry="6" fill="#553b2a"/>
+  <ellipse cx="138" cy="89" rx="4.5" ry="6" fill="#553b2a"/>
+  <circle cx="95" cy="87" r="2" fill="white"/><circle cx="139" cy="87" r="2" fill="white"/>
+  <path d="M106 106q10-5 20 0c1 6-5 10-10 11-6-1-11-5-10-11Z" fill="#171a27"/>
+  <path d="M116 116v7m-17-1q8 12 17 1 10 11 19-1" fill="none" stroke="#252334" stroke-width="3" stroke-linecap="round"/>
+  <path d="M107 132q9 5 18-1l-2 7q-8 7-14-1Z" fill="#ed8790"/>
+  <path d="m82 136 32 10 36-12-2 16-34 17-32-19Z" fill="#ed1c24" stroke="#851c30" stroke-width="3" stroke-linejoin="round"/>
+  <path d="m98 148 16 6 17-7" fill="none" stroke="#ffb3b6" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- A simple checklist, not a real client document. -->
+  <g transform="rotate(9 182 170)">
+    <rect x="161" y="139" width="45" height="64" rx="6" fill="#fff4e7" stroke="#4b4050" stroke-width="3"/>
+    <rect x="173" y="135" width="21" height="10" rx="3" fill="#a3a5b0" stroke="#4b4050" stroke-width="2"/>
+    <path d="m169 157 4 4 7-8m-11 22 4 4 7-8" fill="none" stroke="#369878" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M185 158h13m-13 18h13m-28 13h28" fill="none" stroke="#9795a1" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  <path d="m208 48 3 8 8 3-8 3-3 8-3-8-8-3 8-3Z" fill="#ffd166"/>
+</svg>

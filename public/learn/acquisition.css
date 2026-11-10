@@ -514,3 +514,22 @@ section[id], article[id] { scroll-margin-top: 24px; }
   .build-process { grid-template-columns: minmax(0, 1fr); }
   .hero-actions .button { width: 100%; }
 }
+
+/* Familiar characters, kept with their clearly labeled examples. */
+.agent-character { margin: 0; text-align: center; }
+.agent-character img { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+.agent-character figcaption { display: flex; align-items: baseline; justify-content: center; flex-wrap: wrap; gap: 4px 10px; margin-top: 8px; }
+.agent-character figcaption strong { font-size: 17px; }
+.agent-character figcaption span { color: var(--muted); font-size: 13px; }
+.scout-character { margin: -6px 0 26px; padding-bottom: 22px; border-bottom: 1px solid var(--line); }
+.scout-character img { width: 210px; }
+.moxie-intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(200px, 280px); align-items: center; gap: clamp(28px, 5vw, 64px); }
+.moxie-character { padding: 24px 10px; }
+.moxie-character img { width: 280px; }
+.moxie-character figcaption { margin-top: 20px; }
+@media (max-width: 700px) {
+  .moxie-intro { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .moxie-character { grid-row: 1; padding: 10px; }
+  .moxie-character img { width: 230px; }
+  .scout-character img { width: 185px; }
+}
