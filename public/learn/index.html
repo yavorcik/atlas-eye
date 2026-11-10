@@ -15,7 +15,7 @@
 </style>
 <link rel="stylesheet" href="./acquisition.css?v=20261110-flagship">
 <script type="module" src="./acquisition.js?v=20261109-autoplay-fallback"></script>
-<script type="module" src="./intake.js?v=20261110-workshop-email"></script>
+<script type="module" src="./intake.js?v=20261110-workshop-clarity"></script>
 </head>
 <body>
 <div class="review">Atlas Learning · Practical AI agents for work and life</div>
@@ -243,7 +243,7 @@
     <p><strong><time id="workshop-start" datetime="2026-11-20T16:00:00-05:00">Friday, November 20, 2026</time> · 4:00–4:45 p.m. Eastern · Google Meet</strong></p>
     <p class="qualification">Limited to 25 people in this session. Register with this form—there is no separate calendar signup. We’ll email the Google Meet joining instructions to registered attendees. The booking calendar below is for a separate free consultation.</p>
     <p id="workshop-closed" class="qualification" hidden>Registration for this session has closed.</p>
-    <form class="intake-form" method="post" action="/learn/intake" data-intake="workshop">
+    <form class="intake-form" method="post" action="/learn/intake" data-intake="workshop" aria-label="Register for the November 20 workshop">
       <div class="intake-fields">
         <label>Name <input name="name" required maxlength="100" autocomplete="name"></label>
         <label>Email <input name="email" type="email" required maxlength="254" autocomplete="email"></label>
@@ -251,20 +251,20 @@
 
       <div class="intake-trap" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off"></label></div>
       <label class="intake-consent"><input type="checkbox" name="consent" value="yes" required> Atlas Learning may email me about this workshop.</label>
-      <button class="button primary" type="submit">Register for free</button>
+      <button class="button primary" type="submit">Register for November 20 · Free</button>
       <p class="intake-status" role="status"></p>
     </form>
     <details class="waitlist-details" id="workshop-waitlist-details">
-      <summary>Session full—or want the next one? Get first dibs next time.</summary>
-      <p>Join the next-session list. We’ll use your name and email only to let you know when another free live build is scheduled. This does not reserve a seat in a future session.</p>
-      <form class="intake-form" method="post" action="/learn/intake" data-intake="waitlist">
+      <summary>Looking for a later date? Join the next-session list.</summary>
+      <p>We’ll use your name and email only to let you know when another free live workshop is scheduled. <strong>This does not register you for November 20 or reserve a seat in any session.</strong> No confirmation email is sent when you join this list.</p>
+      <form class="intake-form" method="post" action="/learn/intake" data-intake="waitlist" aria-label="Get notified about a future workshop">
         <div class="intake-fields">
           <label>Name <input name="name" required maxlength="100" autocomplete="name"></label>
           <label>Email <input name="email" type="email" required maxlength="254" autocomplete="email"></label>
         </div>
         <div class="intake-trap" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off"></label></div>
         <label class="intake-consent"><input type="checkbox" name="consent" value="yes" required> Email me when you announce the next free live workshop.</label>
-        <button class="button secondary" type="submit">Add me to the next-session list</button>
+        <button class="button secondary" type="submit">Notify me about the next workshop</button>
         <p class="intake-status" role="status"></p>
       </form>
     </details>
