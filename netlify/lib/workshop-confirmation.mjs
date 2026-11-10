@@ -47,14 +47,18 @@ export function createWorkshopConfirmation({ env = process.env, createTransport 
       let status = 'uncertain'
       try {
         transport = createTransport(config.transport)
+        const controller = new AbortController()
         const result = await Promise.race([transport.sendMail({
           from: { name: 'Atlas Learning', address: config.from },
           to: { address: registration.email },
           subject: 'Your Atlas Learning workshop registration: November 20',
           text: `Hi ${registration.name.replace(/[\r\n]/g, ' ')},\n\nYour registration is saved for the free Atlas Learning live workshop.\n\nFriday, November 20, 2026\n4:00–4:45 p.m. Eastern (21:00–21:45 UTC)\n\nJoin on Google Meet: ${config.meetUrl}\n\nKeep this email for the joining link. If you need help, visit https://atlaseye.ai/learn/#book.\n\nAtlas Learning`,
-          disableFileAccess: true, disableUrlAccess: true,
+          disableFileAccess: true, disableUrlAccess: true, signal: controller.signal,
         }), new Promise((_, reject) => {
-          deadline = setTimeout(() => reject(new Error('SMTP deadline exceeded')), 20000)
+          deadline = setTimeout(() => {
+            controller.abort()
+            reject(new Error('SMTP deadline exceeded'))
+          }, 20000)
         })])
         status = result.accepted?.some((address) => address.toLowerCase() === registration.email.toLowerCase()) ? 'accepted' : 'not_accepted'
       } catch {

@@ -214,3 +214,82 @@ test('browser form distinguishes email acceptance, fallback and interrupted/repe
     }
   }
 })
+
+test('SMTP deadline aborts the in-flight send and retains claim without retry', async t => {
+  t.mock.timers.enable({ apis: ['setTimeout'] })
+  let signal
+  const { handle, messages, records } = setup({ send: message => {
+    signal = message.signal
+    return new Promise((_, reject) => signal.addEventListener('abort', () => reject(new Error('aborted')), { once: true }))
+  } })
+  const response = handle(request(), context)
+  while (!signal) await new Promise(resolve => setImmediate(resolve))
+  assert.equal(signal.aborted, false)
+  t.mock.timers.tick(20000)
+  assert.deepEqual(await (await response).json(), { saved: true, confirmationEmail: 'unconfirmed' })
+  assert.equal(signal.aborted, true)
+  assert.equal(records.get(`_confirmation/${key}/result`).status, 'uncertain')
+  assert.equal((await handle(request(), context)).status, 201)
+  assert.equal(messages.length, 1)
+})
+
+test('protected diagnostic verifies only once, records safe categories, and never sends', async () => {
+  const { createSmtpDiagnostic } = await import('../netlify/lib/workshop-smtp-diagnostic.mjs')
+  for (const [code, expected] of [[null, 'verified'], ['EAUTH', 'auth_failed'], ['EDNS', 'dns_failed'], ['ETLS', 'tls_failed'], ['ESOCKET', 'connection_failed'], ['ETIMEDOUT', 'timeout'], ['SECRET_ERROR', 'other']]) {
+    const { records, store, messages } = setup()
+    records.set(key, attendee)
+    records.set(`_confirmation/${key}/claim`, { status: 'attempting' })
+    const config = { ...env, WORKSHOP_EMAIL_ENABLED: 'false', WORKSHOP_SMTP_DIAGNOSTIC_ENABLED: 'true', WORKSHOP_SMTP_DIAGNOSTIC_TOKEN: 'a'.repeat(64), WORKSHOP_SMTP_DIAGNOSTIC_ID: 'b'.repeat(32), WORKSHOP_SMTP_DIAGNOSTIC_EMAIL: attendee.email }
+    let verified = 0
+    const diagnose = createSmtpDiagnostic(() => store, { env: config, createTransport: options => {
+      assert.equal(options.forceAuth, true)
+      assert.equal(options.requireTLS, true)
+      return { verify: async () => { verified++; if (code) throw Object.assign(new Error('SECRET_PASSWORD private recipient'), { code, response: 'private provider response' }); return true }, sendMail: () => assert.fail('Diagnostic must not send mail'), close() {} }
+    } })
+    const handler = createIntakeHandler(() => store, now, () => assert.fail('Diagnostic must bypass confirmation sender'), diagnose)
+    const probe = () => new Request('https://atlaseye.ai/learn/intake', { method: 'POST', headers: { 'x-workshop-diagnostic': 'verify-smtp', authorization: `Bearer ${config.WORKSHOP_SMTP_DIAGNOSTIC_TOKEN}` } })
+    const responses = await Promise.all([handler(probe(), context), handler(probe(), context)])
+    for (const response of responses) assert.deepEqual(await response.json(), { ok: true })
+    assert.equal(verified, 1)
+    assert.equal(messages.length, 0)
+    const result = records.get(`_smtp_diagnostic/${config.WORKSHOP_SMTP_DIAGNOSTIC_ID}/result`)
+    assert.equal(result.category, expected)
+    assert.deepEqual(Object.keys(result).sort(), ['category', 'elapsedMs', 'recordedAt'])
+    assert.doesNotMatch(JSON.stringify(result), /SECRET|private|sample@example/)
+    assert.deepEqual(records.get(`_confirmation/${key}/claim`), { status: 'attempting' })
+    assert.equal(records.has(`_confirmation/${key}/result`), false)
+  }
+})
+
+test('diagnostics reject unauthenticated, disabled, preview, malformed and unsaved-owner requests', async () => {
+  const { createSmtpDiagnostic } = await import('../netlify/lib/workshop-smtp-diagnostic.mjs')
+  const config = { ...env, WORKSHOP_SMTP_DIAGNOSTIC_ENABLED: 'true', WORKSHOP_SMTP_DIAGNOSTIC_TOKEN: 'a'.repeat(64), WORKSHOP_SMTP_DIAGNOSTIC_ID: 'b'.repeat(32), WORKSHOP_SMTP_DIAGNOSTIC_EMAIL: attendee.email }
+  for (const variant of ['no-token', 'wrong-token', 'disabled', 'preview', 'bad-id', 'short-token', 'no-record', 'wrong-intent', 'get']) {
+    const { records, store } = setup()
+    if (variant !== 'no-record') records.set(key, attendee)
+    const modified = { ...config }
+    if (variant === 'disabled') modified.WORKSHOP_SMTP_DIAGNOSTIC_ENABLED = 'false'
+    if (variant === 'bad-id') modified.WORKSHOP_SMTP_DIAGNOSTIC_ID = '../bad'
+    if (variant === 'short-token') modified.WORKSHOP_SMTP_DIAGNOSTIC_TOKEN = 'short'
+    const diagnose = createSmtpDiagnostic(() => store, { env: modified, createTransport: () => assert.fail('Unauthorized SMTP verification') })
+    const headers = { 'x-workshop-diagnostic': variant === 'wrong-intent' ? 'send' : 'verify-smtp', authorization: `Bearer ${variant === 'wrong-token' ? 'c'.repeat(64) : modified.WORKSHOP_SMTP_DIAGNOSTIC_TOKEN}` }
+    if (variant === 'no-token') delete headers.authorization
+    const response = await diagnose(new Request('https://atlaseye.ai/learn/intake', { method: variant === 'get' ? 'GET' : 'POST', headers }), variant === 'preview' ? {} : context)
+    assert.equal(response.status, 404, variant)
+    assert.deepEqual(await response.json(), { ok: false })
+    assert.equal([...records.keys()].filter(k => k.startsWith('_smtp_diagnostic/')).length, 0)
+  }
+})
+
+test('diagnostic failed claims cannot contact SMTP, and invalid config records only a safe category', async () => {
+  const { createSmtpDiagnostic } = await import('../netlify/lib/workshop-smtp-diagnostic.mjs')
+  for (const failClaim of [true, false]) {
+    const { records, store } = setup({ fail: k => failClaim && k.startsWith('_smtp_diagnostic/') })
+    records.set(key, attendee)
+    const config = { ...env, SMTP_PASS: '', WORKSHOP_SMTP_DIAGNOSTIC_ENABLED: 'true', WORKSHOP_SMTP_DIAGNOSTIC_TOKEN: 'a'.repeat(64), WORKSHOP_SMTP_DIAGNOSTIC_ID: 'b'.repeat(32), WORKSHOP_SMTP_DIAGNOSTIC_EMAIL: attendee.email }
+    const diagnose = createSmtpDiagnostic(() => store, { env: config, createTransport: () => assert.fail('No transport without configuration and persisted claim') })
+    const response = await diagnose(new Request('https://atlaseye.ai/learn/intake', { method: 'POST', headers: { 'x-workshop-diagnostic': 'verify-smtp', authorization: `Bearer ${config.WORKSHOP_SMTP_DIAGNOSTIC_TOKEN}` } }), context)
+    assert.equal(response.status, 200)
+    assert.equal(records.get(`_smtp_diagnostic/${config.WORKSHOP_SMTP_DIAGNOSTIC_ID}/result`)?.category, failClaim ? undefined : 'configuration_failed')
+  }
+})

@@ -1,6 +1,7 @@
 import { createHash, randomUUID } from 'node:crypto'
 import { getDeployStore, getStore } from '@netlify/blobs'
 import { createWorkshopConfirmation } from '../lib/workshop-confirmation.mjs'
+import { createSmtpDiagnostic } from '../lib/workshop-smtp-diagnostic.mjs'
 
 const consultationUrl = 'https://calendar.app.google/T6uKgFsHYE6okXn28'
 const workshopStart = Date.parse('2026-11-20T16:00:00-05:00')
@@ -109,8 +110,9 @@ async function reserveWorkshopRegistration(store, emailKey, record) {
   return { full: true }
 }
 
-export function createIntakeHandler(openStore, now = Date.now, confirmWorkshop = createWorkshopConfirmation()) {
+export function createIntakeHandler(openStore, now = Date.now, confirmWorkshop = createWorkshopConfirmation(), diagnose = createSmtpDiagnostic(openStore)) {
   return async function handleIntake(request, context) {
+    if (request.headers.has('x-workshop-diagnostic')) return diagnose(request, context)
     if (request.method !== 'POST') return reply({ error: 'Method not allowed.' }, 405)
     if (request.headers.get('origin') !== new URL(request.url).origin) {
       return reply({ error: 'Open the form on the Atlas Learning website.' }, 403)
