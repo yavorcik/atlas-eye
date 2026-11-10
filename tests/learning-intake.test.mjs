@@ -43,7 +43,7 @@ test('workshop retries deduplicate without revealing prior registration', async 
   const responses = await Promise.all([handle(request(workshop)), handle(request({ ...workshop, email: 'SAMPLE@example.com' }))])
   for (const response of responses) {
     assert.equal(response.status, 201)
-    assert.deepEqual(await response.json(), { saved: true })
+    assert.deepEqual(await response.json(), { saved: true, confirmationEmail: 'unconfirmed' })
   }
   assert.equal(stores.workshop.size, 2)
   assert.equal(stores.inquiry.size, 0)

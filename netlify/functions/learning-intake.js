@@ -1,5 +1,6 @@
 import { createHash, randomUUID } from 'node:crypto'
 import { getDeployStore, getStore } from '@netlify/blobs'
+import { createWorkshopConfirmation } from '../lib/workshop-confirmation.mjs'
 
 const consultationUrl = 'https://calendar.app.google/T6uKgFsHYE6okXn28'
 const workshopStart = Date.parse('2026-11-20T16:00:00-05:00')
@@ -91,6 +92,9 @@ async function reserveWorkshopRegistration(store, emailKey, record) {
     try {
       const saved = await store.setJSON(emailKey, record, { onlyIfNew: true })
       if (!saved.modified) {
+        if (!(await store.get(emailKey, { type: 'json', consistency: 'strong' }))) {
+          throw new Error('Registration write was not confirmed')
+        }
         await store.delete(seatKey).catch(() => {})
         return { saved: true }
       }
@@ -105,7 +109,7 @@ async function reserveWorkshopRegistration(store, emailKey, record) {
   return { full: true }
 }
 
-export function createIntakeHandler(openStore, now = Date.now) {
+export function createIntakeHandler(openStore, now = Date.now, confirmWorkshop = createWorkshopConfirmation()) {
   return async function handleIntake(request, context) {
     if (request.method !== 'POST') return reply({ error: 'Method not allowed.' }, 405)
     if (request.headers.get('origin') !== new URL(request.url).origin) {
@@ -204,6 +208,7 @@ export function createIntakeHandler(openStore, now = Date.now) {
       key += '-' + requestId
     }
 
+    let confirmationEmail
     try {
       const store = openStore(kind, context)
       if (kind === 'workshop') {
@@ -211,6 +216,8 @@ export function createIntakeHandler(openStore, now = Date.now) {
         if (registration.full) {
           return reply({ error: 'This workshop has reached its 25-person limit. Join the next-session list below.' }, 409)
         }
+        // The sender rereads the saved record; retry input never changes the recipient/name.
+        confirmationEmail = await confirmWorkshop(store, key, context).catch(() => 'unconfirmed')
       } else {
         const write = await store.setJSON(key, record, { onlyIfNew: true })
         if (!write.modified && !(await store.get(key, { type: 'json', consistency: 'strong' }))) {
@@ -220,7 +227,7 @@ export function createIntakeHandler(openStore, now = Date.now) {
     } catch {
       return reply({ error: 'We could not save your submission. Please try again.' }, 503)
     }
-    return reply({ saved: true }, 201)
+    return reply({ saved: true, ...(kind === 'workshop' ? { confirmationEmail } : {}) }, 201)
   }
 }
 
