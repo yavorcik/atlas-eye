@@ -11,6 +11,7 @@
 .portfolio-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin:32px 0 24px}.project{display:flex;flex-direction:column;padding:28px;border:1px solid var(--line);border-radius:10px;background:#111115}.project-number{font:500 48px/1 Georgia,serif;color:var(--accent);margin-bottom:25px}.project h3{font:500 29px/1.15 Georgia,serif;margin:18px 0 12px}.project p{font-size:16px;color:var(--muted)}.project a{margin-top:auto;padding-top:15px;font-size:15px;font-weight:650}.project .status{align-self:flex-start;font-size:11px}.portfolio-note{border-left:3px solid var(--accent);padding-left:20px}@media(max-width:850px){.portfolio-grid{grid-template-columns:1fr}.project{padding:25px}.project-number{margin-bottom:18px}}@media(max-width:700px){header{flex-direction:column}nav{justify-content:flex-start;gap:10px 18px}}
 .bot-track{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:32px;border-top:3px solid var(--accent)}.bot-track h3{margin-bottom:20px}@media(max-width:700px){.bot-track{grid-template-columns:1fr;gap:5px}}
  .waitlist-details{margin-top:18px;padding:14px 18px;border:1px solid var(--line);border-radius:10px;background:#111115}.waitlist-details summary{line-height:1.4}.waitlist-details[open] summary{color:var(--accent)}.waitlist-details>p{font-size:15px;color:var(--muted)}.waitlist-details [hidden]{display:none!important}
+@media(min-width:960px){.service-tracks{grid-template-columns:repeat(3,minmax(0,1fr))}}
 </style>
 <link rel="stylesheet" href="./acquisition.css?v=20261109-scout-popout">
 <script type="module" src="./acquisition.js?v=20261109-autoplay-fallback"></script>
@@ -194,6 +195,38 @@
     <li><strong>Build it live.</strong> Create and test a useful first slice while explaining each tool and decision.</li>
     <li><strong>Keep the keys.</strong> Save the work with Git and learn how to keep building on your own.</li>
   </ol>
+</section>
+<section class="section" id="services" aria-labelledby="services-heading">
+  <div class="intro">
+    <p class="eyebrow">AtlasEye consulting</p>
+    <h2 id="services-heading">Work with AtlasEye</h2>
+    <p class="lead">Bring an idea and build it with us, or have us build and launch it for you.</p>
+  </div>
+  <div class="tracks service-tracks">
+    <article class="track">
+      <h3>Build With Me</h3>
+      <p><strong>$500</strong></p>
+      <p>In a private 90-minute session, we build the first working piece together. You leave with the code and clear next steps.</p>
+    </article>
+    <article class="track">
+      <h3>Build My Website</h3>
+      <p><strong>From $2,500</strong></p>
+      <p>A business website built around one clear action, such as booking, requesting a quote, or paying online.</p>
+    </article>
+    <article class="track featured">
+      <h3>Build My AI Agent</h3>
+      <p><strong>From $4,500</strong></p>
+      <p>A working assistant for one job in your business, such as turning quote requests into leads you can call back. We launch it and show you how it works.</p>
+    </article>
+  </div>
+  <div class="intro">
+    <h3>How you get your agent</h3>
+    <p>We give you a working link you can share. If you have a website, we can add a button like <strong>Get a Quote</strong> that opens your agent. At handoff, we run a test together so you can see what your customer sees and where their information goes.</p>
+    <p>We can build it as a <strong>headless agent</strong>. That means the same engine can work behind different interfaces, such as a website form today and a booking system later.</p>
+    <p><strong>Managed hosting and routine maintenance start at $250/month.</strong> If you prefer to host the agent in your own account, we can deploy it there and hand it over.</p>
+    <p>Your $500 working session fee goes toward any build of $2,500 or more that you book within 30 days.</p>
+    <a class="button primary" href="#book">Tell us what you want to build</a>
+  </div>
 </section>
 <section class="section" id="case-study" aria-labelledby="case-heading"><div class="intro"><p class="eyebrow">The Valley Tote case study</p><h2 id="case-heading">The website was the easy part.<br>Getting a customer was harder.</h2><p>We used AI to turn a moving-tote business concept into a website. The project developed into a public site with a mascot, inquiry forms and payment infrastructure. The initial build was fast. The early test gave us a separate question to answer: would interested visitors take the next step?</p></div>
 <div class="metrics" aria-label="Build time and partial advertising results">
