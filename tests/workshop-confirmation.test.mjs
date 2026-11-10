@@ -293,3 +293,52 @@ test('diagnostic failed claims cannot contact SMTP, and invalid config records o
     assert.equal(records.get(`_smtp_diagnostic/${config.WORKSHOP_SMTP_DIAGNOSTIC_ID}/result`)?.category, failClaim ? undefined : 'configuration_failed')
   }
 })
+
+test('one-time owner test uses saved recipient, separate immutable claims and TEST subject without changing registration or seats', async () => {
+  const { createOwnerEmailTest } = await import('../netlify/lib/workshop-smtp-diagnostic.mjs')
+  for (const failSend of [false, true]) {
+    const { records, store } = setup()
+    const config = { ...env, WORKSHOP_EMAIL_ENABLED: 'false', WORKSHOP_OWNER_TEST_ENABLED: 'true', WORKSHOP_SMTP_DIAGNOSTIC_ENABLED: 'false', WORKSHOP_SMTP_DIAGNOSTIC_TOKEN: 'a'.repeat(64), WORKSHOP_SMTP_DIAGNOSTIC_ID: 'b'.repeat(32), WORKSHOP_SMTP_DIAGNOSTIC_EMAIL: attendee.email }
+    records.set(key, attendee)
+    records.set('_capacity/seat-01', { emailKey: key })
+    records.set(`_confirmation/${key}/claim`, { status: 'attempting' })
+    records.set(`_confirmation/${key}/result`, { status: 'uncertain' })
+    records.set(`_smtp_diagnostic/${config.WORKSHOP_SMTP_DIAGNOSTIC_ID}/result`, { category: 'verified' })
+    const before = [...records.entries()]
+    let attempts = 0
+    const testOwner = createOwnerEmailTest(() => store, { env: config, createTransport: () => ({
+      sendMail: async message => {
+        attempts++
+        assert.equal(message.to.address, attendee.email)
+        assert.match(message.subject, /^\[TEST\] /)
+        assert.match(message.text, /Hi Original attendee/)
+        if (failSend) throw new Error('private timeout or provider error')
+        return { accepted: [attendee.email] }
+      }, close() {},
+    }) })
+    const handler = createIntakeHandler(() => assert.fail('No ordinary registration path'), now, () => assert.fail('No ordinary mail'), () => assert.fail('No verify-only action'), testOwner)
+    const requestTest = () => new Request('https://atlaseye.ai/learn/intake', { method: 'POST', headers: { 'x-workshop-diagnostic': 'send-owner-test', authorization: `Bearer ${config.WORKSHOP_SMTP_DIAGNOSTIC_TOKEN}` }, body: JSON.stringify({ email: 'attacker@example.com', name: 'Changed name', kind: 'workshop' }) })
+    const responses = await Promise.all([handler(requestTest(), context), handler(requestTest(), context)])
+    for (const response of responses) assert.deepEqual(await response.json(), { ok: true })
+    await handler(requestTest(), context)
+    assert.equal(attempts, 1)
+    for (const [k, value] of before) assert.deepEqual(records.get(k), value)
+    const prefix = `_confirmation_test/${config.WORKSHOP_SMTP_DIAGNOSTIC_ID}/${key}`
+    assert.equal(records.get(`${prefix}/result`).status, failSend ? 'uncertain' : 'accepted')
+    assert.equal(records.size, before.length + 2)
+  }
+})
+
+test('owner test refuses disabled, unauthenticated, preview, unverified and missing-owner requests', async () => {
+  const { createOwnerEmailTest } = await import('../netlify/lib/workshop-smtp-diagnostic.mjs')
+  for (const variant of ['disabled', 'no-token', 'preview', 'unverified', 'missing-owner', 'verify-intent']) {
+    const { records, store } = setup()
+    const config = { ...env, WORKSHOP_OWNER_TEST_ENABLED: variant === 'disabled' ? 'false' : 'true', WORKSHOP_SMTP_DIAGNOSTIC_ENABLED: 'false', WORKSHOP_SMTP_DIAGNOSTIC_TOKEN: 'a'.repeat(64), WORKSHOP_SMTP_DIAGNOSTIC_ID: 'b'.repeat(32), WORKSHOP_SMTP_DIAGNOSTIC_EMAIL: attendee.email }
+    if (variant !== 'missing-owner') records.set(key, attendee)
+    records.set(`_smtp_diagnostic/${config.WORKSHOP_SMTP_DIAGNOSTIC_ID}/result`, { category: variant === 'unverified' ? 'auth_failed' : 'verified' })
+    const testOwner = createOwnerEmailTest(() => store, { env: config, createTransport: () => assert.fail('Forbidden test send') })
+    const response = await testOwner(new Request('https://atlaseye.ai/learn/intake', { method: 'POST', headers: { 'x-workshop-diagnostic': variant === 'verify-intent' ? 'verify-smtp' : 'send-owner-test', authorization: variant === 'no-token' ? '' : `Bearer ${config.WORKSHOP_SMTP_DIAGNOSTIC_TOKEN}` } }), variant === 'preview' ? {} : context)
+    assert.equal(response.status, 404, variant)
+    assert.equal([...records.keys()].some(k => k.startsWith('_confirmation_test/')), false)
+  }
+})
