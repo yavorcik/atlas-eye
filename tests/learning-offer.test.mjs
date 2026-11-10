@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 import { test } from 'node:test'
+import { runInNewContext } from 'node:vm'
 
 const page = await readFile(new URL('../public/learn/index.html', import.meta.url), 'utf8')
 const intake = await readFile(new URL('../public/learn/intake.js', import.meta.url), 'utf8')
@@ -29,6 +30,87 @@ test('existing commercial terms, workshop and booking links remain available', (
   for (const kind of ['workshop', 'waitlist', 'inquiry']) assert.equal((page.match(new RegExp(`data-intake="${kind}"`, 'g')) || []).length, 1)
   assert.match(page, /id="workshop-waitlist-details"/)
   assert.match(page, /<iframe src="https:\/\/calendar\.google\.com\/calendar\/appointments\/schedules\//)
+})
+
+test('workshop signup and future-date notifications are clearly separate choices', () => {
+  const workshop = section('workshop')
+  assert.match(workshop, /Register for November 20 · Free/)
+  assert.match(workshop, /aria-label="Register for the November 20 workshop"/)
+  assert.match(workshop, /Looking for a later date\? Join the next-session list\./)
+  assert.doesNotMatch(workshop, /Session full|first dibs/)
+  assert.match(workshop, /This does not register you for November 20 or reserve a seat in any session\./)
+  assert.match(workshop, /No confirmation email is sent when you join this list\./)
+  assert.match(workshop, /aria-label="Get notified about a future workshop"/)
+  assert.match(workshop, /Notify me about the next workshop/)
+  assert.match(intake, /next-session notification list, not registered for November 20/)
+  assert.match(intake, /no confirmation email is sent now/)
+})
+
+test('full or closed registration offers a separate, consented future-date signup without submitting it automatically', async () => {
+  for (const responseStatus of [409, 410]) {
+    const forms = ['workshop', 'waitlist'].map(kind => {
+      const status = { textContent: '' }
+      const button = { disabled: false, textContent: kind }
+      const fields = {
+        name: { value: kind === 'workshop' ? 'Sample attendee' : '' },
+        email: { value: kind === 'workshop' ? 'sample@example.com' : '' },
+        consent: { value: 'yes', checked: kind === 'workshop' },
+      }
+      return {
+        dataset: { intake: kind }, status, button, fields,
+        elements: { namedItem: name => fields[name] },
+        querySelector: selector => selector === '[role="status"]' ? status : button,
+        addEventListener(_, callback) { this.submit = callback },
+        reset() { this.resets = (this.resets || 0) + 1 },
+      }
+    })
+    const details = { open: false, querySelector: () => forms[1] }
+    const requests = []
+    runInNewContext(intake, {
+      window: { location: { search: '' } }, URLSearchParams,
+      crypto: { randomUUID: () => '12345678-1234-1234-1234-123456789abc' },
+      AbortSignal: { timeout: () => undefined },
+      FormData: class {
+        constructor(form) { this.form = form }
+        *[Symbol.iterator]() {
+          for (const [name, field] of Object.entries(this.form.fields)) {
+            if (name !== 'consent' || field.checked) yield [name, field.value]
+          }
+        }
+      },
+      document: {
+        querySelectorAll: selector => selector === '[data-intake]' ? forms : [],
+        getElementById: id => id === 'workshop-waitlist-details' ? details : null,
+      },
+      fetch: async (_, options) => {
+        const input = JSON.parse(options.body)
+        requests.push(input)
+        return input.kind === 'workshop'
+          ? { ok: false, status: responseStatus, json: async () => ({ error: 'Registration is unavailable.' }) }
+          : { ok: true, status: 201, json: async () => ({ saved: true }) }
+      },
+    })
+    await forms[0].submit({ preventDefault() {} })
+    assert.equal(requests.length, 1, 'No automatic waitlist submission')
+    assert.equal(requests[0].kind, 'workshop')
+    assert.equal(details.open, true)
+    assert.equal(forms[1].fields.name.value, 'Sample attendee')
+    assert.equal(forms[1].fields.email.value, 'sample@example.com')
+    assert.equal(forms[1].fields.consent.checked, false, 'Separate permission is still required')
+    assert.equal(forms[0].status.textContent, 'Registration is unavailable.')
+    assert.equal(forms[0].resets, undefined, 'Unsuccessful registration retains the entered data')
+    assert.equal(forms[0].button.disabled, false)
+
+    forms[1].fields.consent.checked = true
+    await forms[1].submit({ preventDefault() {} })
+    assert.equal(requests.length, 2)
+    assert.equal(requests[1].kind, 'waitlist')
+    assert.equal(requests[1].consent, true)
+    assert.match(forms[1].status.textContent, /not registered for November 20/)
+    assert.match(forms[1].status.textContent, /No seat is reserved/)
+    assert.match(forms[1].status.textContent, /no confirmation email is sent now/)
+    assert.equal(forms[1].resets, 1)
+  }
 })
 
 test('examples retain their limits and working interaction hooks', () => {

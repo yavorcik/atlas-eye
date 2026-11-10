@@ -76,7 +76,7 @@ for (const form of document.querySelectorAll('[data-intake]')) {
           ? 'Your registration is saved for November 20, 4–4:45 p.m. Eastern. Our email provider accepted your confirmation with the Google Meet link. Check your inbox and spam folder. If it does not arrive, use the free-call link below for help.'
           : 'Your registration is saved for November 20, 4–4:45 p.m. Eastern, but we cannot confirm that the joining-instructions email was sent. You do not need to register again. Use the free-call link below for help getting the Google Meet link.'
         : form.dataset.intake === 'waitlist'
-          ? 'You’re on the next-session list. We’ll email you when a new free live-build date is announced.'
+          ? 'You’re on the next-session notification list, not registered for November 20. No seat is reserved. We’ll email you when a new free live workshop date is announced; no confirmation email is sent now.'
           : 'Your inquiry is saved for review. If you’d like to talk sooner, you can book a free call below.'
     } catch {
       status.textContent = 'We could not confirm the submission. Please try again.'
