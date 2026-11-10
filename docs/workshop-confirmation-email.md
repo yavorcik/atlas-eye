@@ -39,3 +39,22 @@ If sending was disabled or configuration invalid, no claim was made. After confi
 ## Verification
 
 Run `npm run test:workshop`, `npm run lint` and `npm run build`. The focused tests cover saved-record recipients, duplicate/concurrent requests, the 25-seat cap, full/closed sessions, invalid configuration, previews, SMTP rejection/error, claim/outcome storage errors, interrupted claims, injection attempts and no send after failed writes. Live provider delivery and Netlify integration must be verified after authorized deployment.
+
+## Temporary operator-only SMTP diagnosis
+
+If a saved signup has an uncertain email outcome, do not retry its send or remove its claim. An operator can run a separate **no-email** connection/authentication check through the existing intake function. This does not establish whether an earlier message was accepted or delivered, or whether a future sender/recipient will be accepted.
+
+In production Functions runtime scope only, set:
+
+- `WORKSHOP_SMTP_DIAGNOSTIC_ENABLED=true`.
+- `WORKSHOP_SMTP_DIAGNOSTIC_TOKEN`: 32 cryptographically random bytes encoded as 64 lowercase hexadecimal characters. Keep it secret; never put it in a URL, client code, logs or source.
+- `WORKSHOP_SMTP_DIAGNOSTIC_ID`: a separate nonsecret random 16-byte value encoded as 32 lowercase hexadecimal characters. One verification is permitted per ID. Change it only when deliberately authorizing a new diagnostic run.
+- `WORKSHOP_SMTP_DIAGNOSTIC_EMAIL`: the exact email of the already-saved operator test registration. This is not authentication; the bearer token is mandatory.
+
+The authorized operator issues a POST to `/learn/intake` with `X-Workshop-Diagnostic: verify-smtp` and `Authorization: Bearer <token>`. Do not place the token in shell history. No request body is needed or used. Invalid/disabled/nonproduction requests return generic 404; authorized runs return generic 200 without exposing diagnostic results. The probe bypasses registration and email sending entirely, and never changes registration records or email claims.
+
+Inspect private `learning-workshop-signups` Blobs under `_smtp_diagnostic/<ID>/claim` and `/result`. Results contain only a fixed category, elapsed milliseconds and timestamp. Categories are `verified`, `auth_failed`, `dns_failed`, `tls_failed`, `connection_failed`, `timeout`, `configuration_failed` and `other`. No provider error text, credentials, recipient or message content is saved. A claim without a result is inconclusive and is not automatically retried. The probe uses the configured SMTP settings with forced authentication and TLS; it can run while confirmation sending is disabled, but the remaining workshop configuration must still validate.
+
+The diagnostic response has a 20-second watchdog plus SMTP connection/greeting/socket timeouts. Nodemailer's `verify()` has no per-call abort signal; after a watchdog timeout its bounded transport operation may finish later, but it cannot send a message. Normal confirmation **sending** now passes an AbortSignal at its 20-second deadline so the in-flight SMTP send is cancelled, not merely abandoned by the response handler. Cancellation still cannot retract a message already accepted by the provider.
+
+After inspection, disable the diagnostic flag and remove its token. Keep private diagnostic and send claims for audit. Do not infer approval for a new message from a successful verification.
