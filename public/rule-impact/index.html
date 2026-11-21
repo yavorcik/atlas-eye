@@ -1,12 +1,12 @@
 <!doctype html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Atlas Nuclear fictional rule change review demo.">
-<title>The Law Changed. Which Decision Needs a Second Look? | Atlas Nuclear Demo</title>
+<meta name="description" content="See how Atlas flags a fictional NRC rule change and shows counsel which approval needs review.">
+<title>A New NRC Rule Took Effect Today. Is Your Next Approval Ready? | Atlas Nuclear Demo</title>
 <link rel="canonical" href="https://atlaseye.ai/rule-impact/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="The law changed. Which decision needs a second look?">
-<meta property="og:description" content="Try the two-minute Atlas Nuclear demo: one fictional rule change, two decisions, and the advice counsel gives next.">
+<meta property="og:title" content="Atlas Nuclear Demo: A New NRC Rule Took Effect. Is Your Next Approval Ready?">
+<meta property="og:description" content="See how counsel responds to a fictional NRC rule: one pending supplier approval needs review, while unrelated work keeps moving.">
 <meta property="og:url" content="https://atlaseye.ai/rule-impact/">
 <meta property="og:image" content="https://atlaseye.ai/rule-impact/share.png">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
@@ -30,8 +30,8 @@ nav{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;border:1px solid va
 .guide-time{display:inline-block;color:var(--muted);margin:10px 0 0 11px;font-size:.9rem}.cue-close #client-advisory{animation:mark-cue 800ms ease-out}@media(max-width:675px){.guide-time{display:block;margin-left:0}.narration-top .btn{font-size:.8rem;padding:7px 8px}.narration-caption{min-height:0}.narration-top{gap:5px}.advisory{scroll-margin-top:12rem}}@media(max-width:430px){.top .wrap{gap:6px}.flag{white-space:normal;max-width:9rem;text-align:center}.brand{gap:6px}}</style></head>
 <body>
 <svg hidden xmlns="http://www.w3.org/2000/svg"><symbol id="nuclear-eye" viewBox="0 0 220 116"><path d="M5 58c24-26 63-49 105-49s81 23 105 49c-24 26-63 49-105 49S29 84 5 58Z" fill="none" stroke="currentColor" stroke-width="4"/><g fill="none" stroke="currentColor" stroke-width="2.7"><ellipse cx="110" cy="58" rx="54" ry="15"/><ellipse cx="110" cy="58" rx="54" ry="15" transform="rotate(60 110 58)"/><ellipse cx="110" cy="58" rx="54" ry="15" transform="rotate(-60 110 58)"/></g><circle cx="110" cy="58" r="9" fill="currentColor"/><circle cx="161" cy="58" r="4" fill="currentColor"/><circle cx="84" cy="12" r="4" fill="currentColor"/></symbol></svg>
-<header class="top"><div class="wrap"><div class="brand"><img class="mark" src="atlas-eye.svg" width="30" height="30" alt=""><div>ATLAS NUCLEAR<small>COUNSEL WORKSPACE</small></div></div><span class="flag">DEMO · FICTIONAL SCENARIO</span></div></header>
-<main class="wrap"><section class="hero"><svg class="hero-eye" aria-hidden="true"><use href="#nuclear-eye"/></svg><div class="hero-copy"><p class="kicker">Fictional case · January 1, 2027</p><h1>A new law became<br>effective today.</h1><p class="sub">Your client needs your advice today: what changed, which approvals need a second look, and how to update the process.</p><button class="btn primary guided-launch" id="start-narrated" type="button">Start narrated demo</button><span class="guide-time">About two minutes · or explore the four steps below</span></div></section>
+<header class="top"><div class="wrap"><div class="brand"><img class="mark" src="atlas-eye.svg" width="30" height="30" alt=""><div>ATLAS NUCLEAR<small>COUNSEL WORKSPACE</small></div></div><span class="flag">DEMO · FICTIONAL NRC RULE CHANGE</span></div></header>
+<main class="wrap"><section class="hero"><svg class="hero-eye" aria-hidden="true"><use href="#nuclear-eye"/></svg><div class="hero-copy"><p class="kicker">Nuclear Regulatory Commission · Fictional case · January 1, 2027</p><h1>A New NRC Rule Took Effect Today. Is Your Next Approval Ready?</h1><p class="sub">Atlas flags a pending supplier approval that relies on an older file. Without the exact version of the supporting evidence, your client can’t show what the approval relied on. See what counsel needs to review before sign-off, and what can keep moving.</p><button class="btn primary guided-launch" id="start-narrated" type="button">Start narrated demo</button><span class="guide-time">About two minutes · or explore the four steps below</span></div></section>
 <aside class="narration" id="narration" aria-label="Narration controls" hidden>
 <div class="narration-top"><p class="micro" id="narration-status">Narration</p><button class="btn" type="button" id="voice-toggle">Pause demo</button><button class="btn" type="button" id="voice-replay">Replay from this step</button><button class="btn" type="button" id="voice-exit">Explore on your own</button></div>
 <p class="narration-caption" id="voice-caption" aria-live="off"></p><audio id="voice-audio" preload="none"></audio></aside>
@@ -41,7 +41,7 @@ nav{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;border:1px solid va
 <button type="button" class="step" data-step="2" aria-controls="panel-3"><span>03</span>Impact check</button>
 <button type="button" class="step" data-step="3" aria-controls="panel-4"><span>04</span>Counsel decision</button>
 </nav>
-<section class="panel" id="panel-1" aria-labelledby="title-1"><p class="kicker">01 / Rule change</p><h2 id="title-1" tabindex="-1">The supplier record now needs a revision ID.</h2><p class="sub">In this fictional scenario, a final rule adds one documentation requirement for new covered supplier approvals beginning January 1, 2027. Replay the same two decisions before and after the new rule takes effect.</p>
+<section class="panel" id="panel-1" aria-labelledby="title-1"><p class="kicker">01 / Rule change</p><h2 id="title-1" tabindex="-1">The supplier record now needs a revision ID.</h2><p class="sub">In this fictional scenario, a final NRC rule adds one documentation requirement for new covered supplier approvals beginning January 1, 2027. Replay the same two decisions before and after the new rule takes effect.</p>
 <div class="grid"><article class="tile"><p class="micro">Previous rule</p><h3>Record the supplier approval.</h3><p>Keep the approval record in the project file.</p></article><article class="tile new"><p class="micro">New rule · effective Jan. 1, 2027</p><h3>Also identify the exact evidence revision.</h3><p>Record which version of the supplier’s evidence supported the approval.</p></article></div>
 <p class="signal" id="client-stakes"><strong>Why it matters today:</strong> Without the exact evidence revision, the client can’t show what supported a new covered approval. Alert the client before the next approval goes through. The separate logistics workflow is not affected.</p>
 <div class="guided-monitor" id="guided-monitor" hidden><span>Last successful scan</span><span>Server resumes</span><span>Checker covers the missed interval</span></div>
@@ -82,7 +82,7 @@ nav{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;border:1px solid va
 <footer class="wrap footer">Illustrative rule and decisions. Not an NRC publication or legal advice. Choices stay on this page. We count demo activity in aggregate; we don’t ask who you are.</footer>
 <script src="metrics.js"></script>
 <script src="evaluate.js"></script>
-<script src="narration-cues.js"></script>
+<script src="narration-cues.js?v=nrc-opening"></script>
 <script type="module">
 const {atlasRule,atlasDecisions,evaluateDecision,scanModes}=window.atlasRuleImpact;
 const {narrationCues,narrationStarts}=window.atlasRuleNarration;
@@ -188,7 +188,7 @@ function playVoice(){
 function speakScene(index){
  playbackRun++;
  const isNew=!player.getAttribute('src');
- if(isNew){player.src='guided-demo.mp3';player.load();}
+ if(isNew){player.src='guided-demo.mp3?v=nrc-opening';player.load();}
  if(!isNew||index>0)player.currentTime=narrationStarts[index];
  spokenScene=-1;lastCue=-1;drawCue(index);
  voiceToggle.disabled=false;voiceToggle.textContent='Pause demo';playVoice();

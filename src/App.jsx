@@ -430,7 +430,7 @@ function Cover() {
       <h1 id="cover-title">ATLASEYE</h1>
       <p className="cover-copy">From concept to governed readiness.</p>
       <a className="button primary hero-primary" href="/mission-control/" data-primary-cover-cta="true">ENTER ATLASEYE <span aria-hidden="true">→</span></a>
-      <a className="rule-impact-feature" href="/rule-impact/"><span>DEMO</span><strong>The law changed. Which decision needs a second look?</strong><small>Watch the 2-minute Atlas Nuclear walkthrough</small></a>
+      <a className="rule-impact-feature" href="/rule-impact/"><span>DEMO</span><strong>A new NRC rule took effect. Is your next approval ready?</strong><small>Watch the 2-minute Atlas Nuclear demo with a fictional NRC rule</small></a>
     </section>
   </main>
 }
