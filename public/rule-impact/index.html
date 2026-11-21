@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Atlas Nuclear fictional rule change review demo.">
+<title>The Law Changed. Which Decision Needs a Second Look? | Atlas Nuclear Demo</title>
+<link rel="canonical" href="https://atlaseye.ai/rule-impact/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="The law changed. Which decision needs a second look?">
+<meta property="og:description" content="Try the two-minute Atlas Nuclear demo: one fictional rule change, two decisions, and the advice counsel gives next.">
+<meta property="og:url" content="https://atlaseye.ai/rule-impact/">
+<meta property="og:image" content="https://atlaseye.ai/rule-impact/share.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Atlas Nuclear demo: The law changed. Which decision needs a second look?">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+:root{color-scheme:dark;--bg:#090909;--panel:#101013;--line:#2e2e35;--text:#fff;--muted:#b8b8c0;--red:#cf2525;--light-red:#ff676c;--dim:#211114;--green:#80d8aa}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 76% 0%,#26090d 0,transparent 37%),var(--bg);font:16px/1.55 system-ui,sans-serif;color:var(--text)}button,select{font:inherit}button{cursor:pointer}a{color:inherit}button:focus-visible,select:focus-visible{outline:2px solid white;outline-offset:4px}[hidden]{display:none!important}.wrap{width:min(1120px,calc(100% - 56px));margin:auto}
+.top{border-bottom:1px solid var(--line)}.top .wrap{display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:72px}.brand{display:flex;align-items:center;gap:11px;font-weight:850;letter-spacing:.14em;line-height:1.1}.brand small{display:block;margin-top:5px;color:var(--muted);font-size:.72rem;letter-spacing:.13em}.mark{width:30px;height:30px;color:var(--red);display:block}.flag{color:#ffc7c8;border:1px solid #663539;background:#261114;border-radius:5px;padding:4px 9px;font:700 .73rem/1.5 ui-monospace,monospace;letter-spacing:.055em;white-space:nowrap}
+.hero{position:relative;padding:45px 0 35px;overflow:hidden}.hero-copy{position:relative;z-index:1}.kicker,.micro{font:700 .84rem/1.5 ui-monospace,monospace;letter-spacing:.115em;text-transform:uppercase}.kicker{color:var(--light-red)}.micro{color:var(--muted)}h1,h2,h3,p{margin:0}h1{font-size:clamp(2.4rem,7vw,4.65rem);letter-spacing:-.061em;line-height:1.02;margin:.21em 0 .22em}h2{font-size:clamp(1.65rem,4vw,2.65rem);letter-spacing:-.04em;line-height:1.13;margin:.12em 0 .32em}h3{font-size:1.14rem;line-height:1.3}.sub{max-width:660px;color:var(--muted)}.hero-eye{position:absolute;width:min(35vw,365px);height:100%;right:24px;top:0;color:var(--red);opacity:.38;pointer-events:none;filter:drop-shadow(0 0 25px #f5142d33)}
+nav{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;border:1px solid var(--line);border-radius:10px 10px 0 0;overflow:hidden;background:var(--line)}.step{border:0;border-bottom:2px solid transparent;text-align:left;padding:13px 15px;color:var(--muted);background:#121215;min-height:58px;font-weight:720}.step span{color:#ea7477;font:700 .79rem ui-monospace,monospace;margin-right:8px}.step[aria-current=step]{background:#251216;color:var(--text);border-bottom-color:var(--red)}.step:hover{background:#272125}
+.panel{background:var(--panel);border:1px solid var(--line);border-top:0;border-radius:0 0 10px 10px;padding:clamp(18px,4vw,33px);min-height:344px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:17px 0}.tile{border:1px solid var(--line);border-radius:7px;padding:15px 17px;background:#151519;min-width:0}.tile p,.small{color:var(--muted);margin-top:5px}.tile.new,.tile.impact{border-color:#713139;background:#221317}.tile.unaffected{border-color:#315746}.signal{margin-top:15px;border-left:3px solid var(--red);padding:9px 13px;background:#1a1113;color:#efdedf}.chain{display:flex;gap:7px;flex-wrap:wrap;list-style:none;padding:0;margin:19px 0}.chain li{border:1px solid var(--line);border-radius:5px;padding:8px 11px;color:var(--muted);font-weight:680}.chain li.focus{border-color:#a7363d;background:#301417;color:#fff}.status{display:inline-block;border-radius:4px;padding:3px 7px;font:750 .75rem/1.4 ui-monospace,monospace;letter-spacing:.045em;margin-bottom:9px;background:#2b2a30;color:#e3e3e9}.status.red{background:#422026;color:#ffb2b5}.status.green{background:#183126;color:var(--green)}.status.amber{background:#392b16;color:#f6c87d}.nav-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:21px;padding-top:14px;border-top:1px solid var(--line)}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{padding:9px 14px;border:1px solid #46464e;border-radius:5px;background:#1b1b20;color:white;font-weight:750;min-height:43px}.btn:hover{background:#29292f}.primary{background:#c71620;border-color:#e43a43}.primary:hover{background:#a91119}.footer{padding:16px 0 24px;color:var(--muted);font-size:.85rem}.record{margin-top:13px;padding-top:12px;border-top:1px solid var(--line)}.record label{display:block;font-weight:700;margin-bottom:5px}.record select{appearance:none;width:100%;border:1px solid #656573;background:#101013 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='m1 1 5 5 5-5' stroke='white' stroke-width='2' fill='none'/%3E%3C/svg%3E") right 12px center no-repeat;color:white;border-radius:5px;padding:9px 32px 9px 10px;min-height:44px}.record button{margin-top:8px}.record-output{min-height:26px;color:#fff!important;font-size:.93rem}
+@media(max-width:675px){.wrap{width:calc(100% - 28px)}.hero{padding:32px 0 22px}.hero-eye{right:-35px;width:56vw;opacity:.22}.top .wrap{min-height:62px}.brand{font-size:.86rem;letter-spacing:.085em}.mark{width:36px}.flag{font-size:.65rem}.step{padding:8px 7px;font-size:.8rem;min-height:60px;line-height:1.23}.step span{display:block;margin:0 0 4px}.grid{grid-template-columns:1fr}.panel{min-height:0}.chain{gap:5px}.chain li{padding:6px 8px;font-size:.85rem}.nav-actions>.micro{font-size:.68rem;letter-spacing:.03em}}
+.replay{display:flex;gap:8px;flex-wrap:wrap;margin:13px 0}.replay [aria-pressed=true]{background:#3f191b;border-color:#d64f55}.scan{margin:16px 0 0}.scan summary{cursor:pointer;font-weight:750}.scan-body{margin-top:9px}.scan-result{min-height:27px;color:#ffd6d7;margin:7px 0}.date-anchor{font-weight:750}.scan-mode{position:relative}.summary-strip{margin-top:11px;margin-bottom:3px}.mark{max-width:30px}@media(max-width:675px){.replay button{min-height:44px;font-size:.88rem}}
+.guided-launch{margin-top:18px}.narration{margin:0 0 12px;padding:12px 15px;border:1px solid #633236;background:#1c1215;border-radius:8px}.narration-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.narration-top .micro{margin-right:auto}.narration-caption{min-height:3em;padding-top:8px;color:#f6f2f2}.cue-rule .new,.cue-chain .chain .focus,.cue-dependency .tile.new,.cue-after #diag-review,.cue-flags #flag-a,.cue-choice .record{animation:mark-cue 700ms ease-out}.cue-noimpact .unaffected{animation:mark-cue 700ms ease-out}.cue-eye .hero-eye{animation:eye-cue 900ms ease-out}.cue-after [data-date="2027-01-01"],.cue-before [data-date="2026-12-31"]{animation:mark-cue 700ms ease-out}.guided-monitor{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0 0}.guided-monitor span{padding:4px 8px;border:1px solid #663539;border-radius:4px;background:#29171a;font-size:.9rem}.guided-monitor span:last-child{font-weight:750}.cue-gap .guided-monitor{animation:mark-cue 700ms ease-out}
+@keyframes mark-cue{0%{box-shadow:0 0 0 0 #ff5e6490}100%{box-shadow:0 0 0 13px #ff5e6400}}@keyframes eye-cue{0%,100%{opacity:.38}35%{opacity:.80}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;scroll-behavior:auto!important}}
+@media(max-width:675px){.narration-top .micro{min-width:100%}.narration-caption{min-height:3.8em}}
+.option-preview{margin:9px 0;padding:8px 12px;border:1px solid #805155;border-radius:6px;background:#27161a}.option-preview p{font-size:.85rem;color:#ffd8db;font-weight:750}.option-preview ul{padding-left:19px;margin:4px 0 0;font-size:.92rem}.option-preview .preferred{font-weight:750;color:#fff}.cue-menu-a #action-a,.cue-menu-b #action-b,.cue-choose-a #action-a,.cue-record-a #result-a,.cue-record-b #result-b{animation:mark-cue 750ms ease-out}.result-example{color:#ffd9a3!important;min-height:0;margin-top:6px!important}.narration-caption{min-height:3.8em}@media(max-width:675px){.narration-caption{min-height:5.6em}}
+.narration:not([hidden]){position:sticky;top:8px;z-index:4}.advisory{scroll-margin-top:10rem;border:1px solid #714047;border-radius:8px;padding:15px 17px;background:#211316;margin-top:19px}.advisory h3{margin:3px 0 8px}.advisory ol{padding-left:1.35em;margin:0;color:#f4e7e9}.advisory li+li{margin-top:5px}.cue-stakes #client-stakes,.cue-notify #advisory-notify,.cue-implement #advisory-implement{animation:mark-cue 900ms ease-out}.cue-notify #advisory-notify,.cue-implement #advisory-implement{color:#ffbfc1}@media(max-width:675px){.advisory{scroll-margin-top:14rem}} 
+.guide-time{display:inline-block;color:var(--muted);margin:10px 0 0 11px;font-size:.9rem}.cue-close #client-advisory{animation:mark-cue 800ms ease-out}@media(max-width:675px){.guide-time{display:block;margin-left:0}.narration-top .btn{font-size:.8rem;padding:7px 8px}.narration-caption{min-height:0}.narration-top{gap:5px}.advisory{scroll-margin-top:12rem}}@media(max-width:430px){.top .wrap{gap:6px}.flag{white-space:normal;max-width:9rem;text-align:center}.brand{gap:6px}}</style></head>
+<body>
+<svg hidden xmlns="http://www.w3.org/2000/svg"><symbol id="nuclear-eye" viewBox="0 0 220 116"><path d="M5 58c24-26 63-49 105-49s81 23 105 49c-24 26-63 49-105 49S29 84 5 58Z" fill="none" stroke="currentColor" stroke-width="4"/><g fill="none" stroke="currentColor" stroke-width="2.7"><ellipse cx="110" cy="58" rx="54" ry="15"/><ellipse cx="110" cy="58" rx="54" ry="15" transform="rotate(60 110 58)"/><ellipse cx="110" cy="58" rx="54" ry="15" transform="rotate(-60 110 58)"/></g><circle cx="110" cy="58" r="9" fill="currentColor"/><circle cx="161" cy="58" r="4" fill="currentColor"/><circle cx="84" cy="12" r="4" fill="currentColor"/></symbol></svg>
+<header class="top"><div class="wrap"><div class="brand"><img class="mark" src="atlas-eye.svg" width="30" height="30" alt=""><div>ATLAS NUCLEAR<small>COUNSEL WORKSPACE</small></div></div><span class="flag">DEMO · FICTIONAL SCENARIO</span></div></header>
+<main class="wrap"><section class="hero"><svg class="hero-eye" aria-hidden="true"><use href="#nuclear-eye"/></svg><div class="hero-copy"><p class="kicker">Fictional case · January 1, 2027</p><h1>A new law became<br>effective today.</h1><p class="sub">Your client needs your advice today: what changed, which approvals need a second look, and how to update the process.</p><button class="btn primary guided-launch" id="start-narrated" type="button">Start narrated demo</button><span class="guide-time">About two minutes · or explore the four steps below</span></div></section>
+<aside class="narration" id="narration" aria-label="Narration controls" hidden>
+<div class="narration-top"><p class="micro" id="narration-status">Narration</p><button class="btn" type="button" id="voice-toggle">Pause demo</button><button class="btn" type="button" id="voice-replay">Replay from this step</button><button class="btn" type="button" id="voice-exit">Explore on your own</button></div>
+<p class="narration-caption" id="voice-caption" aria-live="off"></p><audio id="voice-audio" preload="none"></audio></aside>
+<nav aria-label="Demo steps">
+<button type="button" class="step" data-step="0" aria-controls="panel-1" aria-current="step"><span>01</span>Rule change</button>
+<button type="button" class="step" data-step="1" aria-controls="panel-2"><span>02</span>Supply chain</button>
+<button type="button" class="step" data-step="2" aria-controls="panel-3"><span>03</span>Impact check</button>
+<button type="button" class="step" data-step="3" aria-controls="panel-4"><span>04</span>Counsel decision</button>
+</nav>
+<section class="panel" id="panel-1" aria-labelledby="title-1"><p class="kicker">01 / Rule change</p><h2 id="title-1" tabindex="-1">The supplier record now needs a revision ID.</h2><p class="sub">In this fictional scenario, a final rule adds one documentation requirement for new covered supplier approvals beginning January 1, 2027. Replay the same two decisions before and after the new rule takes effect.</p>
+<div class="grid"><article class="tile"><p class="micro">Previous rule</p><h3>Record the supplier approval.</h3><p>Keep the approval record in the project file.</p></article><article class="tile new"><p class="micro">New rule · effective Jan. 1, 2027</p><h3>Also identify the exact evidence revision.</h3><p>Record which version of the supplier’s evidence supported the approval.</p></article></div>
+<p class="signal" id="client-stakes"><strong>Why it matters today:</strong> Without the exact evidence revision, the client can’t show what supported a new covered approval. Alert the client before the next approval goes through. The separate logistics workflow is not affected.</p>
+<div class="guided-monitor" id="guided-monitor" hidden><span>Last successful scan</span><span>Server resumes</span><span>Checker covers the missed interval</span></div>
+<details class="scan"><summary>Replay how the systemd source check works</summary><div class="scan-body">
+<p class="small">Historically configured for <strong>6:15 a.m. server time</strong>. With <code>Persistent=true</code>, a missed scheduled run can start when the timer is active again. The checker itself must cover the interval since the last successful scan. Choose a simulated path:</p>
+<div class="replay" aria-label="Simulated source check paths"><button class="btn scan-mode" type="button" data-scan="scheduled" aria-pressed="false">Scheduled check</button><button class="btn scan-mode" type="button" data-scan="catchup" aria-pressed="false">After downtime</button><button class="btn scan-mode" type="button" data-scan="manual" aria-pressed="false">On-demand check</button></div>
+<p class="scan-result" id="scan-result" role="status">Scenario: the fictional rule is published December 29 at 11:40 a.m.</p>
+<p class="small">A daily check is not an instant alert. An on-demand run can check sooner; a failed fetch is not a clean result. This replay does not check a live source or verify the server’s current schedule.</p>
+</div></details></section>
+<section class="panel" id="panel-2" aria-labelledby="title-2" hidden><p class="kicker">02 / Supply chain</p><h2 id="title-2" tabindex="-1">It lands at supplier qualification.</h2><p class="sub">The affected checkpoint is approval of a covered supplier. Procurement uses that approval later, but it is not where the new record requirement attaches.</p>
+<ol class="chain" aria-label="Illustrative supply chain stages"><li>Supplier screening</li><li class="focus" aria-current="true">Supplier qualification</li><li>Purchase order</li><li>Receiving</li><li>Installation</li></ol>
+<div class="grid"><article class="tile new"><p class="micro">Connected</p><h3>Supplier approval record</h3><p>A planned new approval relies on an older qualification file that doesn’t identify the evidence version.</p></article><article class="tile"><p class="micro">Not connected</p><h3>Delivery calendar</h3><p>Decision B set a receiving slot. It did not rely on supplier qualification evidence.</p></article></div></section>
+<section class="panel" id="panel-3" aria-labelledby="title-3" hidden><p class="kicker">03 / Impact check</p><h2 id="title-3" tabindex="-1">Which decision needs another look?</h2><p class="sub">Using the same two example records, Atlas checks the rule’s status, effective date, scope, and what each decision relied on.</p><div class="replay" aria-label="Evaluate at a planned use date"><button class="btn" type="button" data-date="2026-12-31" aria-pressed="false">Before · Dec. 31</button><button class="btn" type="button" data-date="2027-01-01" aria-pressed="true">Effective · Jan. 1</button></div>
+<div class="grid">
+<article class="tile"><span class="status" id="diag-watch">RULED OUT HERE</span><h3>Watch only</h3><p id="diag-watch-text"></p></article>
+<article class="tile unaffected"><span class="status green">FITS DECISION B</span><h3>No impact</h3><p>The receiving calendar has no dependency on the changed approval requirement.</p></article>
+<article class="tile impact"><span class="status red" id="diag-review">FITS DECISION A</span><h3>Review required</h3><p id="diag-review-text"></p></article>
+<article class="tile"><span class="status amber">NOT NEEDED HERE</span><h3>Undetermined</h3><p>Use this if scope, date, or the decision’s dependency can’t be verified. Ask for the missing fact rather than guessing.</p></article></div></section>
+<section class="panel" id="panel-4" aria-labelledby="title-4" hidden><p class="kicker">04 / Counsel decision</p><h2 id="title-4" tabindex="-1">Atlas flags. Counsel decides.</h2><p class="sub">The original decisions stay intact. Watch the example choices, then try your own. All outcomes are simulated; nothing is approved or sent.</p><div class="replay" aria-label="Replay the same decisions"><button class="btn" type="button" data-date="2026-12-31" aria-pressed="false">Before · Dec. 31</button><button class="btn" type="button" data-date="2027-01-01" aria-pressed="true">Effective · Jan. 1</button></div><p class="summary-strip small" id="decision-summary" role="status"></p>
+<div class="grid">
+<article class="tile impact" id="card-a"><span class="status red" id="flag-a"></span><h3>A. Use the existing supplier file for a new approval</h3><p id="why-a"></p>
+<form class="record" data-record="A"><label for="action-a">Counsel’s next step</label><select id="action-a" required><option value="">Choose an action</option><option>Request the missing evidence revision</option><option>Refer to quality and legal for review</option><option>Defer reliance pending review</option></select><button class="btn" type="submit">Record next step</button><div class="option-preview" id="choices-a" hidden><p>Sample dropdown choices</p><ul></ul></div><p id="result-a" class="record-output" role="status"></p></form></article>
+<article class="tile unaffected"><span class="status green" id="flag-b"></span><h3>B. Keep the receiving appointment</h3><p>The logistics decision did not use the supplier approval record. Atlas leaves it unchanged.</p>
+<form class="record" data-record="B"><label for="action-b">Counsel’s next step</label><select id="action-b" required><option value="">Choose an action</option><option>Leave the decision unchanged</option><option>Request a second look</option></select><button class="btn" type="submit">Record next step</button><div class="option-preview" id="choices-b" hidden><p>Sample dropdown choices</p><ul></ul></div><p id="result-b" class="record-output" role="status"></p></form></article>
+</div>
+<aside class="advisory" id="client-advisory" aria-labelledby="advisory-title">
+<p class="kicker">Sample client advisory · fictional scenario</p>
+<h3 id="advisory-title">What to tell the client on January 1</h3>
+<ol>
+<li id="advisory-notify"><strong>Notify the owners.</strong> Tell the project lead, supplier qualification team, and approval signers what changed on January 1. Ask them to identify pending covered approvals that use older files.</li>
+<li id="advisory-implement"><strong>Update the approval checklist.</strong> Require the exact evidence revision before signing a new covered approval. For Decision A, obtain the missing revision and route the file back for review before relying on it.</li>
+<li><strong>Keep unaffected work moving.</strong> Decision B’s receiving appointment can stay as recorded. Keep the original decisions and document the follow-up separately.</li>
+</ol>
+<p class="small">Illustrative advice only. No message is sent and no approval is recorded outside this demo.</p>
+</aside></section>
+<div class="nav-actions"><p class="micro" id="progress" aria-live="polite">Step 1 of 4</p><div class="actions"><button class="btn" id="prev" type="button" hidden>Back</button><button class="btn primary" id="next" type="button">Next: Supply chain</button><button class="btn" id="reset" type="button" hidden>Restart demo</button></div></div>
+</main>
+<footer class="wrap footer">Illustrative rule and decisions. Not an NRC publication or legal advice. Choices stay on this page. We count demo activity in aggregate; we don’t ask who you are.</footer>
+<script src="metrics.js"></script>
+<script src="evaluate.js"></script>
+<script src="narration-cues.js"></script>
+<script type="module">
+const {atlasRule,atlasDecisions,evaluateDecision,scanModes}=window.atlasRuleImpact;
+const {narrationCues,narrationStarts}=window.atlasRuleNarration;
+const steps=[...document.querySelectorAll('.step')], panels=[...document.querySelectorAll('.panel')], prev=document.getElementById('prev'), next=document.getElementById('next'), reset=document.getElementById('reset'), progress=document.getElementById('progress');
+const labels=['Next: Supply chain','Next: Impact check','Next: Counsel decision'];let current=0;
+function show(index,auto=false){
+ if(index<0||index>=panels.length)return;
+ current=index;steps.forEach((button,i)=>{if(i===index)button.setAttribute('aria-current','step');else button.removeAttribute('aria-current');panels[i].hidden=i!==index});
+ progress.textContent='Step '+(index+1)+' of 4';prev.hidden=index===0;next.hidden=index===3;reset.hidden=index!==3;if(index<3)next.textContent=labels[index];
+ if(!auto){panels[index].querySelector('h2').focus({preventScroll:true});
+ if(window.innerHeight<720||document.querySelector('nav').getBoundingClientRect().top<0) (guided?narrator:document.querySelector('nav')).scrollIntoView({block:'start'});}
+}
+steps.forEach((b,i)=>b.addEventListener('click',()=>go(i)));prev.addEventListener('click',()=>go(current-1));next.addEventListener('click',()=>go(current+1));
+const forms=[...document.querySelectorAll('.record')], dateButtons=[...document.querySelectorAll('[data-date]')], scanButtons=[...document.querySelectorAll('[data-scan]')];
+const records={},samples={},touches=new Set();let replayDate='2027-01-01';
+const put=(id,value)=>document.getElementById(id).textContent=value;
+function replay(date){
+ replayDate=date;
+ const a=evaluateDecision(atlasRule,atlasDecisions.A,date),b=evaluateDecision(atlasRule,atlasDecisions.B,date), before=a==='Watch only';
+ dateButtons.forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.date===date)));
+ put('diag-watch',before?'FITS DECISION A':'RULED OUT HERE');
+ put('diag-watch-text',before?'The rule is final but not effective on December 31. Keep it on the watch list.':'The final rule is in force on January 1, so watch-only no longer fits Decision A.');
+ put('diag-review',before?'NOT REQUIRED YET':'FITS DECISION A');
+ put('diag-review-text',before?'The planned approval links to the requirement, but the new rule is not in force yet.':'The rule applies to the new approval, and the existing record does not name the evidence revision.');
+ put('flag-a','ATLAS FLAG: '+a.toUpperCase());put('flag-b','ATLAS FLAG: '+b.toUpperCase());
+ document.getElementById('flag-a').className='status '+(before?'amber':'red');
+ put('why-a',before?'The approval is in scope, but the new rule is not effective on this date.':'The new approval is in scope. The existing file does not identify the evidence version.');
+ put('decision-summary','Same records, use date '+(before?'December 31, 2026':'January 1, 2027')+'. A: '+a+'. B: '+b+'.');
+ const select=document.getElementById('action-a');
+ select.replaceChildren(new Option('Choose an action',''),...(before?['Watch for the effective date','Request the evidence revision early']:['Request the missing evidence revision','Refer to quality and legal for review','Defer reliance pending review']).map(x=>new Option(x)));
+ forms.forEach(form=>renderResult(form,true));
+}
+dateButtons.forEach(x=>x.addEventListener('click',()=>{pauseForChoice();replay(x.dataset.date);}));
+scanButtons.forEach(x=>x.addEventListener('click',()=>{scanButtons.forEach(y=>y.setAttribute('aria-pressed',String(y===x)));put('scan-result',scanModes[x.dataset.scan])}));
+const outcomes={
+ 'Request the missing evidence revision':'Follow-up: obtain the exact evidence revision. Approval still needs review.',
+ 'Refer to quality and legal for review':'Follow-up: route the open question to quality and legal. Approval still needs review.',
+ 'Defer reliance pending review':'Reliance deferred in this replay. The original decision is unchanged.',
+ 'Watch for the effective date':'Watch the effective date. No current review flag on this date.',
+ 'Request the evidence revision early':'Follow-up: obtain the revision before the new rule takes effect.',
+ 'Leave the decision unchanged':'No follow-up. The receiving appointment stays as recorded.',
+ 'Request a second look':'Follow-up: ask counsel to independently verify that the appointment is unaffected.'
+};
+function renderResult(form,restore=false){
+ const id=replayDate+form.dataset.record, result=form.querySelector('[role=status]'), selected=records[id]||samples[id]||'';
+ if(restore)form.querySelector('select').value=selected;
+ result.classList.toggle('result-example',!!samples[id]&&!records[id]);
+ result.textContent=selected?(records[id]?'Recorded for this replay: ':'Sample result: ')+outcomes[selected]:'';
+}
+function touch(form){const k=replayDate+form.dataset.record;touches.add(k);delete samples[k];renderResult(form);}
+forms.forEach(form=>{
+ form.querySelector('select').addEventListener('change',()=>{pauseForChoice();touch(form);});
+ form.addEventListener('submit',e=>{e.preventDefault();pauseForChoice();const v=form.querySelector('select').value;if(v){const k=replayDate+form.dataset.record;touch(form);records[k]=v;renderResult(form);}});
+});
+reset.addEventListener('click',()=>{endGuide();Object.keys(records).forEach(key=>delete records[key]);Object.keys(samples).forEach(key=>delete samples[key]);touches.clear();scanButtons.forEach(x=>x.setAttribute('aria-pressed','false'));put('scan-result','Scenario: the fictional rule is published December 29 at 11:40 a.m.');document.querySelector('.scan').open=false;replay('2027-01-01');show(0)});
+replay(replayDate);
+const player=document.getElementById('voice-audio'), narrator=document.getElementById('narration'), voiceToggle=document.getElementById('voice-toggle'), monitor=document.getElementById('guided-monitor');
+let guided=false, spokenScene=-1, lastCue=-1, lastClass='', playbackRun=0;
+function clearCue(){if(lastClass)document.body.classList.remove(lastClass);lastClass='';monitor.hidden=true;document.querySelectorAll('.option-preview').forEach(x=>x.hidden=true);}
+function example(letter,choice,mode){
+ if(replayDate!=='2027-01-01')return;
+ const form=forms.find(f=>f.dataset.record===letter), id=replayDate+letter;
+ if(touches.has(id)||records[id])return;
+ const select=form.querySelector('select'), list=form.querySelector('.option-preview');
+ if(mode==='menu'){
+   list.querySelector('ul').replaceChildren(...Array.from(select.options).filter(o=>o.value).map(o=>{const li=document.createElement('li');li.textContent=o.label;if(o.value===choice)li.className='preferred';return li;}));
+   list.hidden=false;
+ }
+ if(mode==='select'||mode==='record')select.value=choice;
+ if(mode==='record'){samples[id]=choice;renderResult(form);}
+}
+function drawCue(forced){
+ if(!guided)return;
+ const t=player.currentTime;
+ let scene=Number.isInteger(forced)?forced:0;
+ if(!Number.isInteger(forced))while(scene+1<narrationStarts.length&&t>=narrationStarts[scene+1])scene++;
+ const list=narrationCues[scene];
+ let i=0;
+ while(i+1<list.length&&t-narrationStarts[scene]>=list[i+1].at)i++;
+ if(scene!==spokenScene){spokenScene=scene;lastCue=-1;show(scene,true);put('narration-status','Playing automatically · '+(scene+1)+' of 4');}
+ if(i===lastCue)return;
+ lastCue=i;
+ const cue=list[i], action=cue.action;
+ clearCue();
+ lastClass='cue-'+action;document.body.classList.add(lastClass);
+ if(action==='gap')monitor.hidden=false;
+ if(action==='before')replay('2026-12-31');
+ if(action==='after'||action==='flags')replay('2027-01-01');
+ const a='Request the missing evidence revision', b='Leave the decision unchanged';
+ if(action==='menu-a')example('A',a,'menu');
+ if(action==='choose-a')example('A',a,'select');
+ if(action==='record-a')example('A',a,'record');
+ if(action==='menu-b'){example('B',b,'menu');example('B',b,'select');}
+ if(action==='record-b')example('B',b,'record');
+ if(action==='notify'||action==='close'){const box=document.getElementById('client-advisory');const bounds=box.getBoundingClientRect();if(bounds.bottom>window.innerHeight)box.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});}
+ put('voice-caption',cue.text);
+}
+function pauseForChoice(){if(guided&&!player.paused)player.pause();}
+function playVoice(){
+ const attempt=++playbackRun;
+ player.play().catch(()=>{if(guided&&attempt===playbackRun){put('narration-status','Voice could not play');voiceToggle.disabled=false;voiceToggle.textContent='Try voice again';}});
+}
+function speakScene(index){
+ playbackRun++;
+ const isNew=!player.getAttribute('src');
+ if(isNew){player.src='guided-demo.mp3';player.load();}
+ if(!isNew||index>0)player.currentTime=narrationStarts[index];
+ spokenScene=-1;lastCue=-1;drawCue(index);
+ voiceToggle.disabled=false;voiceToggle.textContent='Pause demo';playVoice();
+}
+function go(index){if(index<0||index>=panels.length)return;show(index);if(guided)speakScene(index);}
+function endGuide(){guided=false;playbackRun++;player.pause();player.removeAttribute('src');player.load();spokenScene=-1;lastCue=-1;clearCue();narrator.hidden=true;put('voice-caption','');}
+function startGuide(){
+ window.atlasRuleImpactMetric?.('start');
+ guided=true;narrator.hidden=false;Object.keys(samples).forEach(k=>delete samples[k]);touches.clear();replay(replayDate);go(0);voiceToggle.focus({preventScroll:true});narrator.scrollIntoView({block:'nearest'});
+}
+document.getElementById('start-narrated').addEventListener('click',startGuide);
+document.getElementById('voice-replay').addEventListener('click',()=>speakScene(current));
+document.getElementById('voice-exit').addEventListener('click',()=>{endGuide();panels[current].querySelector('h2').focus({preventScroll:true});});
+voiceToggle.addEventListener('click',()=>{if(player.ended)startGuide();else if(player.paused)playVoice();else player.pause();});
+player.addEventListener('timeupdate',()=>drawCue());
+player.addEventListener('playing',()=>{if(guided){voiceToggle.textContent='Pause demo';put('narration-status','Playing automatically · '+(current+1)+' of 4');}});
+player.addEventListener('pause',()=>{if(guided&&!player.ended){voiceToggle.textContent='Resume demo';put('narration-status','Paused · '+(current+1)+' of 4');}});
+player.addEventListener('ended',()=>{if(guided){window.atlasRuleImpactMetric?.('complete');voiceToggle.textContent='Replay full demo';put('narration-status','Demo complete · try your own choices');clearCue();}});
+player.addEventListener('error',()=>{if(guided){put('narration-status','Voice could not load');voiceToggle.textContent='Try voice again';}});
+</script>
+</body></html>

@@ -187,3 +187,10 @@ input[aria-invalid="true"] { border: 2px solid #e84141; }
 .basis-content { font-size: .9rem; overflow-wrap: anywhere; color: inherit; }
 .basis-content ul { padding-left: 1.25rem; }
 @media print { .basis-panel { break-inside: auto; } .basis-panel::details-content { display: block; } .basis-content a::after { content: ' (' attr(href) ')'; font-size: .8em; } }
+
+/* Rule-impact public demo callout; independent of the primary workspace link. */
+.rule-impact-feature{position:relative;z-index:8;display:grid;grid-template-columns:max-content minmax(0,1fr);align-items:center;gap:.22rem .75rem;width:min(530px,90vw);padding:.7rem .9rem;margin:.35rem 0 .15rem;text-align:left;text-decoration:none;color:#f5f1f2;background:#180d10;border:1px solid #75424a;border-radius:7px}
+.rule-impact-feature:hover,.rule-impact-feature:focus-visible{border-color:#ff676c}
+.rule-impact-feature span{grid-row:span 2;display:block;padding:.14rem .4rem;border:1px solid #a9454c;border-radius:3px;color:#ffb9bd;font-weight:850;font-size:.76rem;letter-spacing:.08em}
+.rule-impact-feature strong{font-size:clamp(.94rem,2.8vw,1.05rem);line-height:1.25}
+.rule-impact-feature small{color:#c8bbc0;font-size:.82rem}
