@@ -31,7 +31,7 @@ nav{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;border:1px solid va
 <body>
 <svg hidden xmlns="http://www.w3.org/2000/svg"><symbol id="nuclear-eye" viewBox="0 0 220 116"><path d="M5 58c24-26 63-49 105-49s81 23 105 49c-24 26-63 49-105 49S29 84 5 58Z" fill="none" stroke="currentColor" stroke-width="4"/><g fill="none" stroke="currentColor" stroke-width="2.7"><ellipse cx="110" cy="58" rx="54" ry="15"/><ellipse cx="110" cy="58" rx="54" ry="15" transform="rotate(60 110 58)"/><ellipse cx="110" cy="58" rx="54" ry="15" transform="rotate(-60 110 58)"/></g><circle cx="110" cy="58" r="9" fill="currentColor"/><circle cx="161" cy="58" r="4" fill="currentColor"/><circle cx="84" cy="12" r="4" fill="currentColor"/></symbol></svg>
 <header class="top"><div class="wrap"><div class="brand"><img class="mark" src="atlas-eye.svg" width="30" height="30" alt=""><div>ATLAS NUCLEAR<small>COUNSEL WORKSPACE</small></div></div><span class="flag">DEMO · FICTIONAL NRC RULE CHANGE</span></div></header>
-<main class="wrap"><section class="hero"><svg class="hero-eye" aria-hidden="true"><use href="#nuclear-eye"/></svg><div class="hero-copy"><p class="kicker">Nuclear Regulatory Commission · Fictional case · January 1, 2027</p><h1>A New NRC Rule Took Effect Today. Is Your Next Approval Ready?</h1><p class="sub">Your client is about to approve a supplier. The new rule requires the approval record to identify the exact version of the evidence supporting that decision. The supplier file doesn’t say which version supports it, so Atlas flags the approval for counsel to review before sign-off.</p><button class="btn primary guided-launch" id="start-narrated" type="button">Start narrated demo</button><span class="guide-time">About two minutes · or explore the four steps below</span></div></section>
+<main class="wrap"><section class="hero"><svg class="hero-eye" aria-hidden="true"><use href="#nuclear-eye"/></svg><div class="hero-copy"><p class="kicker">Nuclear Regulatory Commission · Fictional case · January 1, 2027</p><h1>A New NRC Rule Took Effect Today. Is Your Next Approval Ready?</h1><p class="sub">Your client develops small modular reactors (SMRs) and is about to approve a supplier. The new rule changes what the developer must document before sign-off: the exact version of the evidence supporting the approval. The pending file doesn’t identify that version, so Atlas flags it for counsel’s review.</p><p class="signal"><strong>Notify the SMR developer today.</strong> Tell the project and quality leads to hold this approval until the team identifies the missing evidence version and counsel reviews the updated record.</p><button class="btn primary guided-launch" id="start-narrated" type="button">Start narrated demo</button><span class="guide-time">About two minutes · or explore the four steps below</span></div></section>
 <aside class="narration" id="narration" aria-label="Narration controls" hidden>
 <div class="narration-top"><p class="micro" id="narration-status">Narration</p><button class="btn" type="button" id="voice-toggle">Pause demo</button><button class="btn" type="button" id="voice-replay">Replay from this step</button><button class="btn" type="button" id="voice-exit">Explore on your own</button></div>
 <p class="narration-caption" id="voice-caption" aria-live="off"></p><audio id="voice-audio" preload="none"></audio></aside>
@@ -69,9 +69,9 @@ nav{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;border:1px solid va
 </div>
 <aside class="advisory" id="client-advisory" aria-labelledby="advisory-title">
 <p class="kicker">Sample client advisory · fictional scenario</p>
-<h3 id="advisory-title">What to tell the client on January 1</h3>
+<h3 id="advisory-title">What counsel should tell the SMR developer today</h3>
 <ol>
-<li id="advisory-notify"><strong>Notify the owners.</strong> Tell the project lead, supplier qualification team, and approval signers what changed on January 1. Ask them to identify pending covered approvals that use older files.</li>
+<li id="advisory-notify"><strong>Notify the developer today.</strong> Tell the project lead, supplier qualification team, and approval signers that the rule is in effect. Flag the pending approval before sign-off and ask the team to check other pending covered approvals for the same gap.</li>
 <li id="advisory-implement"><strong>Update the approval checklist.</strong> Require the exact evidence revision before signing a new covered approval. For Decision A, obtain the missing revision and route the file back for review before relying on it.</li>
 <li><strong>Keep unaffected work moving.</strong> Decision B’s receiving appointment can stay as recorded. Keep the original decisions and document the follow-up separately.</li>
 </ol>
@@ -82,7 +82,7 @@ nav{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;border:1px solid va
 <footer class="wrap footer">Illustrative rule and decisions. Not an NRC publication or legal advice. Choices stay on this page. We count demo activity in aggregate; we don’t ask who you are.</footer>
 <script src="metrics.js"></script>
 <script src="evaluate.js"></script>
-<script src="narration-cues.js?v=nrc-opening"></script>
+<script src="narration-cues.js?v=smr-stakes"></script>
 <script type="module">
 const {atlasRule,atlasDecisions,evaluateDecision,scanModes}=window.atlasRuleImpact;
 const {narrationCues,narrationStarts}=window.atlasRuleNarration;
@@ -188,7 +188,7 @@ function playVoice(){
 function speakScene(index){
  playbackRun++;
  const isNew=!player.getAttribute('src');
- if(isNew){player.src='guided-demo.mp3?v=nrc-opening';player.load();}
+ if(isNew){player.src='guided-demo.mp3?v=smr-stakes';player.load();}
  if(!isNew||index>0)player.currentTime=narrationStarts[index];
  spokenScene=-1;lastCue=-1;drawCue(index);
  voiceToggle.disabled=false;voiceToggle.textContent='Pause demo';playVoice();
