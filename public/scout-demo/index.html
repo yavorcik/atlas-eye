@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="canonical" href="https://atlaseye.ai/scout-demo/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://atlaseye.ai/scout-demo/">
+<meta property="og:title" content="Scout | Chapter 7 intake demo">
+<meta property="og:description" content="See a fictional Chapter 7 intake from the first client answer to the paralegal handoff.">
+<title>Scout · Chapter 7 intake demo</title>
+<meta name="description" content="Watch a fictional Chapter 7 intake turn into an actionable handoff for a bankruptcy practice.">
+<link rel="icon" href="atlas-eye.svg"><link rel="stylesheet" href="style.css">
+<script type="module" src="app.js"></script>
+</head>
+<body>
+<header class="top wrap"><a class="brand" href="/" aria-label="AtlasEye home"><img src="atlas-eye.svg" alt=""><div>SCOUT <small>by AtlasEye</small></div></a><span class="tag">DEMO · FICTIONAL CASE</span></header>
+<main class="wrap">
+<section class="intro">
+<p class="eyebrow">CHAPTER 7 / CLIENT INTAKE</p>
+<h1>The client started intake.<br><span>Your paralegal already knows what’s missing.</span></h1>
+<p class="lede">Watch Scout ask the next question, flag two missing pay stubs, and hand your staff a packet they can act on.</p>
+</section>
+<section class="player" aria-label="Scout walkthrough">
+<div class="bar"><div><span class="redmark"></span> Case 007 <span class="sep">/</span> Jamie Rivera <span class="sample">Fictional</span></div><span id="view">Client view</span></div>
+<nav class="steps" aria-label="Walkthrough chapters">
+<button type="button" data-step="0" aria-current="step"><span>01</span> Client intake</button>
+<button type="button" data-step="1"><span>02</span> Follow-up</button>
+<button type="button" data-step="2"><span>03</span> Document check</button>
+<button type="button" data-step="3"><span>04</span> Staff handoff</button>
+</nav>
+<div id="stage" class="stage" tabindex="-1">
+<div class="stage-kicker">01 / CLIENT INTAKE</div><h2>Meet Jamie Rivera.</h2><p class="stage-sub">A fictional client has started a Chapter 7 intake.</p>
+<div class="message"><span>JAMIE · CLIENT</span><p>“I own a car with my sister, and I uploaded the pay stubs I could find.”</p></div>
+</div>
+<div class="caption" id="caption"><span class="caption-label">CAPTIONS</span><span id="words">Press Start to follow Jamie’s intake with narration.</span></div>
+<div class="controls">
+<button type="button" class="primary" id="play">Start narrated demo</button>
+<button type="button" id="replay" class="quiet" disabled>Restart</button>
+<button type="button" id="sound" class="quiet" aria-pressed="false">Sound on</button>
+<div class="clock"><span id="elapsed">0:00</span> / <span id="total">1:19</span></div>
+</div>
+<div class="timeline"><progress id="progress" max="1" value="0" aria-label="Walkthrough progress"></progress></div>
+<div class="sr" id="status" role="status"></div>
+<audio id="narration" preload="auto" src="narration.mp3"></audio>
+</section>
+<footer><p><strong>Scout organizes intake. The firm decides what happens next.</strong></p><p>Illustrative walkthrough, not a live Scout session. No actual client records, uploads, filings, or messages. Not legal advice.</p></footer>
+</main>
+</body>
+</html>

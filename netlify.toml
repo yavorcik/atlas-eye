@@ -138,6 +138,18 @@
   force = true
 
 [[redirects]]
+  from = "/scout-demo"
+  to = "/scout-demo/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/scout-demo/"
+  to = "/scout-demo/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
