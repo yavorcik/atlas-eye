@@ -150,6 +150,18 @@
   force = true
 
 [[redirects]]
+  from = "/moxie-demo"
+  to = "/moxie-demo/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/moxie-demo/"
+  to = "/moxie-demo/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200

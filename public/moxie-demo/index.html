@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="canonical" href="https://atlaseye.ai/moxie-demo/">
+  <meta name="description" content="A fictional narrated walkthrough of Moxie, a tool for preparing for a transplant follow-up.">
+  <title>Moxie · Transplant follow-up walkthrough</title>
+  <link rel="icon" href="moxie-liver.svg">
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <header class="top wrap"><div class="brand">Moxie <span>by AtlasEye</span></div><span class="badge">Fictional walkthrough</span></header>
+  <main class="wrap">
+    <section class="intro" aria-labelledby="title">
+      <div>
+        <p class="eyebrow">Transplant follow-up</p>
+        <h1 id="title">Follow-up visit tomorrow.<br><span>Know what to ask.</span></h1>
+        <p class="lede">Moxie is personal to Alex. This demo shows how, with Alex’s permission, it could read Alex’s own MyChart records and help prepare a question for the transplant team.</p>
+      </div>
+      <img class="mascot" src="moxie-liver.svg" alt="Moxie, the smiling liver mascot" width="152" height="152">
+    </section>
+    <p class="demo-notice"><strong>Simulated MyChart connection · no real patient data</strong><span>This walkthrough is not connected to any account.</span></p>
+    <section class="player" aria-label="Moxie walkthrough">
+      <div class="bar"><strong>Alex Morgan <span>· Example profile</span></strong><span id="view">Visit prep</span></div>
+      <nav class="steps" aria-label="Walkthrough chapters">
+        <button type="button" data-step="0" aria-current="step"><span>01</span> Meet Alex</button>
+        <button type="button" data-step="1"><span>02</span> Read reports</button>
+        <button type="button" data-step="2"><span>03</span> Compare values</button>
+        <button type="button" data-step="3"><span>04</span> Prepare a question</button>
+      </nav>
+      <div class="stage" id="stage">
+        <div class="stage-kicker">01 / Meet Alex</div><h2>Tomorrow’s follow-up</h2>
+        <p class="stage-sub">Alex has a transplant follow-up tomorrow. This example shows the records Alex would give Moxie permission to read.</p>
+        <aside class="connection" aria-label="Simulated connection details"><div><strong>Simulated MyChart connection</strong><span>Example permission: read-only · Alex Morgan’s record</span></div><div><strong>Example latest pull</strong><span>Nov 10, 9:15 a.m. ET</span></div></aside>
+        <div class="message"><span>Alex · Example patient</span><p>“I have two reports. What should I ask at my visit?”</p></div>
+      </div>
+      <div class="caption"><span class="caption-label">Captions</span><span id="words">Select Start narrated demo to begin.</span></div>
+      <div class="controls">
+        <button type="button" class="primary" id="play">Start narrated demo</button>
+        <button type="button" class="quiet" id="replay" disabled>Restart</button>
+        <button type="button" class="quiet" id="sound" aria-pressed="false" aria-label="Mute narration">Sound on</button>
+        <div class="clock"><span id="elapsed">0:00</span> / <span id="total">–:––</span></div>
+      </div>
+      <div class="timeline"><progress id="progress" max="1" value="0" aria-label="Walkthrough progress"></progress></div>
+      <div class="sr" id="status" role="status"></div>
+      <audio id="narration" preload="auto" src="narration.mp3"></audio>
+    </section>
+    <footer><strong>Moxie helps you prepare. Your care team interprets the results.</strong><p>Fictional example, not medical advice. No real patient records, live account connection, or uploads.</p></footer>
+  </main>
+</body>
+</html>
