@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises'
 import { runInNewContext } from 'node:vm'
 
 const html = await readFile(new URL('../public/learn/connection-check.html', import.meta.url), 'utf8')
-const script = await readFile(new URL('../public/learn/connection-check.js', import.meta.url), 'utf8')
+const script = await readFile(new URL('../public/learn/connection-check-v2.js', import.meta.url), 'utf8')
 
 test('operator page is noindex with an unnamed password field and no unsafe non-JS submission', () => {
   assert.match(html, /name="robots" content="noindex,nofollow,noarchive"/)
@@ -13,7 +13,7 @@ test('operator page is noindex with an unnamed password field and no unsafe non-
   assert.match(html, /type="password"/)
   assert.doesNotMatch(html.match(/<input[^>]+>/)[0], /\bname=/)
   assert.match(html, /<button type="submit" disabled>/)
-  assert.match(html, /src="\.\/connection-check.js"/)
+  assert.match(html, /src="\.\/connection-check-v2.js"/)
   assert.doesNotMatch(script, /localStorage|sessionStorage|console\.|location\.|sendBeacon/)
 })
 
@@ -70,4 +70,16 @@ test('invalid input is cleared without any request', async () => {
   await listener({ preventDefault() {} })
   assert.equal(input.value, '')
   assert.match(status.textContent, /valid temporary/)
+})
+
+test('operator page uses a distinct versioned handler and no-store cache policy', async () => {
+  const config = await readFile(new URL('../netlify.toml', import.meta.url), 'utf8')
+  assert.match(html, /src="\.\/connection-check-v2\.js"/)
+  assert.doesNotMatch(html, /src="\.\/connection-check\.js"/)
+  assert.match(script, /Running selected action/)
+  assert.match(script, /send-owner-test/)
+  const headers = config.slice(config.indexOf('for = "/learn/connection-check*"'))
+  assert.match(headers, /Cache-Control = "no-store"/)
+  assert.match(headers, /CDN-Cache-Control = "no-store"/)
+  assert.match(headers, /Cloudflare-CDN-Cache-Control = "no-store"/)
 })
